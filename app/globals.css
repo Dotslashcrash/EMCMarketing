@@ -112,6 +112,29 @@
   .social-icon:hover { color: var(--acid) !important; border-color: var(--acid); background: rgba(184,255,0,0.08); opacity: 1 !important; transform: translateY(-2px); }
   .social-icon--large { width: 44px; height: 44px; border-color: rgba(255,255,255,0.3); }
 
+  .search-signal { position: relative; background: var(--bone); color: var(--ink); border-top: 2px solid var(--ink); border-bottom: 2px solid var(--ink); overflow: hidden; }
+  .search-signal::before { content: "SEARCH SIGNAL"; position: absolute; right: -2vw; top: 18px; font-family: var(--font-display); font-size: clamp(52px, 9vw, 140px); line-height: 0.82; color: transparent; -webkit-text-stroke: 1px rgba(0,0,0,0.12); pointer-events: none; }
+  .search-signal__inner { position: relative; z-index: 2; display: grid; grid-template-columns: 0.72fr 1fr 1.2fr; gap: 32px; align-items: start; padding-top: 34px; padding-bottom: 34px; }
+  .search-signal p { font-size: 17px; line-height: 1.55; max-width: 640px; }
+  .search-signal__qa { display: grid; gap: 10px; }
+  .search-signal details { background: #fff; border: 1.5px solid var(--ink); padding: 14px 16px; transition: transform .18s ease, box-shadow .18s ease; }
+  .search-signal details:hover { transform: translateY(-2px); box-shadow: 5px 5px 0 var(--acid); }
+  .search-signal summary { cursor: pointer; font-family: var(--font-display); font-size: 18px; line-height: 1.05; list-style: none; }
+  .search-signal summary::-webkit-details-marker { display: none; }
+  .search-signal summary::after { content: "+"; float: right; color: var(--acid); -webkit-text-stroke: 1px var(--ink); }
+  .search-signal details[open] summary::after { content: "-"; }
+  .search-signal details p { margin-top: 12px; font-size: 14px; color: #222; }
+
+  .seo-field-notes { background: var(--ink); color: #fff; border-top: 1px solid var(--edge); padding: 64px 0; }
+  .seo-field-notes__inner { display: grid; grid-template-columns: 0.85fr 1fr 1.15fr; gap: 34px; align-items: start; }
+  .seo-field-notes h2 { font-size: clamp(46px, 7vw, 98px); color: var(--acid); margin-top: 14px; }
+  .seo-field-notes__copy { display: grid; gap: 18px; font-size: 16px; line-height: 1.65; color: rgba(255,255,255,0.82); }
+  .seo-field-notes__cards { display: grid; gap: 12px; }
+  .seo-field-notes__cards article { border: 1px solid rgba(255,255,255,0.16); padding: 18px; background: rgba(255,255,255,0.035); transition: border-color .18s ease, transform .18s ease; }
+  .seo-field-notes__cards article:hover { border-color: var(--acid); transform: translateY(-2px); }
+  .seo-field-notes__cards h3 { font-family: var(--font-display); font-size: 22px; line-height: 1; color: #fff; margin-bottom: 10px; }
+  .seo-field-notes__cards p { font-size: 14px; line-height: 1.55; color: rgba(255,255,255,0.76); }
+
   /* Responsive two-column CTA layout used by BigCTA and Careers DON'T BE A STRANGER.
      Xrow at size 88–96 needs ~430–470px; collapse before that can overflow. */
   .cta-split { display: grid; grid-template-columns: 1.3fr 1fr; gap: 48px; align-items: center; }
@@ -217,6 +240,8 @@
     .reviews-lab__grid, .google-review-wall { grid-template-columns: 1fr; }
     .reviews-lab__copy { min-height: auto; }
     .review-submit { transform: none; }
+    .search-signal__inner { grid-template-columns: 1fr; gap: 18px; }
+    .seo-field-notes__inner { grid-template-columns: 1fr; }
   }
 
   /* === Breakpoint: 760px — layout collapse, tighter spacing === */

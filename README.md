@@ -1,21 +1,29 @@
 # EMC Marketing
 
-Static mirror of [emcmarketing.co](https://emcmarketing.co/#home), packaged for Azure Static Web Apps.
+Next.js + TypeScript source for the EMC Marketing site, deployed as a static export to Azure Static Web Apps.
 
-## Structure
+## Stack
 
-- `index.html` - static shell
-- `css/styles.css` - site styles
-- `js/app.jsx` - React app loaded through Babel Standalone
-- `js/inline-images.js` - embedded image data used by the app
-- `images/emc-logo.svg` - logo asset
+- Next.js app router
+- TypeScript project config
+- Static export via `output: 'export'`
+- Dynamic client-side SEO/AEO metadata per hash section
+- Server-rendered field notes for search and answer engines
+- Azure Static Web Apps deployment from `out/`
 
-## Local Preview
-
-Run a simple static server from the repo root:
+## Local Development
 
 ```powershell
-python -m http.server 8080
+npm install
+npm run dev
 ```
 
-Then open `http://localhost:8080/#home`.
+Open `http://localhost:3000`.
+
+## Production Build
+
+```powershell
+npm run build
+```
+
+The static export is generated in `out/`.

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://yellow-glacier-039e21b10.7.azurestaticapps.net/sitemap.xml

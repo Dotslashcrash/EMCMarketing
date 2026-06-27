@@ -1,3 +1,7 @@
+﻿"use client";
+
+import React, { useEffect, useRef, useState } from 'react';
+
   const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
     "heroVariant": "zine",
     "greenTone": "classic"
@@ -19,11 +23,149 @@
     { code: 'YT', label: 'YouTube',   url: 'https://www.youtube.com/@EMCSocialClub' },
   ];
   const EXT = { target: '_blank', rel: 'noopener noreferrer' };
+  const SITE_URL = 'https://yellow-glacier-039e21b10.7.azurestaticapps.net';
+  const BASE_TITLE = 'EMC Marketing';
+  const PAGE_SEO = {
+    home: {
+      title: 'EMC Marketing | Fayetteville Marketing Agency',
+      description: 'EMC Marketing is a Fayetteville marketing agency for social media, paid ads, brand identity, content production, website design, SEO, AIO and Google Business optimization.',
+      signal: 'Fayetteville strategy, brand, content, paid media, and websites for companies that are done being quiet.',
+      questions: [
+        ['What is EMC Marketing?', 'EMC Marketing is a Fayetteville, Arkansas marketing agency that blends strategy, creative, paid media, content production, websites and analytics.'],
+        ['Who does EMC Marketing help?', 'EMC Marketing helps local, regional and national brands that need clearer positioning, stronger content, better ads and a more memorable online presence.']
+      ]
+    },
+    services: {
+      title: 'Marketing Services | EMC Marketing',
+      description: 'Social media management, paid advertising, brand identity, website design, content production and marketing consultation from EMC Marketing in Fayetteville, Arkansas.',
+      signal: 'Six ways to get loud: social, paid, brand, web, content, and consultation.',
+      questions: [
+        ['What services does EMC Marketing offer?', 'EMC Marketing offers social media strategy, paid ads, brand identity, website design, content production, audits and consultation.'],
+        ['Can EMC Marketing manage both creative and paid ads?', 'Yes. EMC Marketing pairs creative production with paid media so campaigns have strong concepts, tracking and reporting.']
+      ]
+    },
+    websites: {
+      title: 'Website Design, SEO & AIO | EMC Marketing',
+      description: 'Conversion-focused website design, SEO foundations, AIO optimization, Google Analytics and Google Business integration with no-money-up-front demo options.',
+      signal: 'Websites that show up, load clean, answer questions, and make people take the next step.',
+      questions: [
+        ['Does EMC Marketing build websites?', 'Yes. EMC Marketing designs and deploys landing pages and full websites with UX, visual design, CMS setup, analytics and SEO foundations.'],
+        ['What is AIO optimization?', 'AIO optimization helps a website answer the questions people ask in AI search tools while still supporting traditional search visibility.']
+      ]
+    },
+    portfolio: {
+      title: 'Marketing Portfolio | EMC Marketing',
+      description: 'A look at EMC Marketing work across social media strategy, paid advertisements, print, guerrilla marketing, websites, brand campaigns and content.',
+      signal: 'Real campaigns, sharp positioning, and work built to move through feeds without apologizing.',
+      questions: [
+        ['What kind of work is in the EMC Marketing portfolio?', 'The portfolio includes social media strategy, paid advertising, print, guerrilla marketing, websites, brand campaigns and content systems.']
+      ]
+    },
+    about: {
+      title: 'About EMC Marketing | Fayetteville, AR',
+      description: 'Meet EMC Marketing, a Fayetteville marketing agency built around clear strategy, loud creative, honest reporting and human-first brand work.',
+      signal: 'Built in Fayetteville, made for brands that want strategy with a pulse.',
+      questions: [
+        ['Where is EMC Marketing based?', 'EMC Marketing is based in Fayetteville, Arkansas and serves Northwest Arkansas and brands across the United States.']
+      ]
+    },
+    careers: {
+      title: 'Careers at EMC Marketing',
+      description: 'Join EMC Marketing, a strategy-driven marketing collective looking for clear thinkers, strong communicators and creative operators.',
+      signal: 'For people who care about clarity, craft, momentum, and showing up like a real human.',
+      questions: [
+        ['Is EMC Marketing hiring?', 'EMC Marketing keeps opportunities open for aligned sales, strategy, creative and marketing talent through its careers page.']
+      ]
+    },
+    contact: {
+      title: 'Contact EMC Marketing',
+      description: 'Contact EMC Marketing in Fayetteville, Arkansas. Email info@emcmarketing.co, call 479-445-3632 or book a discovery call.',
+      signal: 'Bring the messy brief, the half-built idea, the stuck campaign, or the site that needs a backbone.',
+      questions: [
+        ['How do I contact EMC Marketing?', 'Email info@emcmarketing.co, call 479-445-3632 or book a discovery call through the EMC Marketing website.']
+      ]
+    },
+  };
 
-  const { useEffect, useRef, useState } = React;
+  function upsertMeta(selector, attrs) {
+    let el = document.head.querySelector(selector);
+    if (!el) {
+      el = document.createElement('meta');
+      document.head.appendChild(el);
+    }
+    Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, String(v)));
+  }
+
+  function upsertLink(selector, attrs) {
+    let el = document.head.querySelector(selector);
+    if (!el) {
+      el = document.createElement('link');
+      document.head.appendChild(el);
+    }
+    Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, String(v)));
+  }
+
+  function DynamicSearchLayer({ page }) {
+    const data = PAGE_SEO[page] || PAGE_SEO.home;
+    useEffect(() => {
+      const url = page === 'home' ? `${SITE_URL}/` : `${SITE_URL}/#${page}`;
+      document.title = data.title;
+      upsertMeta('meta[name="description"]', { name: 'description', content: data.description });
+      upsertMeta('meta[property="og:title"]', { property: 'og:title', content: data.title });
+      upsertMeta('meta[property="og:description"]', { property: 'og:description', content: data.description });
+      upsertMeta('meta[property="og:url"]', { property: 'og:url', content: url });
+      upsertMeta('meta[name="twitter:title"]', { name: 'twitter:title', content: data.title });
+      upsertMeta('meta[name="twitter:description"]', { name: 'twitter:description', content: data.description });
+      upsertLink('link[rel="canonical"]', { rel: 'canonical', href: url });
+
+      const json = {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        '@id': `${url}#answers`,
+        mainEntity: data.questions.map(([q, a]) => ({
+          '@type': 'Question',
+          name: q,
+          acceptedAnswer: { '@type': 'Answer', text: a }
+        }))
+      };
+      let script = document.getElementById('emc-dynamic-answers');
+      if (!script) {
+        script = document.createElement('script');
+        script.id = 'emc-dynamic-answers';
+        script.type = 'application/ld+json';
+        document.head.appendChild(script);
+      }
+      script.textContent = JSON.stringify(json);
+    }, [page, data]);
+    return null;
+  }
+
+  function SearchSignal({ page }) {
+    const data = PAGE_SEO[page] || PAGE_SEO.home;
+    return (
+      <aside className="search-signal" aria-label={`${BASE_TITLE} search context`}>
+        <div className="wrap-wide search-signal__inner">
+          <div className="mono">What the internet should understand</div>
+          <p>{data.signal}</p>
+          <div className="search-signal__qa">
+            {data.questions.map(([q, a]) => (
+              <details key={q}>
+                <summary>{q}</summary>
+                <p>{a}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </aside>
+    );
+  }
+
+  function inlineImage(key) {
+    return typeof window !== 'undefined' ? window[key] : undefined;
+  }
 
   function SocialIcon({ code, size = 18 }) {
-    const common = { width: size, height: size, viewBox: '0 0 24 24', fill: 'currentColor', 'aria-hidden': 'true' };
+    const common = { width: size, height: size, viewBox: '0 0 24 24', fill: 'currentColor', 'aria-hidden': true };
     if (code === 'FB') return (
       <svg {...common}>
         <path d="M14.1 8.2V6.7c0-.7.5-.9.9-.9h2.2V2.1L14.1 2c-3.4 0-4.2 2.5-4.2 4.2v2H7v3.9h2.9V22h4.2v-9.9h3.3l.5-3.9h-3.8Z" />
@@ -96,7 +238,7 @@
     }
     return (
       <div className={cls} style={{aspectRatio: aspect, width: '100%', ...style}}>
-        <span className="ph__label">↑ PHOTO · {label}</span>
+        <span className="ph__label">â†‘ PHOTO Â· {label}</span>
       </div>
     );
   }
@@ -167,7 +309,7 @@
         </div>
         <div className="nav__right">
           <a className="nav__link nav__crew" style={{fontSize: 12}} href={LINKS.crew} {...EXT}>EMCREW</a>
-          <a className="nav__cta" href={LINKS.calendly} {...EXT}>Book a chat →</a>
+          <a className="nav__cta" href={LINKS.calendly} {...EXT}>Book a chat â†’</a>
           <button className="nav__burger" onClick={() => setMenuOpen(v => !v)} aria-label="Toggle menu" aria-expanded={menuOpen}>
             <span></span><span></span><span></span>
           </button>
@@ -178,7 +320,7 @@
           ))}
           <div className="nav__drawer-divider"></div>
           <a href={LINKS.crew} {...EXT} onClick={() => setMenuOpen(false)}>EMCREW</a>
-          <a className="nav__drawer-cta" href={LINKS.calendly} {...EXT} onClick={() => setMenuOpen(false)}>Book a chat →</a>
+          <a className="nav__drawer-cta" href={LINKS.calendly} {...EXT} onClick={() => setMenuOpen(false)}>Book a chat â†’</a>
         </div>
       </nav>
     );
@@ -223,7 +365,7 @@
           <div>
             <div className="foot__head">LEAVE<br/>A MARK.</div>
             <div style={{marginTop: 28}}>
-              <a className="btn btn--acid" href={LINKS.calendly} {...EXT}>Book a chat →</a>
+              <a className="btn btn--acid" href={LINKS.calendly} {...EXT}>Book a chat â†’</a>
             </div>
           </div>
           <div className="foot__col">
@@ -254,7 +396,7 @@
           </div>
         </div>
         <div className="foot__bottom">
-          <span>© 2026 EMC MARKETING</span>
+          <span>Â© 2026 EMC MARKETING</span>
           <span>MADE LOUD IN FAYETTEVILLE, AR</span>
           <span>NOT BORING SINCE DAY ONE</span>
         </div>
@@ -293,8 +435,8 @@
             <div>
               <Reveal>
                 <div style={{display: 'flex', gap: 14, marginBottom: 28, alignItems: 'center', flexWrap: 'wrap'}}>
-                  <span className="tag">● Taking clients for Q3</span>
-                  <span className="mono" style={{opacity: 0.6}}>5.0 ★★★★★ · 40+ brands</span>
+                  <span className="tag">â— Taking clients for Q3</span>
+                  <span className="mono" style={{opacity: 0.6}}>5.0 â˜…â˜…â˜…â˜…â˜… Â· 40+ brands</span>
                 </div>
               </Reveal>
               <Reveal>
@@ -307,12 +449,12 @@
               </Reveal>
               <Reveal>
                 <p style={{maxWidth: 520, marginTop: 32, fontSize: 17, lineHeight: 1.55, opacity: 0.82, color: '#fff'}}>
-                  It's time for you to leave a mark online. We blend strategy, creative and chaos into work that makes people stop scrolling — and start spending.
+                  It's time for you to leave a mark online. We blend strategy, creative and chaos into work that makes people stop scrolling â€” and start spending.
                 </p>
               </Reveal>
               <Reveal>
                 <div style={{display: 'flex', gap: 14, marginTop: 32, flexWrap: 'wrap'}}>
-                  <a className="btn btn--acid" href={LINKS.vault} {...EXT}>Shop the EMC Vault →</a>
+                  <a className="btn btn--acid" href={LINKS.vault} {...EXT}>Shop the EMC Vault â†’</a>
                   <a className="btn btn--ghost" href={LINKS.smarter} {...EXT}>Make me smarter</a>
                 </div>
               </Reveal>
@@ -329,10 +471,10 @@
               <div style={{position: 'absolute', top: '-8%', right: '-10%', width: '110%', aspectRatio: '1',
                 borderRadius: '50%', background: 'var(--acid)', transform: `translateY(${-y * 0.08}px)`, zIndex: 1}} />
               <div style={{position: 'relative', zIndex: 2, transform: `translateY(${-y * 0.04}px)`}}>
-                <Photo label="Elizabeth / Hero shot" aspect="4/5" variant="default" src={window.__ELIZ_PT} objectPosition="center top" />
+                <Photo label="Elizabeth / Hero shot" aspect="4/5" variant="default" src={inlineImage('__ELIZ_PT')} objectPosition="center top" />
               </div>
               <div style={{position: 'absolute', bottom: 28, left: -14, zIndex: 3, transform: 'rotate(-8deg)'}}>
-                <span className="stamp" style={{background: 'var(--ink)', color: 'var(--acid)', padding: '14px 18px', fontSize: 14}}>CERTIFIED LOUD®</span>
+                <span className="stamp" style={{background: 'var(--ink)', color: 'var(--acid)', padding: '14px 18px', fontSize: 14}}>CERTIFIED LOUDÂ®</span>
               </div>
               <div style={{position: 'absolute', top: 40, right: 0, zIndex: 3, transform: 'rotate(6deg)'}}>
                 <span className="stamp" style={{background: 'var(--acid)', color: 'var(--ink)', padding: '10px 14px', fontSize: 12}}>NOT BORING</span>
@@ -364,20 +506,20 @@
             </Reveal>
             <Reveal>
               <div className="mono" style={{color: 'var(--acid)', marginBottom: 10}}>02 / METHOD</div>
-              <p style={{fontSize: 15, opacity: 0.85, lineHeight: 1.55, color: '#fff'}}>Strategy, creative, media buy. We do the whole loud thing — not just the pretty part.</p>
+              <p style={{fontSize: 15, opacity: 0.85, lineHeight: 1.55, color: '#fff'}}>Strategy, creative, media buy. We do the whole loud thing â€” not just the pretty part.</p>
             </Reveal>
             <Reveal>
               <div className="mono" style={{color: 'var(--acid)', marginBottom: 10}}>03 / ACTION</div>
               <div style={{display: 'flex', gap: 10, flexWrap: 'wrap'}}>
-                <a className="btn btn--acid" style={{padding: '14px 22px'}} href={LINKS.calendly} {...EXT}>Book a chat →</a>
+                <a className="btn btn--acid" style={{padding: '14px 22px'}} href={LINKS.calendly} {...EXT}>Book a chat â†’</a>
                 <button className="btn btn--ghost" style={{padding: '14px 22px'}} onClick={() => setPage('portfolio')}>Portfolio</button>
               </div>
             </Reveal>
           </div>
         </div>
         <div className="hero-zine__founder" style={{position: 'absolute', right: 'max(3vw, 40px)', top: 200, width: 220, zIndex: 3, transform: `rotate(6deg) translateY(${-y * 0.08}px)`, border: '4px solid #fff'}}>
-          <Photo label="Founder" aspect="3/4" variant="acid" src={window.__ELIZ_PT} objectPosition="center 20%" />
-          <div style={{background: '#fff', color: '#000', padding: '6px 10px', fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.14em', textAlign: 'center'}}>EXHIBIT A · FOUNDER</div>
+          <Photo label="Founder" aspect="3/4" variant="acid" src={inlineImage('__ELIZ_PT')} objectPosition="center 20%" />
+          <div style={{background: '#fff', color: '#000', padding: '6px 10px', fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.14em', textAlign: 'center'}}>EXHIBIT A Â· FOUNDER</div>
         </div>
       </section>
     );
@@ -388,7 +530,7 @@
     return (
       <section style={{position: 'relative', minHeight: '100vh', display: 'grid', gridTemplateColumns: '1.15fr 1fr', background: 'var(--ink)', paddingTop: 88}}>
         <div style={{padding: '72px 48px', display: 'flex', flexDirection: 'column', justifyContent: 'center'}}>
-          <span className="tag" style={{alignSelf: 'flex-start', marginBottom: 28}}>● CURRENTLY CRUSHING Q2</span>
+          <span className="tag" style={{alignSelf: 'flex-start', marginBottom: 28}}>â— CURRENTLY CRUSHING Q2</span>
           <Reveal>
             <h1 className="display" style={{fontSize: 'clamp(80px, 11vw, 180px)', color: '#fff'}}>
               MAKE<br/>THEM<br/><span style={{color: 'var(--acid)'}}>STARE.</span>
@@ -401,14 +543,14 @@
           </Reveal>
           <Reveal>
             <div style={{display: 'flex', gap: 12, marginTop: 32, flexWrap: 'wrap'}}>
-              <button className="btn btn--acid">Start screaming →</button>
+              <button className="btn btn--acid">Start screaming â†’</button>
               <button className="btn btn--ghost">Shut up & show me</button>
             </div>
           </Reveal>
         </div>
         <div style={{position: 'relative', background: 'var(--acid)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', overflow: 'hidden'}}>
           <div style={{width: '85%', transform: `translateY(${-y * 0.05}px)`, marginBottom: 0}}>
-            <Photo label="Elizabeth" aspect="4/5" variant="bone" src={window.__ELIZ_PT} objectPosition="center top" />
+            <Photo label="Elizabeth" aspect="4/5" variant="bone" src={inlineImage('__ELIZ_PT')} objectPosition="center top" />
           </div>
           <div style={{position: 'absolute', top: 60, left: 40, fontFamily: 'var(--font-display)', color: 'var(--ink)', fontSize: 'clamp(72px, 9vw, 140px)', lineHeight: 0.86}}>
             LOUD<br/>BY<br/>DESIGN.
@@ -426,7 +568,7 @@
 
   // ====== Services grid ======
   const SERVICES = [
-    { n: '01', title: 'SOCIAL THAT\nACTUALLY MOVES', body: "We don't 'post content.' We engineer scroll-stoppers. Organic posts, reels, UGC, community — tied back to revenue, not vanity.", tags: ['Instagram','TikTok','LinkedIn'] },
+    { n: '01', title: 'SOCIAL THAT\nACTUALLY MOVES', body: "We don't 'post content.' We engineer scroll-stoppers. Organic posts, reels, UGC, community â€” tied back to revenue, not vanity.", tags: ['Instagram','TikTok','LinkedIn'] },
     { n: '02', title: 'PAID ADS,\nNO GAMBLING', body: 'Google and Meta buys that respect your budget. Tight tracking, honest reporting, zero guru-speak.', tags: ['Google','Meta','YouTube'] },
     { n: '03', title: 'BRAND THAT\nHITS BACK', body: 'Logos, identity, packaging, decks. Built to look loud in a feed and professional in a boardroom. Both, not either.', tags: ['Identity','Packaging','Web'] },
     { n: '04', title: 'CONTENT\nON-DEMAND', body: 'Photography, short-form video, copywriting. The monthly machine that feeds your feeds without you crying.', tags: ['Photo','Video','Copy'] },
@@ -439,17 +581,17 @@
         <div className="wrap-wide">
           <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 48, flexWrap: 'wrap', gap: 24}}>
             <div>
-              <div className="section__label">§ 001 — Capabilities & Expertise</div>
+              <div className="section__label">Â§ 001 â€” Capabilities & Expertise</div>
               <Reveal>
                 <h2 className="display" style={{fontSize: 'clamp(56px, 9vw, 140px)', maxWidth: 1000, color: 'var(--ink)'}}>
                   WE DO THE <span style={{color: 'var(--acid)'}}>WHOLE</span> THING.
                 </h2>
               </Reveal>
               <p style={{maxWidth: 560, marginTop: 20, color: '#222', fontSize: 17, lineHeight: 1.55}}>
-                Six capabilities, one brain. Mix and match or hand us the keys — most clients end up doing the second thing once they see the first one work.
+                Six capabilities, one brain. Mix and match or hand us the keys â€” most clients end up doing the second thing once they see the first one work.
               </p>
             </div>
-            <button className="btn btn--ink" onClick={() => setPage('contact')}>Let's chat →</button>
+            <button className="btn btn--ink" onClick={() => setPage('contact')}>Let's chat â†’</button>
           </div>
           <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', border: '1.5px solid var(--ink)'}}>
             {SERVICES.map((s, i) => (
@@ -483,7 +625,7 @@
 
   // ====== Stats ======
   function StatsStrip() {
-    const stats = [{n:'40+',l:'Brands served'},{n:'5.0★',l:'Average rating'},{n:'12×',l:'Avg. ROAS'},{n:'2.4M',l:'Organic imp/mo'}];
+    const stats = [{n:'40+',l:'Brands served'},{n:'5.0â˜…',l:'Average rating'},{n:'12Ã—',l:'Avg. ROAS'},{n:'2.4M',l:'Organic imp/mo'}];
     return (
       <section style={{background: 'var(--ink)', padding: '60px 0', borderTop: '1.5px solid var(--acid)', borderBottom: '1.5px solid var(--acid)'}}>
         <div className="wrap-wide" style={{display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24}}>
@@ -520,7 +662,7 @@
         <div className="wrap-wide">
           <div className="reviews-lab__grid">
             <div className="reviews-lab__copy">
-              <div className="section__label">§ 002 - Google receipts</div>
+              <div className="section__label">Â§ 002 - Google receipts</div>
               <Reveal>
                 <h2 className="display reviews-lab__title">
                   PROOF WITH<br/><span>TEETH.</span>
@@ -534,7 +676,7 @@
                   <strong>5.0</strong>
                   <span>Google rating</span>
                 </div>
-                <div className="reviews-lab__stars" aria-label="Five star rating">★★★★★</div>
+                <div className="reviews-lab__stars" aria-label="Five star rating">â˜…â˜…â˜…â˜…â˜…</div>
               </div>
               <a className="btn btn--ghost" href={LINKS.googleReviews} {...EXT}>See every Google review</a>
             </div>
@@ -545,7 +687,7 @@
                 <span className="tag">Google review box</span>
                 <div className="review-submit__stars" aria-label={`${rating} star draft rating`}>
                   {[1,2,3,4,5].map(n => (
-                    <button type="button" key={n} className={n <= rating ? 'active' : ''} onClick={() => setRating(n)} aria-label={`${n} stars`}>★</button>
+                    <button type="button" key={n} className={n <= rating ? 'active' : ''} onClick={() => setRating(n)} aria-label={`${n} stars`}>â˜…</button>
                   ))}
                 </div>
               </div>
@@ -558,10 +700,10 @@
                 <textarea value={draft} onChange={e => setDraft(e.target.value)} placeholder="Tell the internet why EMC made your marketing suck less..." rows="4" required />
               </label>
               <div className="review-submit__preview">
-                <div className="mono">{name || 'Your name'} · draft preview</div>
+                <div className="mono">{name || 'Your name'} Â· draft preview</div>
                 <p>{draft || 'Your review will preview here before you post it on Google.'}</p>
               </div>
-              <button className="btn btn--acid" type="submit">Post it on Google →</button>
+              <button className="btn btn--acid" type="submit">Post it on Google â†’</button>
               {sent && <div className="review-submit__note">Google opened in a new tab. Drop the review there and make it official.</div>}
             </form>
           </div>
@@ -571,7 +713,7 @@
               <Reveal key={q.author} className={`google-review-card google-review-card--${q.hue}`}>
                 <div className="google-review-card__top">
                   <span className="mono">Google</span>
-                  <span className="google-review-card__stars">★★★★★</span>
+                  <span className="google-review-card__stars">â˜…â˜…â˜…â˜…â˜…</span>
                 </div>
                 <p>{q.body}</p>
                 <div className="google-review-card__foot">
@@ -596,17 +738,17 @@
         <div className="wrap-wide">
           <div className="cta-split">
             <div>
-              <div className="section__label">§ 003 — Need my power?</div>
+              <div className="section__label">Â§ 003 â€” Need my power?</div>
               <Reveal>
                 <h2 className="display" style={{fontSize: 'clamp(72px, 12vw, 200px)', letterSpacing: '-0.02em'}}>
                   STOP<br/>BEING<br/>IGNORED.
                 </h2>
               </Reveal>
               <p style={{maxWidth: 480, marginTop: 24, fontSize: 18}}>
-                Book a 20-minute chat. No pitch deck, no fake urgency — just us figuring out if you should hire us.
+                Book a 20-minute chat. No pitch deck, no fake urgency â€” just us figuring out if you should hire us.
               </p>
               <div style={{display: 'flex', gap: 14, marginTop: 32, flexWrap: 'wrap'}}>
-                <a className="btn btn--ink" href={LINKS.calendly} {...EXT}>Book a meeting →</a>
+                <a className="btn btn--ink" href={LINKS.calendly} {...EXT}>Book a meeting â†’</a>
                 <button className="btn btn--outline-ink" onClick={() => setPage('contact')}>Or email instead</button>
               </div>
             </div>
@@ -631,7 +773,7 @@
         <Hero variant={variant} setPage={setPage} />
         <Marquee items={['ELEVATE YOUR BRAND','EXPRESS YOUR VISION','LEAVE A MARK','NOT BORING SINCE 2019','LOUD BY DESIGN']} />
         <ServicesGrid setPage={setPage} />
-        <Marquee variant="marquee--dark" items={['BOOK A CHAT','CERTIFIED LOUD®','YOUR MARKETING SUCKS LESS NOW','SHOP THE VAULT']} />
+        <Marquee variant="marquee--dark" items={['BOOK A CHAT','CERTIFIED LOUDÂ®','YOUR MARKETING SUCKS LESS NOW','SHOP THE VAULT']} />
         <StatsStrip />
         <Testimonials />
         <BigCTA setPage={setPage} />
@@ -642,7 +784,7 @@
   function AboutPage({ setPage }) {
     const values = [
       { n:'01', t:'NO FLUFF', b:"If it doesn't move a number or move a person, we're not doing it." },
-      { n:'02', t:'LOUD ≠ DUMB', b:'We earn attention with craft. Yelling without substance is TikTok filler.' },
+      { n:'02', t:'LOUD â‰  DUMB', b:'We earn attention with craft. Yelling without substance is TikTok filler.' },
       { n:'03', t:'OWN YOUR WORK', b:'You get the files, the logins, the learnings. No vendor lock.' },
       { n:'04', t:'PICK A FIGHT', b:"Taking a stance is free advertising. We'll help you find yours." },
       { n:'05', t:'BE A HUMAN', b:'Answering emails like a person is somehow a competitive advantage now.' },
@@ -650,14 +792,14 @@
     const steps = [
       { t:'Kickoff', d:'We dig into your brand, customers and competitors. Audit what exists. Flag what stinks.' },
       { t:'Blueprint', d:"We write a one-page strategy. Not a phonebook. If you can't read it in 5 min, we rewrote it." },
-      { t:'Make', d:'Creative, ads, posts, pages — whatever the plan calls for. Weekly check-ins, not radio silence.' },
+      { t:'Make', d:'Creative, ads, posts, pages â€” whatever the plan calls for. Weekly check-ins, not radio silence.' },
       { t:'Measure', d:'You get a dashboard, not a PDF. Real numbers, real humans explaining them.' },
     ];
     return (
       <div className="page-enter">
         <section style={{paddingTop: 160, paddingBottom: 50, background: 'var(--ink)'}}>
           <div className="wrap-wide">
-            <span className="tag" style={{marginBottom: 24, display: 'inline-flex'}}>● ABOUT EMC</span>
+            <span className="tag" style={{marginBottom: 24, display: 'inline-flex'}}>â— ABOUT EMC</span>
             <Reveal>
               <h1 className="display" style={{fontSize: 'clamp(80px, 13vw, 220px)', color: '#fff', letterSpacing: '-0.02em', marginTop: 24}}>
                 WE PUT THE<br/>
@@ -667,32 +809,32 @@
             </Reveal>
           </div>
         </section>
-        <Marquee items={['FOUNDED 2019','FAYETTEVILLE AR','SMALL TEAM · BIG MOUTH','40+ BRANDS SERVED','CERTIFIED LOUD']} />
+        <Marquee items={['FOUNDED 2019','FAYETTEVILLE AR','SMALL TEAM Â· BIG MOUTH','40+ BRANDS SERVED','CERTIFIED LOUD']} />
         <section className="section section--bone">
           <div className="wrap-wide">
             <div style={{display: 'grid', gridTemplateColumns: '1fr 1.15fr', gap: 72, alignItems: 'center'}}>
               <Reveal>
                 <div style={{position: 'relative'}}>
                   <div style={{background: 'var(--acid)', aspectRatio: '4/5', border: '2px solid var(--ink)', position: 'relative', overflow: 'hidden'}}>
-                    <Photo label="Founder — Elizabeth" aspect="4/5" variant="default" src={window.__ELIZ_PT} objectPosition="center top" style={{border: 'none'}} />
+                    <Photo label="Founder â€” Elizabeth" aspect="4/5" variant="default" src={inlineImage('__ELIZ_PT')} objectPosition="center top" style={{border: 'none'}} />
                   </div>
                   <span className="stamp" style={{position: 'absolute', bottom: -16, left: -16, background: 'var(--ink)', color: 'var(--acid)', padding: '12px 18px', fontSize: 14, transform: 'rotate(-8deg)'}}>FOUNDER / CEO</span>
                 </div>
               </Reveal>
               <div>
-                <div className="section__label">§ 001 — Meet Elizabeth</div>
+                <div className="section__label">Â§ 001 â€” Meet Elizabeth</div>
                 <Reveal>
                   <h2 className="display" style={{fontSize: 'clamp(56px, 8vw, 120px)', color: 'var(--ink)'}}>
                     I'M THE E<br/>IN EMC.
                   </h2>
                 </Reveal>
                 <div style={{marginTop: 28, color: '#222', fontSize: 17, lineHeight: 1.65, maxWidth: 520}}>
-                  <p style={{marginBottom: 18}}>I've managed social media for brands big, small, and medium-sized-but-think-they're-big. Transparency, integrity and collaboration aren't values I put on a wall — they're how I return emails.</p>
+                  <p style={{marginBottom: 18}}>I've managed social media for brands big, small, and medium-sized-but-think-they're-big. Transparency, integrity and collaboration aren't values I put on a wall â€” they're how I return emails.</p>
                   <p style={{marginBottom: 18}}>I aim to inspire and educate, not only my clients but also myself. The algorithm is a moving target; I like it that way.</p>
                   <p>Let's embark on this journey together, transforming online spaces into thriving ecosystems of engagement and impact. (Also: making ads you don't immediately skip.)</p>
                 </div>
                 <div style={{display: 'flex', gap: 14, marginTop: 32, flexWrap: 'wrap'}}>
-                  <button className="btn btn--ink" onClick={() => setPage('contact')}>Let's go →</button>
+                  <button className="btn btn--ink" onClick={() => setPage('contact')}>Let's go â†’</button>
                 </div>
               </div>
             </div>
@@ -700,7 +842,7 @@
         </section>
         <section className="section" style={{background: 'var(--ink)'}}>
           <div className="wrap-wide">
-            <div className="section__label">§ 002 — House rules</div>
+            <div className="section__label">Â§ 002 â€” House rules</div>
             <Reveal>
               <h2 className="display" style={{fontSize: 'clamp(52px, 8vw, 120px)', color: '#fff', marginBottom: 48}}>
                 THE <span style={{color: 'var(--acid)'}}>FIVE</span> RULES.
@@ -723,7 +865,7 @@
           <div className="wrap-wide">
             <div style={{display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: 60}}>
               <div>
-                <div className="section__label">§ 003 — The process</div>
+                <div className="section__label">Â§ 003 â€” The process</div>
                 <Reveal>
                   <h2 className="display" style={{fontSize: 'clamp(56px, 8vw, 120px)'}}>
                     HOW WE<br/>ACTUALLY<br/>WORK.
@@ -754,18 +896,18 @@
 
   function ServicesPage({ setPage }) {
     const services = [
-      { n:'01', t:'SOCIAL MEDIA', body:'Strategy, content, community. We run your channels like a newsroom — consistent, creative.', includes:['Content strategy','Monthly calendar','Daily engagement','Reels / TikToks','Analytics'] },
+      { n:'01', t:'SOCIAL MEDIA', body:'Strategy, content, community. We run your channels like a newsroom â€” consistent, creative.', includes:['Content strategy','Monthly calendar','Daily engagement','Reels / TikToks','Analytics'] },
       { n:'02', t:'PAID MEDIA', body:'Google, Meta, YouTube, TikTok ads. Tight targeting, creative testing, honest reporting. No agency math.', includes:['Campaign architecture','Creative production','Pixel / GA4 setup','Weekly reports'] },
       { n:'03', t:'BRAND IDENTITY', body:'Logo, colors, type, voice, guidelines. Full identity systems built to be loud in a feed and sharp in a deck.', includes:['Discovery + moodboard','Logo system','Typography + color','Guidelines PDF','Launch assets'] },
       { n:'04', t:'WEBSITE DESIGN', body:'Landing pages or full sites. Designed to convert, coded to load fast, CMS-ready so you can actually update them.', includes:['UX wireframes','Visual design','Webflow / Shopify build','CMS setup','SEO foundation'] },
-      { n:'05', t:'CONTENT PRODUCTION', body:'Photography, video, copy — in one production day per month. Six months of content in twelve hours.', includes:['Shot list planning','Full production day','Edit + retouching','Copy + captions','Asset delivery'] },
+      { n:'05', t:'CONTENT PRODUCTION', body:'Photography, video, copy â€” in one production day per month. Six months of content in twelve hours.', includes:['Shot list planning','Full production day','Edit + retouching','Copy + captions','Asset delivery'] },
       { n:'06', t:'CONSULTATION', body:'Not every fix needs an agency. Audits, second opinions, strategy on tap. Available as a monthly retainer or a one-off session.', includes:['Monthly advisory retainer','One-off strategy session','Marketing + brand audit','Campaign + creative review','Channel + content strategy'] },
     ];
     return (
       <div className="page-enter">
         <section style={{paddingTop: 160, paddingBottom: 50, background: 'var(--ink)'}}>
           <div className="wrap-wide">
-            <span className="tag" style={{marginBottom: 24, display: 'inline-flex'}}>● CAPABILITIES</span>
+            <span className="tag" style={{marginBottom: 24, display: 'inline-flex'}}>â— CAPABILITIES</span>
             <Reveal>
               <h1 className="display" style={{fontSize: 'clamp(80px, 13vw, 220px)', color: '#fff', marginTop: 24}}>
                 SIX WAYS TO<br/>
@@ -774,7 +916,7 @@
             </Reveal>
             <Reveal>
               <p style={{maxWidth: 620, marginTop: 28, fontSize: 18, opacity: 0.85, color: '#fff'}}>
-                Pick one, bundle a few, or hand us the whole thing. Retainer, project, or fractional — we shape the scope around the actual problem, not the other way around.
+                Pick one, bundle a few, or hand us the whole thing. Retainer, project, or fractional â€” we shape the scope around the actual problem, not the other way around.
               </p>
             </Reveal>
           </div>
@@ -799,7 +941,7 @@
                 <div>
                   <div className="mono" style={{opacity: 0.55, marginBottom: 10, color: '#fff'}}>Includes</div>
                   <ul style={{listStyle: 'none', padding: 0, fontSize: 14, lineHeight: 1.8, color: '#fff'}}>
-                    {s.includes.map(item => <li key={item} style={{display: 'flex', gap: 8, alignItems: 'baseline'}}><span style={{color: 'var(--acid)'}}>→</span>{item}</li>)}
+                    {s.includes.map(item => <li key={item} style={{display: 'flex', gap: 8, alignItems: 'baseline'}}><span style={{color: 'var(--acid)'}}>â†’</span>{item}</li>)}
                   </ul>
                 </div>
               </div>
@@ -810,7 +952,7 @@
           <div className="wrap-wide">
             <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60, alignItems: 'center', marginBottom: 80}}>
               <div>
-                <div className="section__label">§ ADD-ON</div>
+                <div className="section__label">Â§ ADD-ON</div>
                 <Reveal>
                   <h2 className="display" style={{fontSize: 'clamp(52px, 7vw, 110px)', color: 'var(--ink)'}}>
                     COMPETITOR<br/>RESEARCH.
@@ -825,7 +967,7 @@
             <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60, alignItems: 'center'}}>
               <Photo label="Cutthroat analysis" aspect="4/3" variant="bone" video="uploads/services-cutthroat-analysis.mp4" />
               <div>
-                <div className="section__label">§ ADD-ON</div>
+                <div className="section__label">Â§ ADD-ON</div>
                 <Reveal>
                   <h2 className="display" style={{fontSize: 'clamp(52px, 7vw, 110px)', color: 'var(--ink)'}}>
                     CUTTHROAT<br/>ANALYSIS.
@@ -846,7 +988,7 @@
               </h2>
             </Reveal>
             <div style={{display: 'flex', gap: 14, marginTop: 32, justifyContent: 'center', flexWrap: 'wrap'}}>
-              <a className="btn btn--ink" href={LINKS.calendly} {...EXT}>Book a scoping call →</a>
+              <a className="btn btn--ink" href={LINKS.calendly} {...EXT}>Book a scoping call â†’</a>
               <button className="btn btn--outline-ink">Download rate card</button>
             </div>
           </div>
@@ -893,7 +1035,7 @@
       <div className="page-enter">
         <section style={{paddingTop: 160, paddingBottom: 60, background: 'var(--ink)'}}>
           <div className="wrap-wide">
-            <span className="tag" style={{marginBottom: 24, display: 'inline-flex'}}>● KEEP IN TOUCH</span>
+            <span className="tag" style={{marginBottom: 24, display: 'inline-flex'}}>â— KEEP IN TOUCH</span>
             <Reveal>
               <h1 className="display" style={{fontSize: 'clamp(90px, 14vw, 260px)', color: '#fff', marginTop: 24}}>
                 NEED MY<br/>
@@ -902,7 +1044,7 @@
             </Reveal>
             <Reveal>
               <p style={{marginTop: 24, fontSize: 20, maxWidth: 620, opacity: 0.85, color: '#fff'}}>
-                Contact me and let's schedule a chat today. Replies inside 24 hours — probably less, unless you email on a weekend.
+                Contact me and let's schedule a chat today. Replies inside 24 hours â€” probably less, unless you email on a weekend.
               </p>
             </Reveal>
           </div>
@@ -912,13 +1054,13 @@
           <div className="wrap-wide">
             <div style={{display: 'grid', gridTemplateColumns: '1.35fr 1fr', gap: 60, alignItems: 'flex-start'}}>
               <div style={{background: 'var(--ink-2)', padding: 36, border: '1.5px solid var(--edge)'}}>
-                <div className="section__label">§ 01 — Send a note</div>
+                <div className="section__label">Â§ 01 â€” Send a note</div>
                 <h2 className="display" style={{fontSize: 44, marginBottom: 28, color: '#fff'}}>
                   TELL US <span style={{color: 'var(--acid)'}}>EVERYTHING.</span>
                 </h2>
                 {sent ? (
                   <div style={{padding: 40, border: '1.5px dashed var(--acid)', textAlign: 'center'}}>
-                    <div className="display" style={{fontSize: 72, color: 'var(--acid)'}}>✓</div>
+                    <div className="display" style={{fontSize: 72, color: 'var(--acid)'}}>âœ“</div>
                     <div className="display" style={{fontSize: 32, marginTop: 10, color: '#fff'}}>GOT IT.</div>
                     <p style={{marginTop: 12, opacity: 0.8, color: '#fff'}}>We'll reply inside 24 hours. Probably faster.</p>
                   </div>
@@ -940,7 +1082,7 @@
                     <div>
                       <div className="field__label">Rough budget</div>
                       <div style={{display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8}}>
-                        {['< $5k','$5–15k','$15–50k','$50k+','ongoing retainer'].map(n => (
+                        {['< $5k','$5â€“15k','$15â€“50k','$50k+','ongoing retainer'].map(n => (
                           <button type="button" key={n} className={`chip ${form.budget===n?'active':''}`} onClick={() => setForm(p=>({...p, budget:n}))}>{n}</button>
                         ))}
                       </div>
@@ -949,7 +1091,7 @@
                       <div className="field__label">The story so far</div>
                       <textarea rows="5" value={form.message} onChange={set('message')} placeholder="What's broken, what's working, what you'd like to happen in 90 days." style={{padding: '12px 0', borderBottom: '1.5px solid rgba(255,255,255,0.3)', background: 'transparent', color: '#fff', fontFamily: 'var(--font-body)', fontSize: 15, border: 0, borderBottom: '1.5px solid rgba(255,255,255,0.3)', resize: 'vertical', width: '100%', outline: 'none'}} />
                     </div>
-                    <button className="btn btn--acid" style={{alignSelf: 'flex-start'}} disabled={sending}>{sending ? 'Sending…' : 'Send it →'}</button>
+                    <button className="btn btn--acid" style={{alignSelf: 'flex-start'}} disabled={sending}>{sending ? 'Sendingâ€¦' : 'Send it â†’'}</button>
                     {error && (
                       <div style={{color: '#ff5a5a', fontSize: 14, fontFamily: 'var(--font-body)'}}>{error}</div>
                     )}
@@ -957,13 +1099,13 @@
                 )}
               </div>
               <div>
-                <div className="section__label">§ 02 — Or the old ways</div>
+                <div className="section__label">Â§ 02 â€” Or the old ways</div>
                 <div style={{display: 'grid', gap: 14, marginTop: 8}}>
                   {[
                     { l:'Email', v:'info@emcmarketing.co', h:'mailto:info@emcmarketing.co' },
                     { l:'Phone', v:'479-445-3632', h:'tel:4794453632' },
                     { l:'HQ', v:'Fayetteville, AR' },
-                    { l:'Hours', v:'Mon–Fri · 9 to 6 CT' },
+                    { l:'Hours', v:'Monâ€“Fri Â· 9 to 6 CT' },
                   ].map(r => (
                     <a key={r.l} href={r.h} style={{display: 'grid', gridTemplateColumns: '90px 1fr', gap: 20, alignItems: 'baseline', padding: '14px 0', borderBottom: '1px dashed rgba(255,255,255,0.15)', color: '#fff'}}>
                       <div className="mono" style={{opacity: 0.55}}>{r.l}</div>
@@ -974,7 +1116,7 @@
                 <div style={{marginTop: 32, padding: 26, background: 'var(--acid)', color: 'var(--ink)'}}>
                   <div className="display" style={{fontSize: 28, marginBottom: 8}}>LIKE A CALL BETTER?</div>
                   <p style={{fontSize: 14, marginBottom: 18}}>Skip the email dance. Pick a 20-min slot and we'll get to it.</p>
-                  <a className="btn btn--ink" href={LINKS.calendly} {...EXT}>Book a meeting →</a>
+                  <a className="btn btn--ink" href={LINKS.calendly} {...EXT}>Book a meeting â†’</a>
                 </div>
                 <div style={{marginTop: 28}}>
                   <div className="mono" style={{opacity: 0.55, marginBottom: 10, color: '#fff'}}>Follow along</div>
@@ -1061,17 +1203,17 @@
   // ====== Portfolio page ======
   function PortfolioPage({ setPage }) {
     const work = [
-      { n:'01', brand:'HOOKAH + RESTAURANT & BAR', scope:'Social Media Strategy · Paid Advertisements', note:'Creative showcase — scroll-stopping reels and community-first growth.' },
-      { n:'02', brand:'HOGBOX',                     scope:'Social Media · Guerrilla Marketing · Print',  note:'Featured in Arkansas Living Magazine (May 2023).', link:'https://arkansaslivingmagazine.com/wp-content/uploads/Ark-Living-MAY-2023-WEB-1.pdf', linkLabel:'Arkansas Living Magazine →' },
-      { n:'03', brand:'MULTI-MILLION DOLLAR FURNITURE CO.', scope:'Social Media · Paid Advertisements', note:'Local market dominance — organic reach paired with tight paid funnels.' },
-      { n:'04', brand:'LOCAL MEDICAL SPA',          scope:'Social Media · Paid Advertisements',          note:'Booking-driven creative and lead-gen funnels that fill the calendar.' },
-      { n:'05', brand:'ROOFING & CONSTRUCTION CO.', scope:'Social Media · Paid Advertisements',          note:'Lead volume engineered for seasonality — geo-targeted, tracked to revenue.' },
+      { n:'01', brand:'HOOKAH + RESTAURANT & BAR', scope:'Social Media Strategy Â· Paid Advertisements', note:'Creative showcase â€” scroll-stopping reels and community-first growth.' },
+      { n:'02', brand:'HOGBOX',                     scope:'Social Media Â· Guerrilla Marketing Â· Print',  note:'Featured in Arkansas Living Magazine (May 2023).', link:'https://arkansaslivingmagazine.com/wp-content/uploads/Ark-Living-MAY-2023-WEB-1.pdf', linkLabel:'Arkansas Living Magazine â†’' },
+      { n:'03', brand:'MULTI-MILLION DOLLAR FURNITURE CO.', scope:'Social Media Â· Paid Advertisements', note:'Local market dominance â€” organic reach paired with tight paid funnels.' },
+      { n:'04', brand:'LOCAL MEDICAL SPA',          scope:'Social Media Â· Paid Advertisements',          note:'Booking-driven creative and lead-gen funnels that fill the calendar.' },
+      { n:'05', brand:'ROOFING & CONSTRUCTION CO.', scope:'Social Media Â· Paid Advertisements',          note:'Lead volume engineered for seasonality â€” geo-targeted, tracked to revenue.' },
     ];
     return (
       <div className="page-enter">
         <section style={{paddingTop: 160, paddingBottom: 50, background: 'var(--ink)'}}>
           <div className="wrap-wide">
-            <span className="tag" style={{marginBottom: 24, display: 'inline-flex'}}>● PORTFOLIO · EST. 2022</span>
+            <span className="tag" style={{marginBottom: 24, display: 'inline-flex'}}>â— PORTFOLIO Â· EST. 2022</span>
             <Reveal>
               <h1 className="display" style={{fontSize: 'clamp(80px, 13vw, 220px)', color: '#fff', marginTop: 24, letterSpacing: '-0.02em'}}>
                 WE DON'T JUST<br/>
@@ -1082,21 +1224,21 @@
             </Reveal>
             <Reveal>
               <p style={{maxWidth: 620, marginTop: 28, fontSize: 18, opacity: 0.85, color: '#fff'}}>
-                Disrupt the scroll, rewrite the rules. A short stack of work we're proud of — each one built to stop thumbs and move numbers.
+                Disrupt the scroll, rewrite the rules. A short stack of work we're proud of â€” each one built to stop thumbs and move numbers.
               </p>
             </Reveal>
             <Reveal>
               <div style={{display: 'flex', gap: 14, marginTop: 32, flexWrap: 'wrap'}}>
-                <a className="btn btn--acid" href={LINKS.vault} {...EXT}>Explore the Vault →</a>
+                <a className="btn btn--acid" href={LINKS.vault} {...EXT}>Explore the Vault â†’</a>
                 <a className="btn btn--ghost" href={LINKS.calendly} {...EXT}>Book a chat</a>
               </div>
             </Reveal>
           </div>
         </section>
-        <Marquee items={['LOUD BY DESIGN','CERTIFIED LOUD®','STOP THE SCROLL','SHAKE UP THE SPACE','EST. 2022']} />
+        <Marquee items={['LOUD BY DESIGN','CERTIFIED LOUDÂ®','STOP THE SCROLL','SHAKE UP THE SPACE','EST. 2022']} />
         <section className="section" style={{background: 'var(--ink)', padding: '60px 0'}}>
           <div className="wrap-wide">
-            <div className="section__label">§ 001 — Featured work</div>
+            <div className="section__label">Â§ 001 â€” Featured work</div>
             <Reveal>
               <h2 className="display" style={{fontSize: 'clamp(56px, 9vw, 140px)', color: '#fff', marginBottom: 40}}>
                 THE <span style={{color: 'var(--acid)'}}>CASE</span> FILES.
@@ -1124,7 +1266,7 @@
           <div className="wrap-wide">
             <div style={{display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: 60, alignItems: 'flex-end', marginBottom: 56}}>
               <div>
-                <div className="section__label">§ 002 — Photography</div>
+                <div className="section__label">Â§ 002 â€” Photography</div>
                 <Reveal>
                   <h2 className="display" style={{fontSize: 'clamp(56px, 8vw, 120px)', color: 'var(--ink)'}}>
                     EVERY FRAME<br/>
@@ -1133,7 +1275,7 @@
                 </Reveal>
               </div>
               <div style={{color: '#222', fontSize: 17, lineHeight: 1.65, maxWidth: 560}}>
-                <p style={{marginBottom: 14}}>At EMC, we capture more than content — we capture feeling.</p>
+                <p style={{marginBottom: 14}}>At EMC, we capture more than content â€” we capture feeling.</p>
                 <p>High-quality photography and story-driven video that bring your brand to life with clarity, emotion, and bold creative energy. Every shot tells a story.</p>
               </div>
             </div>
@@ -1161,7 +1303,7 @@
                 <Reel src="https://storage.googleapis.com/emc-marketing-media/reels/reel-03.mp4" />
               </div>
               <div>
-                <div className="section__label">§ 003 — Video production</div>
+                <div className="section__label">Â§ 003 â€” Video production</div>
                 <Reveal>
                   <h2 className="display" style={{fontSize: 'clamp(56px, 8vw, 120px)', color: '#fff'}}>
                     BUILT<br/>
@@ -1178,7 +1320,7 @@
         </section>
         <section className="section" style={{background: 'var(--ink-2)', padding: '100px 0', borderTop: '1px solid var(--edge)', borderBottom: '1px solid var(--edge)'}}>
           <div className="wrap-wide">
-            <div className="section__label">§ 004 — Real campaigns, real results</div>
+            <div className="section__label">Â§ 004 â€” Real campaigns, real results</div>
             <Reveal>
               <h2 className="display" style={{fontSize: 'clamp(60px, 10vw, 160px)', color: '#fff', marginBottom: 64}}>
                 NUMBERS<br/><span style={{color: 'var(--acid)'}}>THAT HIT.</span>
@@ -1206,24 +1348,24 @@
             <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60}}>
               <div>
                 <div className="mono" style={{color: 'var(--acid)', marginBottom: 36, letterSpacing: '0.2em', borderBottom: '1px solid var(--edge)', paddingBottom: 16}}>PAID SEARCH</div>
-                <PerfBar label="IMPRESSIONS"        display="152K"    pct={82} note="↑ 78%"   />
-                <PerfBar label="CLICKS"             display="5,338"   pct={58} note="↑ 155%"  />
+                <PerfBar label="IMPRESSIONS"        display="152K"    pct={82} note="â†‘ 78%"   />
+                <PerfBar label="CLICKS"             display="5,338"   pct={58} note="â†‘ 155%"  />
                 <PerfBar label="CLICK-THROUGH RATE" display="19.34%"  pct={97}                />
                 <PerfBar label="CONVERSIONS"        display="9,370+"  pct={95}                />
-                <PerfBar label="COST PER CONVERSION" display="$1.22"  pct={98} note="↓ 100%" />
+                <PerfBar label="COST PER CONVERSION" display="$1.22"  pct={98} note="â†“ 100%" />
               </div>
               <div>
                 <div className="mono" style={{color: 'var(--acid)', marginBottom: 36, letterSpacing: '0.2em', borderBottom: '1px solid var(--edge)', paddingBottom: 16}}>PAID SOCIAL</div>
-                <PerfBar label="IMPRESSIONS"        display="1.48M"   pct={100} note="↑ 11,792%" />
-                <PerfBar label="CLICKS"             display="7,826"   pct={75}  note="↑ 78,160%" />
-                <PerfBar label="AVG COST PER CLICK" display="$0.58"   pct={92}  note="↓ 55%"     />
+                <PerfBar label="IMPRESSIONS"        display="1.48M"   pct={100} note="â†‘ 11,792%" />
+                <PerfBar label="CLICKS"             display="7,826"   pct={75}  note="â†‘ 78,160%" />
+                <PerfBar label="AVG COST PER CLICK" display="$0.58"   pct={92}  note="â†“ 55%"     />
                 <PerfBar label="CTR GROWTH"         display="+450%"   pct={88}                   />
                 <PerfBar label="TOTAL REACH"        display="162K+"   pct={62}                   />
               </div>
             </div>
 
             <p className="mono" style={{marginTop: 60, opacity: 0.3, fontSize: 10, textAlign: 'center', color: '#fff', letterSpacing: '0.2em'}}>
-              REAL CAMPAIGNS · ANONYMOUS CLIENTS · NUMBERS WE DIDN'T ROUND UP
+              REAL CAMPAIGNS Â· ANONYMOUS CLIENTS Â· NUMBERS WE DIDN'T ROUND UP
             </p>
           </div>
         </section>
@@ -1234,13 +1376,13 @@
               <Reveal>
                 <div style={{position: 'relative'}}>
                   <div style={{background: 'var(--acid)', aspectRatio: '4/5', border: '2px solid #fff', position: 'relative', overflow: 'hidden'}}>
-                    <Photo label="Founder — Elizabeth" aspect="4/5" variant="default" src={window.__ELIZ_PT} objectPosition="center top" style={{border: 'none'}} />
+                    <Photo label="Founder â€” Elizabeth" aspect="4/5" variant="default" src={inlineImage('__ELIZ_PT')} objectPosition="center top" style={{border: 'none'}} />
                   </div>
                   <span className="stamp" style={{position: 'absolute', bottom: -16, left: -16, background: 'var(--acid)', color: 'var(--ink)', padding: '12px 18px', fontSize: 14, transform: 'rotate(-8deg)'}}>EST. 2022</span>
                 </div>
               </Reveal>
               <div>
-                <div className="section__label">§ 005 — How it started</div>
+                <div className="section__label">Â§ 005 â€” How it started</div>
                 <Reveal>
                   <h2 className="display" style={{fontSize: 'clamp(56px, 8vw, 120px)', color: '#fff'}}>
                     THE <span style={{color: 'var(--acid)'}}>BLUEPRINT</span><br/>
@@ -1249,7 +1391,7 @@
                   </h2>
                 </Reveal>
                 <div style={{marginTop: 24, color: '#fff', fontSize: 17, lineHeight: 1.65, maxWidth: 560, opacity: 0.88}}>
-                  <p style={{marginBottom: 16}}>It started as Elizabeth's Media Creations — a creative space for planners, graphics, and passion projects. No investors. No agency-owner dreams. Just a vision, and a need to build something real.</p>
+                  <p style={{marginBottom: 16}}>It started as Elizabeth's Media Creations â€” a creative space for planners, graphics, and passion projects. No investors. No agency-owner dreams. Just a vision, and a need to build something real.</p>
                   <p style={{marginBottom: 16}}>Every graphic mockup, every social side gig, every late-night edit was the blueprint. EMC didn't happen by accident. It was the plan before I knew it was one.</p>
                   <p>Now? A full-service marketing agency built on bold strategy, disruptive content, and results that speak louder than likes. We don't do boring. We don't do safe. We build brands that stop the scroll and shake up the space.</p>
                 </div>
@@ -1265,7 +1407,7 @@
               </h2>
             </Reveal>
             <div style={{display: 'flex', gap: 14, marginTop: 32, justifyContent: 'center', flexWrap: 'wrap'}}>
-              <a className="btn btn--ink" href={LINKS.calendly} {...EXT}>Book a chat →</a>
+              <a className="btn btn--ink" href={LINKS.calendly} {...EXT}>Book a chat â†’</a>
               <a className="btn btn--outline-ink" href={LINKS.vault} {...EXT}>Shop the Vault</a>
             </div>
           </div>
@@ -1278,7 +1420,7 @@
   function WebsitesPage({ setPage }) {
     const steps = [
       { t:'RESEARCH', d:"We dig into your brand, your audience, and your competitors. If you already have a site, we pull what's worth keeping and flag what isn't." },
-      { t:'DESIGN',   d:"We align on the vibe — loud or refined, minimal or maximal. You tell us who you're talking to, we design accordingly." },
+      { t:'DESIGN',   d:"We align on the vibe â€” loud or refined, minimal or maximal. You tell us who you're talking to, we design accordingly." },
       { t:'DEMO',     d:"We build a working demo site. Usually same day. You see exactly what you're getting before any money moves." },
       { t:'DECIDE',   d:"Yes, we launch. No, you walk. Either way, nothing changes hands until you've seen the work. No contracts, no cancel fees." },
     ];
@@ -1319,15 +1461,15 @@
       },
     ];
     const glossary = [
-      { t:'SEO',              b:"Search Engine Optimization. Making sure your site actually shows up when people Google you. Keywords, page speed, site structure — the technical bits that tell Google 'this page deserves to be seen.'" },
-      { t:'AIO',              b:"AI Optimization. The new SEO. Making sure ChatGPT, Perplexity, Gemini, and the other AI chatbots can find and recommend your site when someone asks them. Your customers are asking AI now — you need to be in those answers." },
+      { t:'SEO',              b:"Search Engine Optimization. Making sure your site actually shows up when people Google you. Keywords, page speed, site structure â€” the technical bits that tell Google 'this page deserves to be seen.'" },
+      { t:'AIO',              b:"AI Optimization. The new SEO. Making sure ChatGPT, Perplexity, Gemini, and the other AI chatbots can find and recommend your site when someone asks them. Your customers are asking AI now â€” you need to be in those answers." },
       { t:'GOOGLE BUSINESS',  b:"That card that shows up with your hours, reviews, and photos when someone Googles you. We set it up, verify it, and keep it in sync with your site so nothing goes stale." },
-      { t:'GOOGLE ANALYTICS', b:"Tracking hooked up so you actually know what's working — where visitors come from, what they click, what makes them call. No more guessing, no more vibes-based marketing." },
+      { t:'GOOGLE ANALYTICS', b:"Tracking hooked up so you actually know what's working â€” where visitors come from, what they click, what makes them call. No more guessing, no more vibes-based marketing." },
     ];
     const faq = [
-      { q:'When do I start paying?', a:"Upfront is due when you say yes to the demo. Monthly kicks in 30 days after your site goes live — so the first month of hosting and updates is on us. Call it a shakedown period." },
-      { q:"What if I don't like the demo?", a:"You walk. No charge, no hard feelings, no 'but we did the work already' nonsense. The demo is the audition — we don't get paid until we earn it." },
-      { q:'Who owns the finished site?', a:"You do. Files, domain, logins, analytics — all yours. No vendor lock, no weird licensing. If we ever part ways, you keep everything." },
+      { q:'When do I start paying?', a:"Upfront is due when you say yes to the demo. Monthly kicks in 30 days after your site goes live â€” so the first month of hosting and updates is on us. Call it a shakedown period." },
+      { q:"What if I don't like the demo?", a:"You walk. No charge, no hard feelings, no 'but we did the work already' nonsense. The demo is the audition â€” we don't get paid until we earn it." },
+      { q:'Who owns the finished site?', a:"You do. Files, domain, logins, analytics â€” all yours. No vendor lock, no weird licensing. If we ever part ways, you keep everything." },
       { q:'Can I upgrade tiers later?', a:"Any time. Upgrades take effect on the next monthly cycle. Downgrades too. Life changes, sites change." },
     ];
 
@@ -1335,7 +1477,7 @@
       <div className="page-enter">
         <section style={{paddingTop: 160, paddingBottom: 50, background: 'var(--ink)'}}>
           <div className="wrap-wide">
-            <span className="tag" style={{marginBottom: 24, display: 'inline-flex'}}>● WEBSITES · NO MONEY UP FRONT</span>
+            <span className="tag" style={{marginBottom: 24, display: 'inline-flex'}}>â— WEBSITES Â· NO MONEY UP FRONT</span>
             <Reveal>
               <h1 className="display" style={{fontSize: 'clamp(80px, 13vw, 220px)', color: '#fff', marginTop: 24, letterSpacing: '-0.02em'}}>
                 SEE IT FIRST.<br/>
@@ -1345,12 +1487,12 @@
             </Reveal>
             <Reveal>
               <p style={{maxWidth: 620, marginTop: 28, fontSize: 18, opacity: 0.85, color: '#fff'}}>
-                We research, design, and launch a working demo site — usually same day. You decide if it moves forward. Money only changes hands once you say go.
+                We research, design, and launch a working demo site â€” usually same day. You decide if it moves forward. Money only changes hands once you say go.
               </p>
             </Reveal>
             <Reveal>
               <div style={{display: 'flex', gap: 14, marginTop: 32, flexWrap: 'wrap'}}>
-                <a className="btn btn--acid" href={LINKS.calendly} {...EXT}>Book a discovery call →</a>
+                <a className="btn btn--acid" href={LINKS.calendly} {...EXT}>Book a discovery call â†’</a>
                 <button className="btn btn--ghost" onClick={() => setPage('portfolio')}>See recent work</button>
               </div>
             </Reveal>
@@ -1362,7 +1504,7 @@
           <div className="wrap-wide">
             <div style={{display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: 60}}>
               <div>
-                <div className="section__label">§ 001 — How it works</div>
+                <div className="section__label">Â§ 001 â€” How it works</div>
                 <Reveal>
                   <h2 className="display" style={{fontSize: 'clamp(56px, 8vw, 120px)', color: 'var(--ink)'}}>
                     FOUR STEPS.<br/>ZERO <span style={{color: 'var(--acid)'}}>CATCH.</span>
@@ -1390,7 +1532,7 @@
         <section className="section" style={{background: 'var(--ink)', padding: '100px 0'}}>
           <div className="wrap-wide">
             <div style={{textAlign: 'center', marginBottom: 56}}>
-              <div className="section__label" style={{justifyContent: 'center', display: 'inline-flex'}}>§ 002 — Pick your plan</div>
+              <div className="section__label" style={{justifyContent: 'center', display: 'inline-flex'}}>Â§ 002 â€” Pick your plan</div>
               <Reveal>
                 <h2 className="display" style={{fontSize: 'clamp(60px, 10vw, 160px)', color: '#fff', marginTop: 16}}>
                   THREE TIERS.<br/><span style={{color: 'var(--acid)'}}>ZERO GUESSWORK.</span>
@@ -1421,13 +1563,13 @@
                     <ul style={{listStyle: 'none', padding: 0, fontSize: 14, lineHeight: 1.55, flex: 1, marginBottom: 24}}>
                       {t.features.map(f => (
                         <li key={f} style={{display: 'flex', gap: 10, alignItems: 'flex-start', paddingBottom: 10, borderBottom: `1px ${pop ? 'solid rgba(0,0,0,0.1)' : 'dashed rgba(255,255,255,0.1)'}`, marginBottom: 10}}>
-                          <span style={{color: pop ? 'var(--ink)' : 'var(--acid)', fontWeight: 'bold', flexShrink: 0}}>→</span>
+                          <span style={{color: pop ? 'var(--ink)' : 'var(--acid)', fontWeight: 'bold', flexShrink: 0}}>â†’</span>
                           <span>{f}</span>
                         </li>
                       ))}
                     </ul>
                     <a className={pop ? 'btn btn--ink' : 'btn btn--acid'} href={LINKS.calendly} {...EXT} style={{justifyContent: 'center'}}>
-                      {pop ? 'Start here →' : 'See a demo →'}
+                      {pop ? 'Start here â†’' : 'See a demo â†’'}
                     </a>
                   </div>
                 );
@@ -1438,7 +1580,7 @@
 
         <section className="section section--bone">
           <div className="wrap-wide">
-            <div className="section__label">§ 003 — What those words mean</div>
+            <div className="section__label">Â§ 003 â€” What those words mean</div>
             <Reveal>
               <h2 className="display" style={{fontSize: 'clamp(48px, 7vw, 100px)', color: 'var(--ink)', marginBottom: 48}}>
                 NO JARGON.<br/>
@@ -1458,7 +1600,7 @@
 
         <section className="section" style={{background: 'var(--ink)'}}>
           <div className="wrap-wide">
-            <div className="section__label">§ 004 — The fine print (there isn't much)</div>
+            <div className="section__label">Â§ 004 â€” The fine print (there isn't much)</div>
             <Reveal>
               <h2 className="display" style={{fontSize: 'clamp(60px, 9vw, 140px)', color: '#fff', marginBottom: 48}}>
                 ASKED <span style={{color: 'var(--acid)'}}>+</span> ANSWERED.
@@ -1477,7 +1619,7 @@
 
         <section className="section section--bone" style={{padding: '110px 0'}}>
           <div className="wrap-wide" style={{textAlign: 'center'}}>
-            <div className="section__label" style={{justifyContent: 'center', display: 'inline-flex'}}>§ 005 — Project intake</div>
+            <div className="section__label" style={{justifyContent: 'center', display: 'inline-flex'}}>Â§ 005 â€” Project intake</div>
             <Reveal>
               <h2 className="display" style={{fontSize: 'clamp(60px, 9vw, 140px)', color: 'var(--ink)', marginTop: 16}}>
                 TELL US WHAT<br/>
@@ -1488,7 +1630,7 @@
               Two minutes, a few questions, straight into our CRM. We'll come back with a custom demo, usually inside 24 hours.
             </p>
             <div style={{display: 'flex', gap: 14, marginTop: 36, justifyContent: 'center', flexWrap: 'wrap'}}>
-              <a className="btn btn--acid" href={LINKS.inquiry} {...EXT}>Start your inquiry →</a>
+              <a className="btn btn--acid" href={LINKS.inquiry} {...EXT}>Start your inquiry â†’</a>
             </div>
           </div>
         </section>
@@ -1504,7 +1646,7 @@
               Bring us your current site (or just a vibe). Walk away with a working demo, usually same day. Then decide.
             </p>
             <div style={{display: 'flex', gap: 14, marginTop: 40, justifyContent: 'center', flexWrap: 'wrap'}}>
-              <a className="btn btn--ink" href={LINKS.calendly} {...EXT}>Book a discovery call →</a>
+              <a className="btn btn--ink" href={LINKS.calendly} {...EXT}>Book a discovery call â†’</a>
               <button className="btn btn--outline-ink" onClick={() => setPage('portfolio')}>See our work</button>
             </div>
           </div>
@@ -1519,29 +1661,29 @@
       { n:'01', t:'GROWTH-FOCUSED',      b:'Innovative, disruptive, always hunting for the next lever.' },
       { n:'02', t:'CLARITY FIRST',        b:'Honesty and data at the core. No jargon, no smoke.' },
       { n:'03', t:'CONTENT + PAID',       b:'High-quality creative paired with paid strategy that earns.' },
-      { n:'04', t:'TRAIN UP',             b:'Ongoing development — we invest in the craft.' },
+      { n:'04', t:'TRAIN UP',             b:'Ongoing development â€” we invest in the craft.' },
       { n:'05', t:'COLLECTIVE MINDSET',   b:'Strategy-driven marketing collective. Teams, not silos.' },
-      { n:'06', t:'ALWAYS EVOLVING',      b:'Ahead of the industry — the algorithm is a moving target.' },
+      { n:'06', t:'ALWAYS EVOLVING',      b:'Ahead of the industry â€” the algorithm is a moving target.' },
     ];
     const roles = [
       {
         n:'01',
         t:'SALES STRATEGIST',
-        tag:'Open · Part-to-Full',
+        tag:'Open Â· Part-to-Full',
         body:'Builds relationships, opens doors, and turns aligned conversations into long-term clients.',
         bullets:['Prospecting + outbound','Discovery + scoping','Pipeline hygiene','Close with care'],
       },
     ];
     const pillars = [
       { t:"CLARITY,\nHONESTY,\nDAMN-GIVING.", b:'No vague reports. No hiding behind jargon. No overpromising deliverables just to close a client.' },
-      { t:'HIGH-VIBE.\nHUMAN.\nNO MASKS.',    b:"You don't shrink, shape-shift, or play corporate robot here. Real humans, real energy — because authenticity is what creates trust, connection, and a thriving atmosphere. Be you. Loud, soft, weird, bold — just be real." },
-      { t:'WE WANT\nTO SEE YOU\nFLY.',        b:'Mental, physical, soul health — all of it matters. We want you at your best. In fact, we encourage it. When you thrive, everything you touch elevates.' },
+      { t:'HIGH-VIBE.\nHUMAN.\nNO MASKS.',    b:"You don't shrink, shape-shift, or play corporate robot here. Real humans, real energy â€” because authenticity is what creates trust, connection, and a thriving atmosphere. Be you. Loud, soft, weird, bold â€” just be real." },
+      { t:'WE WANT\nTO SEE YOU\nFLY.',        b:'Mental, physical, soul health â€” all of it matters. We want you at your best. In fact, we encourage it. When you thrive, everything you touch elevates.' },
     ];
     return (
       <div className="page-enter">
         <section style={{paddingTop: 160, paddingBottom: 50, background: 'var(--ink)'}}>
           <div className="wrap-wide">
-            <span className="tag" style={{marginBottom: 24, display: 'inline-flex'}}>● WE'RE HIRING</span>
+            <span className="tag" style={{marginBottom: 24, display: 'inline-flex'}}>â— WE'RE HIRING</span>
             <Reveal>
               <h1 className="display" style={{fontSize: 'clamp(90px, 15vw, 260px)', color: '#fff', marginTop: 24, letterSpacing: '-0.02em'}}>
                 JOIN THE<br/>
@@ -1550,15 +1692,15 @@
             </Reveal>
             <Reveal>
               <p style={{maxWidth: 620, marginTop: 28, fontSize: 18, opacity: 0.85, color: '#fff'}}>
-                A strategy-driven marketing collective built on clarity, craft, and humans who give a damn. If that reads like your people — keep scrolling.
+                A strategy-driven marketing collective built on clarity, craft, and humans who give a damn. If that reads like your people â€” keep scrolling.
               </p>
             </Reveal>
           </div>
         </section>
-        <Marquee items={['NOW HIRING','SALES STRATEGIST','BE REAL · BE LOUD','CLARITY OVER JARGON','GROW WITH US']} />
+        <Marquee items={['NOW HIRING','SALES STRATEGIST','BE REAL Â· BE LOUD','CLARITY OVER JARGON','GROW WITH US']} />
         <section className="section section--bone">
           <div className="wrap-wide">
-            <div className="section__label">§ 001 — Our identity, standards, edge</div>
+            <div className="section__label">Â§ 001 â€” Our identity, standards, edge</div>
             <Reveal>
               <h2 className="display" style={{fontSize: 'clamp(56px, 9vw, 140px)', color: 'var(--ink)', marginBottom: 48}}>
                 HOW WE <span style={{color: 'var(--acid)'}}>SHOW UP.</span>
@@ -1587,7 +1729,7 @@
           <div className="wrap-wide">
             <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 32, flexWrap: 'wrap', gap: 24}}>
               <div>
-                <div className="section__label">§ 002 — Open positions</div>
+                <div className="section__label">Â§ 002 â€” Open positions</div>
                 <Reveal>
                   <h2 className="display" style={{fontSize: 'clamp(60px, 9vw, 140px)', color: '#fff'}}>
                     ROLES ON<br/>THE <span style={{color: 'var(--acid)'}}>TABLE.</span>
@@ -1595,7 +1737,7 @@
                 </Reveal>
               </div>
               <div className="mono" style={{opacity: 0.6, color: '#fff', maxWidth: 280}}>
-                One application form feeds every role. Tell us who you are — we'll figure out where you fit.
+                One application form feeds every role. Tell us who you are â€” we'll figure out where you fit.
               </div>
             </div>
             {roles.map((r, i) => (
@@ -1614,9 +1756,9 @@
                 <div>
                   <div className="mono" style={{opacity: 0.55, marginBottom: 10, color: '#fff'}}>You'll do</div>
                   <ul style={{listStyle: 'none', padding: 0, fontSize: 14, lineHeight: 1.8, color: '#fff', marginBottom: 20}}>
-                    {r.bullets.map(b => <li key={b} style={{display: 'flex', gap: 8, alignItems: 'baseline'}}><span style={{color: 'var(--acid)'}}>→</span>{b}</li>)}
+                    {r.bullets.map(b => <li key={b} style={{display: 'flex', gap: 8, alignItems: 'baseline'}}><span style={{color: 'var(--acid)'}}>â†’</span>{b}</li>)}
                   </ul>
-                  <a className="btn btn--acid" href={LINKS.apply} {...EXT}>Apply now →</a>
+                  <a className="btn btn--acid" href={LINKS.apply} {...EXT}>Apply now â†’</a>
                 </div>
               </div>
             ))}
@@ -1626,10 +1768,10 @@
           <div className="wrap-wide">
             <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 48, flexWrap: 'wrap', gap: 24}}>
               <div>
-                <div className="section__label">§ 003 — What makes us different</div>
+                <div className="section__label">Â§ 003 â€” What makes us different</div>
                 <Reveal>
                   <h2 className="display" style={{fontSize: 'clamp(56px, 9vw, 140px)'}}>
-                    COOL —<br/>WHY <span style={{fontStyle: 'italic', display: 'inline-block', transform: 'skewX(-6deg)'}}>EMC?</span>
+                    COOL â€”<br/>WHY <span style={{fontStyle: 'italic', display: 'inline-block', transform: 'skewX(-6deg)'}}>EMC?</span>
                   </h2>
                 </Reveal>
               </div>
@@ -1651,17 +1793,17 @@
           <div className="wrap-wide">
             <div className="cta-split">
               <div>
-                <div className="section__label">§ 004 — Suggestions? Questions?</div>
+                <div className="section__label">Â§ 004 â€” Suggestions? Questions?</div>
                 <Reveal>
                   <h2 className="display" style={{fontSize: 'clamp(60px, 10vw, 160px)', color: '#fff'}}>
                     DON'T BE<br/>A <span style={{color: 'var(--acid)'}}>STRANGER.</span>
                   </h2>
                 </Reveal>
                 <p style={{maxWidth: 520, marginTop: 20, fontSize: 17, lineHeight: 1.55, opacity: 0.85, color: '#fff'}}>
-                  Not the right role? Still want in? Say hi anyway — we keep a running bench of humans we'd hire yesterday.
+                  Not the right role? Still want in? Say hi anyway â€” we keep a running bench of humans we'd hire yesterday.
                 </p>
                 <div style={{display: 'flex', gap: 14, marginTop: 28, flexWrap: 'wrap'}}>
-                  <a className="btn btn--acid" href={LINKS.apply} {...EXT}>Apply now →</a>
+                  <a className="btn btn--acid" href={LINKS.apply} {...EXT}>Apply now â†’</a>
                   <a className="btn btn--ghost" href="mailto:info@emcmarketing.co">Email us</a>
                 </div>
               </div>
@@ -1681,6 +1823,7 @@
   // ====== App ======
   function App() {
     const getHashPage = () => {
+      if (typeof window === 'undefined') return 'home';
       const h = (location.hash || '').replace('#', '');
       return ['home','about','services','contact','portfolio','careers','websites'].includes(h) ? h : 'home';
     };
@@ -1728,11 +1871,13 @@
 
     return (
       <>
+        <DynamicSearchLayer page={page} />
         <ScrollBar />
         <Nav page={page} setPage={setPage} />
         <main data-screen-label={page}>
           <Page variant={tweaks.heroVariant} setPage={setPage} />
         </main>
+        <SearchSignal page={page} />
         <Footer setPage={setPage} />
         {editMode && (
           <div className="tweaks">
@@ -1758,5 +1903,9 @@
       </>
     );
   }
+export default App;
 
-  ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+
+
+
+
