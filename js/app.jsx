@@ -22,6 +22,30 @@
 
   const { useEffect, useRef, useState } = React;
 
+  function SocialIcon({ code, size = 18 }) {
+    const common = { width: size, height: size, viewBox: '0 0 24 24', fill: 'currentColor', 'aria-hidden': 'true' };
+    if (code === 'FB') return (
+      <svg {...common}>
+        <path d="M14.1 8.2V6.7c0-.7.5-.9.9-.9h2.2V2.1L14.1 2c-3.4 0-4.2 2.5-4.2 4.2v2H7v3.9h2.9V22h4.2v-9.9h3.3l.5-3.9h-3.8Z" />
+      </svg>
+    );
+    if (code === 'IG') return (
+      <svg {...common}>
+        <path d="M7.7 2h8.6C19.5 2 22 4.5 22 7.7v8.6c0 3.2-2.5 5.7-5.7 5.7H7.7C4.5 22 2 19.5 2 16.3V7.7C2 4.5 4.5 2 7.7 2Zm0 2C5.6 4 4 5.6 4 7.7v8.6C4 18.4 5.6 20 7.7 20h8.6c2.1 0 3.7-1.6 3.7-3.7V7.7C20 5.6 18.4 4 16.3 4H7.7Zm8.8 1.6a1.3 1.3 0 1 1 0 2.6 1.3 1.3 0 0 1 0-2.6ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z" />
+      </svg>
+    );
+    if (code === 'LI') return (
+      <svg {...common}>
+        <path d="M6.9 8.8H3.2V22h3.7V8.8ZM5.1 2A2.1 2.1 0 1 0 5 6.2 2.1 2.1 0 0 0 5.1 2Zm16 12.5c0-3.6-1.9-5.9-4.9-5.9-2.2 0-3.2 1.2-3.7 2V8.8H8.9V22h3.7v-6.5c0-1.7.3-3.4 2.5-3.4 2.1 0 2.1 2 2.1 3.5V22h3.8v-7.5Z" />
+      </svg>
+    );
+    return (
+      <svg {...common}>
+        <path d="M21.6 7.2s-.2-1.6-.9-2.3c-.9-.9-1.9-.9-2.3-1C15.2 3.7 12 3.7 12 3.7h-.1s-3.2 0-6.4.2c-.4.1-1.4.1-2.3 1-.7.7-.9 2.3-.9 2.3S2 9.1 2 11v1.8c0 1.9.3 3.8.3 3.8s.2 1.6.9 2.3c.9.9 2.1.9 2.6 1 1.9.2 6.2.2 6.2.2s3.2 0 6.4-.3c.4-.1 1.4-.1 2.3-1 .7-.7.9-2.3.9-2.3s.3-1.9.3-3.8V11c0-1.9-.3-3.8-.3-3.8ZM10 15.2V8.7l5.8 3.3-5.8 3.2Z" />
+      </svg>
+    );
+  }
+
   // ====== Hooks ======
   function useReveal(threshold = 0.12) {
     const ref = useRef(null);
@@ -222,7 +246,9 @@
             <a href="tel:4794453632">479-445-3632</a>
             <div style={{display: 'flex', gap: 10, marginTop: 14}}>
               {SOCIAL.map(s => (
-                <a key={s.code} href={s.url} {...EXT} aria-label={s.label} style={{width: 36, height: 36, borderRadius: '50%', border: '1px solid rgba(255,255,255,0.2)', display: 'grid', placeItems: 'center', fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.14em', cursor: 'pointer'}}>{s.code}</a>
+                <a key={s.code} className="social-icon" href={s.url} {...EXT} aria-label={s.label}>
+                  <SocialIcon code={s.code} size={17} />
+                </a>
               ))}
             </div>
           </div>
@@ -954,7 +980,9 @@
                   <div className="mono" style={{opacity: 0.55, marginBottom: 10, color: '#fff'}}>Follow along</div>
                   <div style={{display: 'flex', gap: 12}}>
                     {SOCIAL.map(s => (
-                      <a key={s.code} href={s.url} {...EXT} aria-label={s.label} style={{width: 44, height: 44, borderRadius: '50%', border: '1px solid rgba(255,255,255,0.3)', display: 'grid', placeItems: 'center', fontFamily: 'var(--font-mono)', fontSize: 11, cursor: 'pointer', color: '#fff'}}>{s.code}</a>
+                      <a key={s.code} className="social-icon social-icon--large" href={s.url} {...EXT} aria-label={s.label}>
+                        <SocialIcon code={s.code} size={19} />
+                      </a>
                     ))}
                   </div>
                 </div>

@@ -107,6 +107,11 @@
   .card-hover { transition: transform .25s ease; }
   .card-hover:hover { transform: translateY(-4px); }
 
+  .social-icon { width: 36px; height: 36px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.24); display: grid !important; place-items: center; color: #fff; opacity: 0.78 !important; transition: color .18s ease, border-color .18s ease, background .18s ease, transform .18s ease, opacity .18s ease; }
+  .social-icon svg { display: block; }
+  .social-icon:hover { color: var(--acid) !important; border-color: var(--acid); background: rgba(184,255,0,0.08); opacity: 1 !important; transform: translateY(-2px); }
+  .social-icon--large { width: 44px; height: 44px; border-color: rgba(255,255,255,0.3); }
+
   /* Responsive two-column CTA layout used by BigCTA and Careers DON'T BE A STRANGER.
      Xrow at size 88–96 needs ~430–470px; collapse before that can overflow. */
   .cta-split { display: grid; grid-template-columns: 1.3fr 1fr; gap: 48px; align-items: center; }
