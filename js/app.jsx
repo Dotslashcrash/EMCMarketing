@@ -10,6 +10,7 @@
     calendly: 'https://emcmarketingllc.hbportal.co/schedule/69ea5f23ac1f98003f0c335a',
     inquiry:  'https://emcmarketingllc.hbportal.co/public/69f2a55b9ef61e3300999198/1-Inquiry_form',
     apply:    'https://forms.gle/jDvzgVo561F7rsah7',
+    googleReviews: 'https://www.google.com/search?q=EMC+Marketing+Reviews',
   };
   const SOCIAL = [
     { code: 'FB', label: 'Facebook',  url: 'https://www.facebook.com/profile.php?id=100095202204919' },
@@ -472,38 +473,90 @@
   }
 
 
-  const QUOTES = [
-    { author: 'SANCHEEZE', role: 'Press kit / merch', body: "I had the honor of working with @emcsocial on a press kit. Well, she knew what to do, I just asked her to do it. She told me what she needed and came up with this. To say I'm impressed is an understatement." },
-    { author: 'TJ WOLFE', role: 'UCG / founder', body: "If you're looking for a brand marketing expert who actually gets it, look no further. Elizabeth doesn't just 'do marketing' — she crafts identity. She listens. She delivers. She elevates. Five stars isn't enough." },
-    { author: 'ALICIA', role: 'Realtor', body: "I can't recommend EMC highly enough. She created a stunning logo and full suite of real estate marketing materials. Attention to detail, deep understanding of my industry — the one to call." },
+  const GOOGLE_REVIEWS = [
+    { author: 'SANCHEEZE', role: 'Google review', body: "I had the honor of working with @emcsocial on a press kit. Well, she knew what to do, I just asked her to do it. She told me what she needed and came up with this. To say I'm impressed is an understatement.", hue: 'acid' },
+    { author: 'TJ WOLFE', role: 'Google review', body: "If you're looking for a brand marketing expert who actually gets it, look no further. Elizabeth doesn't just 'do marketing' - she crafts identity. She listens. She delivers. She elevates. Five stars isn't enough.", hue: 'ink' },
+    { author: 'ALICIA', role: 'Google review', body: "I can't recommend EMC highly enough. She created a stunning logo and full suite of real estate marketing materials. Attention to detail, deep understanding of my industry - the one to call.", hue: 'bone' },
   ];
   function Testimonials() {
+    const [draft, setDraft] = useState('');
+    const [name, setName] = useState('');
+    const [rating, setRating] = useState(5);
+    const [sent, setSent] = useState(false);
+    const submitDraft = (e) => {
+      e.preventDefault();
+      setSent(true);
+      window.open(LINKS.googleReviews, '_blank', 'noopener,noreferrer');
+    };
+
     return (
-      <section className="section" style={{background: 'var(--ink)'}}>
+      <section className="section reviews-lab">
         <div className="wrap-wide">
-          <div className="section__label">§ 002 — Receipts & reviews</div>
-          <Reveal>
-            <h2 className="display" style={{fontSize: 'clamp(60px, 9vw, 140px)', color: '#fff', marginBottom: 48}}>
-              THEY SAID <span style={{color: 'var(--acid)'}}>NICE THINGS.</span>
-            </h2>
-          </Reveal>
-          <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20}}>
-            {QUOTES.map((q, i) => {
-              const acid = i === 1;
-              return (
-                <div key={i} className="card-hover" style={{background: acid ? 'var(--acid)' : 'var(--ink-2)', color: acid ? 'var(--ink)' : '#fff', padding: 32, border: acid ? 'none' : '1px solid var(--edge)', borderRadius: 4, display: 'flex', flexDirection: 'column'}}>
-                  <div className="display" style={{fontSize: 80, lineHeight: 0.6, color: acid ? 'var(--ink)' : 'var(--acid)', opacity: 0.5, marginBottom: 4}}>"</div>
-                  <p style={{fontSize: 15, lineHeight: 1.55, marginTop: -8, flex: 1}}>{q.body}</p>
-                  <div style={{marginTop: 28, display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                    <div>
-                      <div className="display" style={{fontSize: 22}}>{q.author}</div>
-                      <div className="mono" style={{opacity: 0.65, marginTop: 4}}>{q.role}</div>
-                    </div>
-                    <div style={{letterSpacing: 2, fontSize: 14}}>★★★★★</div>
-                  </div>
+          <div className="reviews-lab__grid">
+            <div className="reviews-lab__copy">
+              <div className="section__label">§ 002 - Google receipts</div>
+              <Reveal>
+                <h2 className="display reviews-lab__title">
+                  PROOF WITH<br/><span>TEETH.</span>
+                </h2>
+              </Reveal>
+              <p className="reviews-lab__intro">
+                Real people, real praise, zero beige testimonial energy. Read the Google love, then leave your own mark.
+              </p>
+              <div className="reviews-lab__score">
+                <div>
+                  <strong>5.0</strong>
+                  <span>Google rating</span>
                 </div>
-              );
-            })}
+                <div className="reviews-lab__stars" aria-label="Five star rating">★★★★★</div>
+              </div>
+              <a className="btn btn--ghost" href={LINKS.googleReviews} {...EXT}>See every Google review</a>
+            </div>
+
+            <form className="review-submit" onSubmit={submitDraft}>
+              <div className="review-submit__stamp">SUBMIT<br/>A REVIEW</div>
+              <div className="review-submit__head">
+                <span className="tag">Google review box</span>
+                <div className="review-submit__stars" aria-label={`${rating} star draft rating`}>
+                  {[1,2,3,4,5].map(n => (
+                    <button type="button" key={n} className={n <= rating ? 'active' : ''} onClick={() => setRating(n)} aria-label={`${n} stars`}>★</button>
+                  ))}
+                </div>
+              </div>
+              <label className="field">
+                <div className="field__label">Your name</div>
+                <input value={name} onChange={e => setName(e.target.value)} placeholder="The human behind the praise" />
+              </label>
+              <label className="field">
+                <div className="field__label">What should Google know?</div>
+                <textarea value={draft} onChange={e => setDraft(e.target.value)} placeholder="Tell the internet why EMC made your marketing suck less..." rows="4" required />
+              </label>
+              <div className="review-submit__preview">
+                <div className="mono">{name || 'Your name'} · draft preview</div>
+                <p>{draft || 'Your review will preview here before you post it on Google.'}</p>
+              </div>
+              <button className="btn btn--acid" type="submit">Post it on Google →</button>
+              {sent && <div className="review-submit__note">Google opened in a new tab. Drop the review there and make it official.</div>}
+            </form>
+          </div>
+
+          <div className="google-review-wall">
+            {GOOGLE_REVIEWS.map(q => (
+              <Reveal key={q.author} className={`google-review-card google-review-card--${q.hue}`}>
+                <div className="google-review-card__top">
+                  <span className="mono">Google</span>
+                  <span className="google-review-card__stars">★★★★★</span>
+                </div>
+                <p>{q.body}</p>
+                <div className="google-review-card__foot">
+                  <div>
+                    <div className="display">{q.author}</div>
+                    <div className="mono">{q.role}</div>
+                  </div>
+                  <span className="google-review-card__mark">G</span>
+                </div>
+              </Reveal>
+            ))}
           </div>
         </div>
       </section>
