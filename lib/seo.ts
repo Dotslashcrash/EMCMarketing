@@ -146,7 +146,8 @@ export function reviewSchemaIfVerified() {
       '@type': 'Review',
       author: { '@type': 'Person', name: review.author },
       reviewRating: { '@type': 'Rating', ratingValue: review.rating, bestRating: 5 },
-      reviewBody: review.body
+      reviewBody: review.body,
+      publisher: { '@type': 'Organization', name: 'Google' }
     }))
   };
 }

@@ -174,7 +174,7 @@ export function ReviewsSection() {
             Reviews belong to the people who wrote them.
           </h2>
           <p className="mt-5 text-lg text-white/70">
-            Google review text is intentionally placeholder-only until verified copy can be pulled or provided. The structure is ready without making fake claims.
+            Verified Google reviews from real EMC clients, shown with excerpts where Google truncated the original text.
           </p>
           <a href={business.reviewUrl} target="_blank" rel="noreferrer" className="btn-acid mt-7 inline-flex" data-event="cta_google_review">
             Leave EMC a Google Review <ArrowRight size={17} />
@@ -339,7 +339,7 @@ export function ServicesPageContent() {
 export function ResultsReviewsPageContent() {
   return (
     <>
-      <PageHero eyebrow="Results & reviews" title="Proof without pretending." body="This page is wired for verified Google reviews, review schema, and proof points. Review schema stays off until real verified text is added." />
+      <PageHero eyebrow="Results & reviews" title="Proof without pretending." body="This page is wired with verified Google reviews, review schema, and proof points without inventing claims." />
       <ReviewsSection />
       <ProcessSection />
       <ConsultationCta />

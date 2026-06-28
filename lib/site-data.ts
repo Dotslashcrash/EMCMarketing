@@ -115,25 +115,64 @@ export const faqs = [
 
 export const reviews = [
   {
-    author: 'TODO: Replace with verified Google reviewer name',
+    author: 'Avalon Jay',
     rating: 5,
-    body: 'Replace with verified Google review text.',
-    verified: false,
-    source: 'Google Reviews placeholder'
+    body: "Elizabeth is a social media marketing wizard! She's very professional, knowledgeable and she gets results. She's one of the best videographers I have ever worked with. And she is very personable and easy to work with. I highly recommend her for anybody wanting their business to reach great heights of success.",
+    verified: true,
+    source: 'Google review provided by business owner',
+    relativeTime: '8 months ago'
   },
   {
-    author: 'TODO: Replace with verified Google reviewer name',
+    author: 'Kaleb Walker',
     rating: 5,
-    body: 'Replace with verified Google review text.',
-    verified: false,
-    source: 'Google Reviews placeholder'
+    body: "Lizzie at EMC Marketing is absolutely incredible at what she does. She brings a deep level of knowledge, creativity, and strategy to social media, and it really shows in both her planning and execution. She doesn't just understand how...",
+    verified: true,
+    source: 'Google review excerpt provided by business owner',
+    relativeTime: '2 months ago',
+    excerpt: true
   },
   {
-    author: 'TODO: Replace with verified Google reviewer name',
+    author: 'Dayna Hume',
     rating: 5,
-    body: 'Replace with verified Google review text.',
-    verified: false,
-    source: 'Google Reviews placeholder'
+    body: "EMC and Elizabeth are absolutely amazing! They've completely transformed my social media with creativity and marketing expertise. No matter how wild my ideas got, they always found a way to turn them into professional, polished videos that...",
+    verified: true,
+    source: 'Google review excerpt provided by business owner',
+    relativeTime: '5 months ago',
+    excerpt: true
+  },
+  {
+    author: 'Tyler-Justin Alan Wolfe',
+    rating: 5,
+    body: "If you're looking for a brand marketing expert who actually gets it, look no further. Elizabeth doesn't just do marketing - she crafts identity. She took a...",
+    verified: true,
+    source: 'Google review excerpt provided by business owner',
+    relativeTime: '10 months ago',
+    excerpt: true
+  },
+  {
+    author: 'Alicia Hawkins',
+    rating: 5,
+    body: "I can't recommend EMC highly enough! She created a stunning logo and a full suite of real estate marketing materials that completely elevated my brand. Her eye for design, attention to detail, and deep understanding of the real estate...",
+    verified: true,
+    source: 'Google review excerpt provided by business owner',
+    relativeTime: 'a year ago',
+    excerpt: true
+  },
+  {
+    author: 'Brandi Beers',
+    rating: 5,
+    body: "20/10 recommend! From start to finish Elizabeth taylored a plan for me. Adding in details that I hadn't even thought about!",
+    verified: true,
+    source: 'Google review provided by business owner',
+    relativeTime: '10 months ago'
+  },
+  {
+    author: 'nic cusey',
+    rating: 5,
+    body: 'Efficient, clean, concise, no BS. Very clear and communicative. Genuine and out for the best results possible.',
+    verified: true,
+    source: 'Google review provided by business owner',
+    relativeTime: '2 months ago'
   }
 ];
 

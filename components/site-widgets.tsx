@@ -105,10 +105,13 @@ export function ReviewCarousel() {
         </div>
       </div>
       <div className="mt-8 min-h-56">
-        <p className="text-2xl tracking-[.12em] text-[var(--acid)]">{'★'.repeat(active.rating)}</p>
-        <blockquote className="mt-5 text-2xl font-black leading-tight md:text-4xl">“{active.body}”</blockquote>
+        <p className="text-2xl tracking-[.12em] text-[var(--acid)]">{'\u2605'.repeat(active.rating)}</p>
+        <blockquote className="mt-5 text-2xl font-black leading-tight md:text-4xl">"{active.body}"</blockquote>
         <p className="mt-5 text-sm uppercase tracking-[.18em] text-white/50">{active.author}</p>
-        {!active.verified ? <p className="mt-3 text-sm text-[var(--acid)]">Placeholder only. Replace with verified Google review text.</p> : null}
+        <p className="mt-2 text-xs uppercase tracking-[.16em] text-white/35">
+          Google review {'\u00b7'} {active.relativeTime}
+          {active.excerpt ? ' \u00b7 excerpt' : ''}
+        </p>
       </div>
       <a href={business.reviewUrl} target="_blank" rel="noreferrer" className="btn-ghost mt-5 inline-flex" data-event={ctaEvents.reviewClick}>
         Leave EMC a Google Review <ArrowRight size={17} />
