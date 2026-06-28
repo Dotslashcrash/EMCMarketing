@@ -218,7 +218,7 @@ export function LeadMagnet() {
           <h2 className="mt-2 text-4xl font-black uppercase leading-none md:text-6xl">Steal the first-page checklist.</h2>
           <p className="mt-3 max-w-2xl text-black/70">Offer clarity, local SEO, answer blocks, proof, CTAs, and the tiny leaks that make good marketing feel quiet.</p>
         </div>
-        <a href={business.bookingUrl} target="_blank" rel="noreferrer" className="btn-dark" data-event="cta_download_marketing_scorecard">
+        <a href={business.scorecardUrl} target="_blank" rel="noreferrer" className="btn-dark" data-event="cta_download_marketing_scorecard">
           Get the scorecard <ArrowRight size={17} />
         </a>
       </div>

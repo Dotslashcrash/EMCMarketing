@@ -398,7 +398,7 @@ export function ExitIntentCapture() {
             <p className="kicker">Before you disappear</p>
             <h2 className="mt-3 text-4xl font-black uppercase leading-none">Want the marketing scorecard?</h2>
             <p className="mt-4 text-white/70">A quick checklist for offer clarity, content signal, search readiness, and conversion leaks.</p>
-            <a href={business.bookingUrl} target="_blank" rel="noreferrer" className="btn-acid mt-6" data-event={ctaEvents.leadMagnet}>
+            <a href={business.scorecardUrl} target="_blank" rel="noreferrer" className="btn-acid mt-6" data-event={ctaEvents.leadMagnet}>
               Get the scorecard <Download size={17} />
             </a>
           </div>
