@@ -139,32 +139,143 @@ export const reviews = [
 
 export const videos = [
   {
-    title: 'Photo portfolio reel',
-    category: 'Behind the Scenes',
-    url: 'https://storage.googleapis.com/emc-marketing-media/video/photo-portfolio.mp4',
-    description: 'Real EMC media asset from the current site.'
+    title: 'Most Brands Skip These 5 Things (Then Blame Marketing)',
+    category: 'Videos',
+    videoId: 'n5DwXWdWFQo',
+    watchUrl: 'https://www.youtube.com/watch?v=n5DwXWdWFQo',
+    embedUrl: 'https://www.youtube.com/embed/n5DwXWdWFQo',
+    thumbnail: 'https://i.ytimg.com/vi/n5DwXWdWFQo/hqdefault.jpg',
+    description: 'Video from the EMC Social Club YouTube channel.'
   },
   {
-    title: 'EMC reel 01',
-    category: 'Tips',
-    url: 'https://storage.googleapis.com/emc-marketing-media/reels/reel-01.mp4',
-    description: 'Real EMC reel asset from the current site.'
+    title: 'What is the difference between Organic Social and Paid Social Content?',
+    category: 'Videos',
+    videoId: 'u09T-dhURrI',
+    watchUrl: 'https://www.youtube.com/watch?v=u09T-dhURrI',
+    embedUrl: 'https://www.youtube.com/embed/u09T-dhURrI',
+    thumbnail: 'https://i.ytimg.com/vi/u09T-dhURrI/hqdefault.jpg',
+    description: 'Video from the EMC Social Club YouTube channel.'
   },
   {
-    title: 'EMC reel 02',
-    category: 'Marketing Education',
-    url: 'https://storage.googleapis.com/emc-marketing-media/reels/reel-02.mp4',
-    description: 'Real EMC reel asset from the current site.'
+    title: 'Top 4 FREE Social Media Schedulers',
+    category: 'Videos',
+    videoId: 'r9Pxbuh870c',
+    watchUrl: 'https://www.youtube.com/watch?v=r9Pxbuh870c',
+    embedUrl: 'https://www.youtube.com/embed/r9Pxbuh870c',
+    thumbnail: 'https://i.ytimg.com/vi/r9Pxbuh870c/hqdefault.jpg',
+    description: 'Video from the EMC Social Club YouTube channel.'
   },
   {
-    title: 'EMC reel 03',
-    category: 'Client Wins',
-    url: 'https://storage.googleapis.com/emc-marketing-media/reels/reel-03.mp4',
-    description: 'Real EMC reel asset from the current site.'
+    title: 'Throwing Money At Ads Won’t Fix This',
+    category: 'Shorts',
+    videoId: 'Xl0uYNb6PAU',
+    watchUrl: 'https://www.youtube.com/shorts/Xl0uYNb6PAU',
+    embedUrl: 'https://www.youtube.com/embed/Xl0uYNb6PAU',
+    thumbnail: 'https://i.ytimg.com/vi/Xl0uYNb6PAU/frame0.jpg',
+    description: 'Short from the EMC Social Club YouTube channel.'
+  },
+  {
+    title: 'Your PR Team Is Already Behind',
+    category: 'Shorts',
+    videoId: '6NZdZavUS6s',
+    watchUrl: 'https://www.youtube.com/shorts/6NZdZavUS6s',
+    embedUrl: 'https://www.youtube.com/embed/6NZdZavUS6s',
+    thumbnail: 'https://i.ytimg.com/vi/6NZdZavUS6s/frame0.jpg',
+    description: 'Short from the EMC Social Club YouTube channel.'
+  },
+  {
+    title: 'The Internet Lied About Content Creation',
+    category: 'Shorts',
+    videoId: '6TdoltdxVCA',
+    watchUrl: 'https://www.youtube.com/shorts/6TdoltdxVCA',
+    embedUrl: 'https://www.youtube.com/embed/6TdoltdxVCA',
+    thumbnail: 'https://i.ytimg.com/vi/6TdoltdxVCA/frame0.jpg',
+    description: 'Short from the EMC Social Club YouTube channel.'
+  },
+  {
+    title: 'The WORST Thing Brands Do During Crisis',
+    category: 'Shorts',
+    videoId: 'SMHyIjti0HI',
+    watchUrl: 'https://www.youtube.com/shorts/SMHyIjti0HI',
+    embedUrl: 'https://www.youtube.com/embed/SMHyIjti0HI',
+    thumbnail: 'https://i.ytimg.com/vi/SMHyIjti0HI/frame0.jpg',
+    description: 'Short from the EMC Social Club YouTube channel.'
+  },
+  {
+    title: 'Attention Means Nothing Without THIS',
+    category: 'Shorts',
+    videoId: 'vleqZity_WY',
+    watchUrl: 'https://www.youtube.com/shorts/vleqZity_WY',
+    embedUrl: 'https://www.youtube.com/embed/vleqZity_WY',
+    thumbnail: 'https://i.ytimg.com/vi/vleqZity_WY/frame0.jpg',
+    description: 'Short from the EMC Social Club YouTube channel.'
+  },
+  {
+    title: 'Your Competitors Are Making The Same Ad',
+    category: 'Shorts',
+    videoId: 'mimMJCJA6SI',
+    watchUrl: 'https://www.youtube.com/shorts/mimMJCJA6SI',
+    embedUrl: 'https://www.youtube.com/embed/mimMJCJA6SI',
+    thumbnail: 'https://i.ytimg.com/vi/mimMJCJA6SI/frame0.jpg',
+    description: 'Short from the EMC Social Club YouTube channel.'
+  },
+  {
+    title: 'Most Marketing Agencies Don’t Do THIS',
+    category: 'Shorts',
+    videoId: 'xOvkjo946-Y',
+    watchUrl: 'https://www.youtube.com/shorts/xOvkjo946-Y',
+    embedUrl: 'https://www.youtube.com/embed/xOvkjo946-Y',
+    thumbnail: 'https://i.ytimg.com/vi/xOvkjo946-Y/frame0.jpg',
+    description: 'Short from the EMC Social Club YouTube channel.'
+  },
+  {
+    title: 'Your Branding Is Costing You Customers',
+    category: 'Shorts',
+    videoId: 'r5j7N8Kva4g',
+    watchUrl: 'https://www.youtube.com/shorts/r5j7N8Kva4g',
+    embedUrl: 'https://www.youtube.com/embed/r5j7N8Kva4g',
+    thumbnail: 'https://i.ytimg.com/vi/r5j7N8Kva4g/frame0.jpg',
+    description: 'Short from the EMC Social Club YouTube channel.'
+  },
+  {
+    title: 'If You Don’t Control Your Businesses Narrative, The Internet Will',
+    category: 'Shorts',
+    videoId: 'jej2Zh0zPYg',
+    watchUrl: 'https://www.youtube.com/shorts/jej2Zh0zPYg',
+    embedUrl: 'https://www.youtube.com/embed/jej2Zh0zPYg',
+    thumbnail: 'https://i.ytimg.com/vi/jej2Zh0zPYg/frame0.jpg',
+    description: 'Short from the EMC Social Club YouTube channel.'
+  },
+  {
+    title: 'Why Your Content Isn’t Working... It’s Not What You Think',
+    category: 'Shorts',
+    videoId: 'W39XPWPy5kg',
+    watchUrl: 'https://www.youtube.com/shorts/W39XPWPy5kg',
+    embedUrl: 'https://www.youtube.com/embed/W39XPWPy5kg',
+    thumbnail: 'https://i.ytimg.com/vi/W39XPWPy5kg/frame0.jpg',
+    description: 'Short from the EMC Social Club YouTube channel.'
+  },
+  {
+    title: 'POV: Your Marketing Team Is Slightly Unhinged',
+    category: 'Shorts',
+    videoId: 'iBRLjPvPolI',
+    watchUrl: 'https://www.youtube.com/shorts/iBRLjPvPolI',
+    embedUrl: 'https://www.youtube.com/embed/iBRLjPvPolI',
+    thumbnail: 'https://i.ytimg.com/vi/iBRLjPvPolI/frame0.jpg',
+    description: 'Short from the EMC Social Club YouTube channel.'
+  },
+  {
+    title: 'Why Your Ads Aren’t Converting',
+    category: 'Shorts',
+    videoId: 'WKrAVXywj1w',
+    watchUrl: 'https://www.youtube.com/shorts/WKrAVXywj1w',
+    embedUrl: 'https://www.youtube.com/embed/WKrAVXywj1w',
+    thumbnail: 'https://i.ytimg.com/vi/WKrAVXywj1w/frame0.jpg',
+    description: 'Short from the EMC Social Club YouTube channel.'
   }
 ];
 
-export const videoCategories = ['All', 'Tips', 'Client Wins', 'Behind the Scenes', 'Marketing Education'];
+export const videoCategories = ['Videos', 'Shorts'];
 
 export const ctaEvents = {
   bookConsultation: 'cta_book_consultation',

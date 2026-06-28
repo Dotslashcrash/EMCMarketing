@@ -118,9 +118,9 @@ export function ReviewCarousel() {
 }
 
 export function VideoGallery() {
-  const [filter, setFilter] = useState('All');
+  const [filter, setFilter] = useState('Videos');
   const [active, setActive] = useState<(typeof videos)[number] | null>(null);
-  const filtered = filter === 'All' ? videos : videos.filter((video) => video.category === filter);
+  const filtered = videos.filter((video) => video.category === filter);
   return (
     <>
       <div className="flex flex-wrap gap-2">
@@ -132,9 +132,14 @@ export function VideoGallery() {
       </div>
       <div className="mt-8 grid gap-5 md:grid-cols-2">
         {filtered.map((video) => (
-          <button key={video.url} className="video-card group text-left" onClick={() => setActive(video)}>
-            <span className="grid aspect-video place-items-center overflow-hidden rounded-sm bg-white/10">
-              <video src={video.url} preload="metadata" muted playsInline className="h-full w-full object-cover opacity-70 transition group-hover:scale-105 group-hover:opacity-100" />
+          <button key={video.videoId} className="video-card group text-left" onClick={() => setActive(video)}>
+            <span className={`grid place-items-center overflow-hidden rounded-sm bg-white/10 ${video.category === 'Shorts' ? 'aspect-[9/14]' : 'aspect-video'}`}>
+              <img
+                src={video.thumbnail}
+                alt={`${video.title} thumbnail from EMC Social Club on YouTube`}
+                loading="lazy"
+                className="h-full w-full object-cover opacity-75 transition group-hover:scale-105 group-hover:opacity-100"
+              />
               <span className="absolute grid h-14 w-14 place-items-center rounded-full bg-[var(--acid)] text-black">
                 <Play fill="currentColor" />
               </span>
@@ -151,9 +156,20 @@ export function VideoGallery() {
               <button className="icon-link ml-auto mb-3" onClick={() => setActive(null)} aria-label="Close video">
                 <X />
               </button>
-              <video src={active.url} controls autoPlay className="w-full rounded-sm border border-white/15 bg-black" />
+              <div className={active.category === 'Shorts' ? 'mx-auto max-w-sm' : ''}>
+                <iframe
+                  src={`${active.embedUrl}?autoplay=1&rel=0`}
+                  title={active.title}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                  className={`w-full rounded-sm border border-white/15 bg-black ${active.category === 'Shorts' ? 'aspect-[9/16]' : 'aspect-video'}`}
+                />
+              </div>
               <h3 className="mt-4 text-2xl font-black text-white">{active.title}</h3>
               <p className="mt-2 text-white/60">{active.description}</p>
+              <a href={active.watchUrl} target="_blank" rel="noreferrer" className="btn-ghost mt-5 inline-flex">
+                Open on YouTube <ArrowRight size={17} />
+              </a>
             </div>
           </motion.div>
         ) : null}

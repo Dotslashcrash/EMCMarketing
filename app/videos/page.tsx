@@ -5,7 +5,7 @@ import { breadcrumbSchema, pageMeta, videoSchema } from '@/lib/seo';
 export const metadata = pageMeta({
   title: 'EMC Marketing Videos',
   description:
-    'Watch EMC Marketing video content organized by tips, client wins, behind the scenes, and marketing education.',
+    'Watch EMC Social Club YouTube videos and Shorts from EMC Marketing, separated by format for easy browsing.',
   path: '/videos/'
 });
 

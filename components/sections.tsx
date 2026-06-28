@@ -196,7 +196,7 @@ export function VideoPreview() {
             Content should feel like proof.
           </h2>
           <p className="mt-5 text-lg text-black/70">
-            The gallery uses real EMC-hosted video assets found from the current site, organized for future tips, wins, behind-the-scenes, and education clips.
+            The gallery pulls from EMC Social Club on YouTube and keeps long-form videos separate from Shorts, because those formats ask for different attention.
           </p>
           <Link href="/videos/" className="btn-dark mt-7 inline-flex">
             Watch the gallery <ArrowRight size={17} />
@@ -204,8 +204,8 @@ export function VideoPreview() {
         </div>
         <div className="grid gap-4 md:grid-cols-3">
           {videos.slice(0, 3).map((video) => (
-            <div key={video.url} className="video-tile">
-              <video src={video.url} muted playsInline preload="metadata" className="h-full w-full object-cover" />
+            <div key={video.videoId} className="video-tile">
+              <img src={video.thumbnail} alt={`${video.title} YouTube thumbnail`} loading="lazy" className="h-full w-full object-cover" />
               <span>{video.category}</span>
             </div>
           ))}
@@ -260,7 +260,7 @@ export function ConsultationCta() {
     <section className="section-dark border-t border-white/10" aria-labelledby="consultation">
       <div className="mx-auto max-w-7xl px-4 text-center md:px-6">
         <Flame className="mx-auto text-[var(--acid)]" size={42} />
-        <h2 id="consultation" className="mx-auto mt-5 max-w-4xl text-5xl font-black uppercase leading-[.88] md:text-8xl">
+        <h2 id="consultation" className="cta-headline mx-auto mt-5 max-w-4xl">
           Give your marketing a point of view.
         </h2>
         <p className="mx-auto mt-5 max-w-2xl text-lg text-white/68">Book the conversation. Bring the messy goals. EMC will help find the first useful move.</p>
@@ -350,7 +350,7 @@ export function ResultsReviewsPageContent() {
 export function VideosPageContent() {
   return (
     <>
-      <PageHero eyebrow="Videos" title="The content shelf." body="Real EMC video assets from the current site, organized into a gallery that can grow into tips, client wins, behind the scenes, and marketing education." />
+      <PageHero eyebrow="Videos" title="The content shelf." body="Real EMC Social Club YouTube videos and Shorts, separated by format so visitors can browse the long-form ideas or the quick hits." />
       <section className="section-dark">
         <div className="mx-auto max-w-7xl px-4 md:px-6">
           <VideoGallery />

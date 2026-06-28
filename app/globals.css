@@ -70,6 +70,16 @@ textarea {
   font-size: 2.85rem;
 }
 
+.cta-headline {
+  color: white;
+  font-size: 3rem;
+  font-weight: 950;
+  letter-spacing: 0;
+  line-height: 1.02;
+  overflow: visible;
+  text-transform: uppercase;
+}
+
 .kicker {
   color: var(--acid);
   font-size: 0.68rem;
@@ -401,6 +411,10 @@ textarea {
     font-size: 7rem;
   }
 
+  .cta-headline {
+    font-size: 5.5rem;
+  }
+
   .prose-copy {
     font-size: 1.8rem;
   }
@@ -413,5 +427,9 @@ textarea {
 
   .hero-title {
     font-size: 10rem;
+  }
+
+  .cta-headline {
+    font-size: 6.5rem;
   }
 }

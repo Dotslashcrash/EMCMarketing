@@ -126,8 +126,9 @@ export function videoSchema() {
         '@type': 'VideoObject',
         name: video.title,
         description: video.description,
-        contentUrl: video.url,
-        uploadDate: '2026-06-27',
+        contentUrl: video.watchUrl,
+        embedUrl: video.embedUrl,
+        thumbnailUrl: video.thumbnail,
         publisher: { '@id': `${siteUrl}/#organization` }
       }
     }))
