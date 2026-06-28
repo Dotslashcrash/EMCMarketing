@@ -197,7 +197,7 @@ export function VideoPreview() {
             Content should feel like proof.
           </h2>
           <p className="mt-5 text-lg text-black/70">
-            The gallery pulls from EMC Social Club on YouTube and keeps long-form videos separate from Shorts, because those formats ask for different attention.
+            Watch Elizabeth break down the marketing habits, content choices, and brand moves that make people pay attention.
           </p>
           <Link href="/videos/" className="btn-dark mt-7 inline-flex">
             Watch the gallery <ArrowRight size={17} />

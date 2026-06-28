@@ -316,6 +316,25 @@ export const videos = [
 
 export const videoCategories = ['Videos', 'Shorts'];
 
+export const videoFaqs = [
+  {
+    q: 'Where can I watch EMC Social Club videos?',
+    a: 'EMC Social Club videos and Shorts are available on YouTube at the @EMCSocialClub channel and on the EMC Marketing videos page.'
+  },
+  {
+    q: 'What topics does EMC Social Club cover?',
+    a: 'EMC Social Club covers social media strategy, paid social content, brand identity, content creation, marketing mistakes, and practical ways businesses can earn attention online.'
+  },
+  {
+    q: 'Does EMC Marketing publish YouTube Shorts?',
+    a: 'Yes. EMC Marketing publishes quick-hit YouTube Shorts through EMC Social Club alongside longer videos about marketing, branding, and content strategy.'
+  },
+  {
+    q: 'Who creates the EMC Social Club content?',
+    a: 'EMC Social Club features marketing perspective from Elizabeth and EMC Marketing, a Fayetteville, Arkansas marketing agency.'
+  }
+];
+
 export const ctaEvents = {
   bookConsultation: 'cta_book_consultation',
   phoneClick: 'cta_click_to_call',

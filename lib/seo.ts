@@ -1,19 +1,22 @@
 import type { Metadata } from 'next';
-import { business, faqs, navItems, reviews, services, siteUrl, socials, videos } from './site-data';
+import { business, faqs, navItems, reviews, services, siteUrl, socials, videoFaqs, videos } from './site-data';
 
 export function pageMeta({
   title,
   description,
-  path = '/'
+  path = '/',
+  keywords = []
 }: {
   title: string;
   description: string;
   path?: string;
+  keywords?: string[];
 }): Metadata {
   const url = new URL(path, siteUrl).toString();
   return {
     title,
     description,
+    keywords,
     alternates: { canonical: url },
     openGraph: {
       type: 'website',
@@ -116,20 +119,66 @@ export function breadcrumbSchema(items: Array<{ name: string; path: string }>) {
 }
 
 export function videoSchema() {
+  const videosUrl = new URL('/videos/', siteUrl).toString();
   return {
     '@context': 'https://schema.org',
-    '@type': 'ItemList',
-    itemListElement: videos.map((video, index) => ({
-      '@type': 'ListItem',
-      position: index + 1,
-      item: {
-        '@type': 'VideoObject',
-        name: video.title,
-        description: video.description,
-        contentUrl: video.watchUrl,
-        embedUrl: video.embedUrl,
-        thumbnailUrl: video.thumbnail,
-        publisher: { '@id': `${siteUrl}/#organization` }
+    '@graph': [
+      {
+        '@type': 'CollectionPage',
+        '@id': `${videosUrl}#collection`,
+        url: videosUrl,
+        name: 'EMC Marketing Videos and Shorts',
+        description:
+          'EMC Social Club videos and Shorts from EMC Marketing covering social media strategy, paid content, brand identity, marketing mistakes, and content creation.',
+        isPartOf: { '@id': `${siteUrl}/#website` },
+        publisher: { '@id': `${siteUrl}/#organization` },
+        mainEntity: { '@id': `${videosUrl}#videos` },
+        about: [
+          'social media marketing',
+          'content strategy',
+          'brand identity',
+          'paid social content',
+          'YouTube Shorts',
+          'Fayetteville marketing agency'
+        ]
+      },
+      {
+        '@type': 'ItemList',
+        '@id': `${videosUrl}#videos`,
+        name: 'EMC Social Club Videos and Shorts',
+        itemListElement: videos.map((video, index) => ({
+          '@type': 'ListItem',
+          position: index + 1,
+          item: {
+            '@type': 'VideoObject',
+            '@id': `${videosUrl}#${video.videoId}`,
+            name: video.title,
+            description: `${video.description} Topic: ${video.title}.`,
+            contentUrl: video.watchUrl,
+            embedUrl: video.embedUrl,
+            thumbnailUrl: video.thumbnail,
+            genre: video.category === 'Shorts' ? 'YouTube Shorts' : 'Marketing education video',
+            isFamilyFriendly: true,
+            inLanguage: 'en-US',
+            publisher: { '@id': `${siteUrl}/#organization` }
+          }
+        }))
+      }
+    ]
+  };
+}
+
+export function videoFaqSchema() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    '@id': `${new URL('/videos/', siteUrl).toString()}#faq`,
+    mainEntity: videoFaqs.map((faq) => ({
+      '@type': 'Question',
+      name: faq.q,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.a
       }
     }))
   };
