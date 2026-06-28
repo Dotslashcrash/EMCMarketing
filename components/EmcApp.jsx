@@ -10,7 +10,6 @@ import React, { useEffect, useRef, useState } from 'react';
   const LINKS = {
     vault:    'https://payhip.com/EMCmarketing',
     smarter:  'https://emcmarketing.aweb.page/exclusive-updates-insights',
-    crew:     'https://sites.google.com/elizabethsmediacreations.com/emcrew/home',
     calendly: 'https://emcmarketingllc.hbportal.co/schedule/69ea5f23ac1f98003f0c335a',
     inquiry:  'https://emcmarketingllc.hbportal.co/public/69f2a55b9ef61e3300999198/1-Inquiry_form',
     apply:    'https://forms.gle/jDvzgVo561F7rsah7',
@@ -308,7 +307,6 @@ import React, { useEffect, useRef, useState } from 'react';
           ))}
         </div>
         <div className="nav__right">
-          <a className="nav__link nav__crew" style={{fontSize: 12}} href={LINKS.crew} {...EXT}>EMCREW</a>
           <a className="nav__cta" href={LINKS.calendly} {...EXT}>Book a chat →</a>
           <button className="nav__burger" onClick={() => setMenuOpen(v => !v)} aria-label="Toggle menu" aria-expanded={menuOpen}>
             <span></span><span></span><span></span>
@@ -319,7 +317,6 @@ import React, { useEffect, useRef, useState } from 'react';
             <a key={i.id} className={page === i.id ? 'active' : ''} onClick={() => go(i.id)}>{i.l}</a>
           ))}
           <div className="nav__drawer-divider"></div>
-          <a href={LINKS.crew} {...EXT} onClick={() => setMenuOpen(false)}>EMCREW</a>
           <a className="nav__drawer-cta" href={LINKS.calendly} {...EXT} onClick={() => setMenuOpen(false)}>Book a chat →</a>
         </div>
       </nav>
@@ -1687,7 +1684,7 @@ import React, { useEffect, useRef, useState } from 'react';
             <Reveal>
               <h1 className="display" style={{fontSize: 'clamp(90px, 15vw, 260px)', color: '#fff', marginTop: 24, letterSpacing: '-0.02em'}}>
                 JOIN THE<br/>
-                <span style={{color: 'var(--acid)'}}>EMCREW.</span>
+                <span style={{color: 'var(--acid)'}}>TEAM.</span>
               </h1>
             </Reveal>
             <Reveal>
@@ -1788,7 +1785,7 @@ import React, { useEffect, useRef, useState } from 'react';
             </div>
           </div>
         </section>
-        <Marquee variant="marquee--dark" items={['BE REAL','BE LOUD','GROW WITH US','APPLY NOW','EMCREW']} />
+        <Marquee variant="marquee--dark" items={['BE REAL','BE LOUD','GROW WITH US','APPLY NOW','JOIN EMC']} />
         <section className="section" style={{background: 'var(--ink)', padding: '100px 0'}}>
           <div className="wrap-wide">
             <div className="cta-split">

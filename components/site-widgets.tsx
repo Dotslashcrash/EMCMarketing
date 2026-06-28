@@ -123,6 +123,7 @@ export function VideoGallery() {
   const [filter, setFilter] = useState('Videos');
   const [active, setActive] = useState<(typeof videos)[number] | null>(null);
   const filtered = videos.filter((video) => video.category === filter);
+  const isShorts = filter === 'Shorts';
   return (
     <>
       <div className="flex flex-wrap gap-2">
@@ -132,10 +133,14 @@ export function VideoGallery() {
           </button>
         ))}
       </div>
-      <div className="mt-8 grid gap-5 md:grid-cols-2">
+      <div className={`mt-8 grid gap-5 ${isShorts ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' : 'md:grid-cols-2'}`}>
         {filtered.map((video) => (
-          <button key={video.videoId} className="video-card group text-left" onClick={() => setActive(video)}>
-            <span className={`grid place-items-center overflow-hidden rounded-sm bg-white/10 ${video.category === 'Shorts' ? 'aspect-[9/14]' : 'aspect-video'}`}>
+          <button
+            key={video.videoId}
+            className={`video-card group text-left ${video.category === 'Shorts' ? 'mx-auto w-full max-w-[19rem] sm:max-w-[21rem]' : ''}`}
+            onClick={() => setActive(video)}
+          >
+            <span className={`grid place-items-center overflow-hidden rounded-sm bg-white/10 ${video.category === 'Shorts' ? 'aspect-[9/12]' : 'aspect-video'}`}>
               <img
                 src={video.thumbnail}
                 alt={`${video.title} thumbnail from EMC Social Club on YouTube`}

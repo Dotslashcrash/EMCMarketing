@@ -15,8 +15,7 @@ export const business = {
   bookingUrl: 'https://emcmarketingllc.hbportal.co/schedule/69ea5f23ac1f98003f0c335a',
   reviewUrl:
     'https://www.google.com/search?sca_esv=4995decb4bdc4888&rlz=1C1ONGR_enUS1214US1214&sxsrf=APpeQnteY9Dmn7Ex0Xseag0wSEQbdtJ6Xg:1782598971313&si=APenkKm7iecQ4G6P-TsbSMFKIQtv3EFIqRAFw-i8uEbk55Z-_xgZ3WciZxW6jumclJY-1heMrVEp9Z5VFwmVsiXmtnUtIFxUdB6EHB_i1UkYWrvjYfRXtXxdABMFh_x2exrR3culyegP&q=EMC+Marketing+Reviews&sa=X&ved=2ahUKEwie3tjTuqiVAxXdnGoFHYNNFcgQ0bkNegQIPBAF&biw=1902&bih=935&dpr=1',
-  vaultUrl: 'https://payhip.com/EMCmarketing',
-  crewUrl: 'https://sites.google.com/elizabethsmediacreations.com/emcrew/home'
+  vaultUrl: 'https://payhip.com/EMCmarketing'
 };
 
 export const navItems = [
