@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import type { ReactNode } from 'react';
 import { ArrowRight, BadgeCheck, Flame, Mail, MapPin, Phone, Sparkles, Target, Zap } from 'lucide-react';
 import { business, faqs, painPoints, processSteps, services, videos } from '@/lib/site-data';
 import { ContactForm, ExitIntentCapture, HeroEnergy, MarketingQuiz, MotionIn, ReviewCarousel, ScrollProgress, VideoGallery } from './site-widgets';
@@ -350,7 +351,16 @@ export function ResultsReviewsPageContent() {
 export function VideosPageContent() {
   return (
     <>
-      <PageHero eyebrow="Videos" title="The content shelf." body="Real EMC Social Club YouTube videos and Shorts, separated by format so visitors can browse the long-form ideas or the quick hits." />
+      <PageHero
+        eyebrow="Videos"
+        title="The content shelf."
+        body="Subscribe to EMC Social Club for sharp marketing takes, quick-hit Shorts, and fresh videos from Elizabeth."
+        action={
+          <a href={business.youtubeUrl} target="_blank" rel="noreferrer" className="btn-acid mt-7 inline-flex" data-event="cta_youtube_subscribe">
+            Subscribe on YouTube <ArrowRight size={17} />
+          </a>
+        }
+      />
       <section className="section-dark">
         <div className="mx-auto max-w-7xl px-4 md:px-6">
           <VideoGallery />
@@ -385,7 +395,7 @@ export function ContactPageContent() {
   );
 }
 
-function PageHero({ eyebrow, title, body }: { eyebrow: string; title: string; body: string }) {
+function PageHero({ eyebrow, title, body, action }: { eyebrow: string; title: string; body: string; action?: ReactNode }) {
   return (
     <section className="relative overflow-hidden bg-black px-4 py-20 text-white md:px-6 md:py-28">
       <HeroEnergy />
@@ -393,6 +403,7 @@ function PageHero({ eyebrow, title, body }: { eyebrow: string; title: string; bo
         <p className="kicker">{eyebrow}</p>
         <h1 className="hero-title mt-5 max-w-5xl font-black uppercase leading-[.8]">{title}</h1>
         <p className="mt-6 max-w-2xl text-xl leading-8 text-white/72">{body}</p>
+        {action}
       </div>
     </section>
   );
