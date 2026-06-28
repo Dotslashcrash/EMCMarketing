@@ -110,7 +110,6 @@ export function ReviewCarousel() {
         <p className="mt-5 text-sm uppercase tracking-[.18em] text-white/50">{active.author}</p>
         <p className="mt-2 text-xs uppercase tracking-[.16em] text-white/35">
           Google review {'\u00b7'} {active.relativeTime}
-          {active.excerpt ? ' \u00b7 excerpt' : ''}
         </p>
       </div>
       <a href={business.reviewUrl} target="_blank" rel="noreferrer" className="btn-ghost mt-5 inline-flex" data-event={ctaEvents.reviewClick}>
@@ -224,7 +223,7 @@ export function ContactForm() {
         <textarea name="message" rows={5} required className="form-input resize-y" />
       </label>
       {error ? <p className="text-sm text-red-300">{error}</p> : null}
-      {sent ? <p className="text-sm text-[var(--acid)]">Saved locally for now. Workspace hooks are marked in code for the next integration pass.</p> : null}
+      {sent ? <p className="text-sm text-[var(--acid)]">Got it. EMC has the signal.</p> : null}
       <button className="btn-acid justify-center" type="submit">
         Send the signal <Send size={17} />
       </button>
@@ -284,7 +283,7 @@ export function Chatbot() {
                 </span>
                 <div>
                   <p className="font-black">EMC Assistant</p>
-                  <p className="text-xs text-white/55">Lead capture mockup</p>
+                  <p className="text-xs text-white/55">Start here</p>
                 </div>
               </div>
               <button onClick={() => setOpen(false)} aria-label="Close chat">
@@ -293,7 +292,7 @@ export function Chatbot() {
             </div>
             <div className="p-4">
               <p className="rounded-sm bg-white/10 p-3 text-sm text-white/80">
-                Tell me what is bugging your marketing. I will save the note locally for now and hand it to the future Workspace flow.
+                Tell me what is bugging your marketing. Quick version is perfect.
               </p>
               {submitted ? (
                 <div className="mt-4 rounded-sm border border-[var(--acid)] p-4">

@@ -174,7 +174,7 @@ export function ReviewsSection() {
             Reviews belong to the people who wrote them.
           </h2>
           <p className="mt-5 text-lg text-white/70">
-            Verified Google reviews from real EMC clients, shown with excerpts where Google truncated the original text.
+            Real words from clients who trusted EMC with the messy, high-stakes work of getting noticed.
           </p>
           <a href={business.reviewUrl} target="_blank" rel="noreferrer" className="btn-acid mt-7 inline-flex" data-event="cta_google_review">
             Leave EMC a Google Review <ArrowRight size={17} />
@@ -339,7 +339,7 @@ export function ServicesPageContent() {
 export function ResultsReviewsPageContent() {
   return (
     <>
-      <PageHero eyebrow="Results & reviews" title="Proof without pretending." body="This page is wired with verified Google reviews, review schema, and proof points without inventing claims." />
+      <PageHero eyebrow="Results & reviews" title="Proof without pretending." body="Real client words, sharp process notes, and a clearer look at what it feels like to work with EMC." />
       <ReviewsSection />
       <ProcessSection />
       <ConsultationCta />
@@ -364,7 +364,7 @@ export function VideosPageContent() {
 export function ContactPageContent() {
   return (
     <>
-      <PageHero eyebrow="Contact" title="Bring the messy marketing problem." body="Email, call, book a slot, or send the form. The form stores locally for now with clear TODO hooks for Google Workspace integration." />
+      <PageHero eyebrow="Contact" title="Bring the messy marketing problem." body="Email, call, book a slot, or send the form. Bring the chaos, the half-formed idea, or the thing that has been quietly bugging you." />
       <section className="section-dark">
         <div className="mx-auto grid max-w-7xl gap-8 px-4 md:px-6 lg:grid-cols-[.8fr_1.2fr]">
           <div className="grid content-start gap-4">

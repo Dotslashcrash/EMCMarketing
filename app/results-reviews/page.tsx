@@ -5,7 +5,7 @@ import { breadcrumbSchema, pageMeta, reviewSchemaIfVerified } from '@/lib/seo';
 export const metadata = pageMeta({
   title: 'Results & Google Reviews',
   description:
-    'EMC Marketing reviews and proof page. Review schema is enabled only when verified Google review text is added.',
+    'Read verified EMC Marketing Google reviews and see how EMC approaches strategy, creative, content, and conversion.',
   path: '/results-reviews/'
 });
 
