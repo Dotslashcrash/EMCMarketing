@@ -141,7 +141,7 @@ function Footer() {
           ]}
         />
       </div>
-      <div className="mx-auto mt-10 flex max-w-7xl flex-wrap justify-between gap-4 border-t border-white/10 pt-6 text-xs uppercase tracking-[.2em] text-white/45">
+      <div className="mx-auto mt-10 flex max-w-7xl flex-wrap justify-between gap-4 border-t border-white/10 pt-6 text-xs uppercase tracking-[.2em] text-white/60">
         <span>{'\u00a9'} 2026 EMC Marketing</span>
         <span>Built to be loud, useful, and measurable.</span>
       </div>

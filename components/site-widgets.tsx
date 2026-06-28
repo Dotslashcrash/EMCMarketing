@@ -158,7 +158,7 @@ export function ReviewCarousel() {
         <p className="text-2xl tracking-[.12em] text-[var(--acid)]">{'\u2605'.repeat(active.rating)}</p>
         <blockquote className="mt-5 text-2xl font-black leading-tight md:text-4xl">"{active.body}"</blockquote>
         <p className="mt-5 text-sm uppercase tracking-[.18em] text-white/50">{active.author}</p>
-        <p className="mt-2 text-xs uppercase tracking-[.16em] text-white/35">
+        <p className="mt-2 text-xs uppercase tracking-[.16em] text-white/60">
           Google review {'\u00b7'} {active.relativeTime}
         </p>
       </div>

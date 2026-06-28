@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { ArrowRight, BadgeCheck, Flame, Mail, MapPin, Phone, Sparkles, Target, Zap } from 'lucide-react';
-import { business, faqs, painPoints, processSteps, services } from '@/lib/site-data';
+import { business, faqs, painPoints, processSteps, services, videoFaqs } from '@/lib/site-data';
 import { ContactForm, DynamicVideoPreview, ExitIntentCapture, HeroEnergy, MarketingQuiz, MotionIn, ReviewCarousel, ScrollProgress, VideoGallery } from './site-widgets';
 
 export function HomePage() {
@@ -301,6 +301,11 @@ export function ServicesPageContent() {
   return (
     <>
       <PageHero eyebrow="Services" title="The useful menu." body="Pick the pressure point. EMC can sharpen the message, build the campaign, fix the site, organize the content, or audit what is already running." />
+      <LocalContext
+        eyebrow="Fayetteville and NWA"
+        title="Built for brands close enough to shake hands, sharp enough to travel."
+        body="EMC works from Fayetteville with Northwest Arkansas businesses and remote brands that need marketing people can actually recognize: clearer offers, better content, stronger local search, and creative that does not disappear into the feed."
+      />
       <section className="section-bone">
         <div className="mx-auto grid max-w-7xl gap-5 px-4 md:px-6">
           {services.map((service, index) => (
@@ -334,6 +339,11 @@ export function ResultsReviewsPageContent() {
   return (
     <>
       <PageHero eyebrow="Results & reviews" title="Proof without pretending." body="Real client words, sharp process notes, and a clearer look at what it feels like to work with EMC." />
+      <LocalContext
+        eyebrow="Trust signals"
+        title="Local proof matters before the first call."
+        body="For service-area businesses in Fayetteville and Northwest Arkansas, reviews, search visibility, and a clear point of view all work together. EMC keeps that proof close to the action so people know who they are trusting."
+      />
       <ReviewsSection />
       <ProcessSection />
       <ConsultationCta />
@@ -359,6 +369,7 @@ export function VideosPageContent() {
           <VideoGallery />
         </div>
       </section>
+      <VideoLearningSection />
       <ConsultationCta />
     </>
   );
@@ -368,6 +379,11 @@ export function ContactPageContent() {
   return (
     <>
       <PageHero eyebrow="Contact" title="Bring the messy marketing problem." body="Email, call, book a slot, or send the form. Bring the chaos, the half-formed idea, or the thing that has been quietly bugging you." />
+      <LocalContext
+        eyebrow="Start local, move fast"
+        title="Fayetteville roots. Real conversations. No maze."
+        body="Whether you are in Northwest Arkansas or building from somewhere else, the first step is simple: tell EMC what is unclear, what is not converting, and what needs to feel more like you."
+      />
       <section className="section-dark">
         <div className="mx-auto grid max-w-7xl gap-8 px-4 md:px-6 lg:grid-cols-[.8fr_1.2fr]">
           <div className="grid content-start gap-4">
@@ -385,6 +401,46 @@ export function ContactPageContent() {
         </div>
       </section>
     </>
+  );
+}
+
+function LocalContext({ eyebrow, title, body }: { eyebrow: string; title: string; body: string }) {
+  return (
+    <section className="bg-[var(--acid)] px-4 py-12 text-black md:px-6">
+      <div className="mx-auto grid max-w-7xl gap-5 md:grid-cols-[.8fr_1.2fr] md:items-end">
+        <div>
+          <p className="text-sm font-black uppercase tracking-[.22em] text-black/60">{eyebrow}</p>
+          <h2 className="mt-3 text-3xl font-black uppercase leading-none md:text-5xl">{title}</h2>
+        </div>
+        <p className="text-lg font-semibold leading-8 text-black/75">{body}</p>
+      </div>
+    </section>
+  );
+}
+
+function VideoLearningSection() {
+  return (
+    <section className="section-bone" aria-labelledby="video-learning">
+      <div className="mx-auto grid max-w-7xl gap-8 px-4 md:px-6 lg:grid-cols-[.8fr_1.2fr]">
+        <div>
+          <p className="kicker text-black/55">What you will learn</p>
+          <h2 id="video-learning" className="headline mt-3 text-black">
+            Small videos. Useful signals.
+          </h2>
+          <p className="mt-5 text-lg text-black/70">
+            EMC Social Club is for business owners, marketers, and local brands that want sharper content instincts without sitting through a seminar.
+          </p>
+        </div>
+        <div className="grid gap-3">
+          {videoFaqs.map((faq) => (
+            <details key={faq.q} className="border border-black/15 bg-white p-5">
+              <summary className="cursor-pointer text-xl font-black">{faq.q}</summary>
+              <p className="mt-3 leading-7 text-black/70">{faq.a}</p>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
 
