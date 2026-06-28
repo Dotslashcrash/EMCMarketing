@@ -1,8 +1,8 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { ArrowRight, BadgeCheck, Flame, Mail, MapPin, Phone, Sparkles, Target, Zap } from 'lucide-react';
-import { business, faqs, painPoints, processSteps, services, videos } from '@/lib/site-data';
-import { ContactForm, ExitIntentCapture, HeroEnergy, MarketingQuiz, MotionIn, ReviewCarousel, ScrollProgress, VideoGallery } from './site-widgets';
+import { business, faqs, painPoints, processSteps, services } from '@/lib/site-data';
+import { ContactForm, DynamicVideoPreview, ExitIntentCapture, HeroEnergy, MarketingQuiz, MotionIn, ReviewCarousel, ScrollProgress, VideoGallery } from './site-widgets';
 
 export function HomePage() {
   return (
@@ -203,14 +203,7 @@ export function VideoPreview() {
             Watch the gallery <ArrowRight size={17} />
           </Link>
         </div>
-        <div className="grid gap-4 md:grid-cols-3">
-          {videos.slice(0, 3).map((video) => (
-            <div key={video.videoId} className="video-tile">
-              <img src={video.thumbnail} alt={`${video.title} YouTube thumbnail`} loading="lazy" className="h-full w-full object-cover" />
-              <span>{video.category}</span>
-            </div>
-          ))}
-        </div>
+        <DynamicVideoPreview />
       </div>
     </section>
   );

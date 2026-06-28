@@ -9,10 +9,60 @@ function track(event: string, detail?: Record<string, unknown>) {
   window.dispatchEvent(new CustomEvent('emc:analytics', { detail: { event, ...detail } }));
 }
 
+function pickMixedVideos(count = 3) {
+  const longVideos = videos.filter((video) => video.category === 'Videos');
+  const shorts = videos.filter((video) => video.category === 'Shorts');
+  const shuffle = <T,>(items: T[]) => [...items].sort(() => Math.random() - 0.5);
+  const required = [shuffle(longVideos)[0], shuffle(shorts)[0]].filter(Boolean);
+  const used = new Set(required.map((video) => video.videoId));
+  const rest = shuffle(videos).filter((video) => !used.has(video.videoId));
+  return [...required, ...rest].slice(0, count);
+}
+
 export function ScrollProgress() {
   const { scrollYProgress } = useScroll();
   const scaleX = useTransform(scrollYProgress, [0, 1], [0, 1]);
   return <motion.div className="fixed left-0 top-0 z-[80] h-1 origin-left bg-[var(--acid)]" style={{ scaleX, width: '100%' }} />;
+}
+
+export function DynamicVideoPreview() {
+  const [previewVideos, setPreviewVideos] = useState(() => videos.slice(0, 3));
+
+  useEffect(() => {
+    setPreviewVideos(pickMixedVideos());
+    const interval = window.setInterval(() => setPreviewVideos(pickMixedVideos()), 9000);
+    return () => window.clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="grid gap-4 md:grid-cols-3" aria-live="polite">
+      <AnimatePresence mode="popLayout">
+        {previewVideos.map((video) => (
+          <motion.a
+            key={video.videoId}
+            href={video.watchUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="video-tile group"
+            data-event="cta_home_video_preview"
+            title={`Watch ${video.title} on YouTube`}
+            initial={{ opacity: 0, y: 16, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -12, scale: 0.98 }}
+            transition={{ duration: 0.35 }}
+          >
+            <img
+              src={video.thumbnail}
+              alt={`${video.title} YouTube thumbnail`}
+              loading="lazy"
+              className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+            />
+            <span>{video.category}</span>
+          </motion.a>
+        ))}
+      </AnimatePresence>
+    </div>
+  );
 }
 
 export function MarketingQuiz() {
