@@ -55,6 +55,7 @@ export function DynamicVideoPreview() {
               src={video.thumbnail}
               alt={`${video.title} YouTube thumbnail`}
               loading="lazy"
+              draggable={false}
               className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
             />
             <span>{video.category}</span>
@@ -195,6 +196,7 @@ export function VideoGallery() {
                 src={video.thumbnail}
                 alt={`${video.title} thumbnail from EMC Social Club on YouTube`}
                 loading="lazy"
+                draggable={false}
                 className="h-full w-full object-cover opacity-75 transition group-hover:scale-105 group-hover:opacity-100"
               />
               <span className="absolute grid h-14 w-14 place-items-center rounded-full bg-[var(--acid)] text-black">
@@ -215,10 +217,12 @@ export function VideoGallery() {
               </button>
               <div className={active.category === 'Shorts' ? 'mx-auto max-w-sm' : ''}>
                 <iframe
-                  src={`${active.embedUrl}?autoplay=1&rel=0`}
+                  src={`${active.embedUrl}?autoplay=1&rel=0&modestbranding=1`}
                   title={active.title}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allow="accelerometer; autoplay; encrypted-media; gyroscope; web-share"
                   allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="strict-origin-when-cross-origin"
                   className={`w-full rounded-sm border border-white/15 bg-black ${active.category === 'Shorts' ? 'aspect-[9/16]' : 'aspect-video'}`}
                 />
               </div>

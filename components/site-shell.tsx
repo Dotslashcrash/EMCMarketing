@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import React, { useEffect } from 'react';
 import { ArrowUpRight, Mail, Menu, Phone, X } from 'lucide-react';
 import { business, ctaEvents, navItems, socials } from '@/lib/site-data';
 import { Chatbot } from './site-widgets';
@@ -10,9 +11,44 @@ function track(event: string) {
   window.dispatchEvent(new CustomEvent('emc:analytics', { detail: { event } }));
 }
 
+function useContentProtection() {
+  useEffect(() => {
+    const block = (event: Event) => event.preventDefault();
+    const blockMediaDrag = (event: DragEvent) => {
+      if ((event.target as HTMLElement | null)?.closest?.('img, video, iframe')) {
+        event.preventDefault();
+      }
+    };
+    const blockShortcuts = (event: KeyboardEvent) => {
+      const key = event.key.toLowerCase();
+      const mod = event.ctrlKey || event.metaKey;
+      const protectedCombos = mod && ['c', 'x', 's', 'p', 'u'].includes(key);
+      const devToolsCombos = event.key === 'F12' || (mod && event.shiftKey && ['i', 'j', 'c'].includes(key));
+      if (protectedCombos || devToolsCombos) event.preventDefault();
+    };
+
+    document.body.classList.add('content-protected');
+    window.addEventListener('contextmenu', block);
+    window.addEventListener('copy', block);
+    window.addEventListener('cut', block);
+    window.addEventListener('dragstart', blockMediaDrag);
+    window.addEventListener('keydown', blockShortcuts);
+
+    return () => {
+      document.body.classList.remove('content-protected');
+      window.removeEventListener('contextmenu', block);
+      window.removeEventListener('copy', block);
+      window.removeEventListener('cut', block);
+      window.removeEventListener('dragstart', blockMediaDrag);
+      window.removeEventListener('keydown', blockShortcuts);
+    };
+  }, []);
+}
+
 export function SiteShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [open, setOpen] = React.useState(false);
+  useContentProtection();
 
   return (
     <>
@@ -178,5 +214,3 @@ function StickyCta() {
     </a>
   );
 }
-
-import React from 'react';

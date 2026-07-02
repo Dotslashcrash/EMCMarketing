@@ -33,6 +33,25 @@ body {
   color: black;
 }
 
+body.content-protected {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+body.content-protected input,
+body.content-protected textarea {
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+body.content-protected img,
+body.content-protected video,
+body.content-protected iframe {
+  -webkit-user-drag: none;
+  user-drag: none;
+}
+
 a {
   text-decoration: none;
 }
@@ -431,5 +450,22 @@ textarea {
 
   .cta-headline {
     font-size: 6.5rem;
+  }
+}
+
+@media print {
+  body.content-protected * {
+    visibility: hidden !important;
+  }
+
+  body.content-protected::before {
+    content: "Printing is disabled for EMC Marketing protected content.";
+    visibility: visible !important;
+    display: block;
+    background: white;
+    color: black;
+    font-family: Arial, sans-serif;
+    font-size: 18px;
+    padding: 32px;
   }
 }

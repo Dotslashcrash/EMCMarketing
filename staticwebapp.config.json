@@ -3,15 +3,11 @@
     "rewrite": "/index.html",
     "exclude": [
       "/_next/*",
-      "/css/*",
-      "/js/*",
       "/images/*",
+      "/js/*",
       "/robots.txt",
       "/sitemap.xml"
     ]
-  },
-  "mimeTypes": {
-    ".jsx": "text/babel"
   },
   "globalHeaders": {
     "X-Content-Type-Options": "nosniff",

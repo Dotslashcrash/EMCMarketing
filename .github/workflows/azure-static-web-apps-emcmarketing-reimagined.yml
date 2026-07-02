@@ -3,7 +3,7 @@ name: Azure Static Web Apps CI/CD - EMC Marketing Reimagined
 on:
   push:
     branches:
-      - codex/reimagined-azure-site
+      - main
   workflow_dispatch:
 
 jobs:
