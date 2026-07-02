@@ -11,8 +11,13 @@ function track(event: string) {
   window.dispatchEvent(new CustomEvent('emc:analytics', { detail: { event } }));
 }
 
-function useContentProtection() {
+function useContentProtection(enabled: boolean) {
   useEffect(() => {
+    if (!enabled) {
+      document.body.classList.remove('content-protected');
+      return;
+    }
+
     const block = (event: Event) => event.preventDefault();
     const blockMediaDrag = (event: DragEvent) => {
       if ((event.target as HTMLElement | null)?.closest?.('img, video, iframe')) {
@@ -42,13 +47,14 @@ function useContentProtection() {
       window.removeEventListener('dragstart', blockMediaDrag);
       window.removeEventListener('keydown', blockShortcuts);
     };
-  }, []);
+  }, [enabled]);
 }
 
 export function SiteShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [open, setOpen] = React.useState(false);
-  useContentProtection();
+  const adminArea = pathname.startsWith('/admin');
+  useContentProtection(!adminArea);
 
   return (
     <>

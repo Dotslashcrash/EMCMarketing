@@ -26,6 +26,7 @@ export const navItems = [
   { label: 'Services', href: '/services/' },
   { label: 'Results', href: '/results-reviews/' },
   { label: 'Videos', href: '/videos/' },
+  { label: 'Brand Portal', href: '/brand-portal/' },
   { label: 'Contact', href: '/contact/' }
 ];
 

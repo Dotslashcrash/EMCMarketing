@@ -45,3 +45,19 @@ Reimagined EMC Marketing site promoted as the main ground truth.
 ## Important Limitation
 
 The safeguards reduce casual copying and direct saving, but a public website cannot fully block screenshots or operating-system-level screen recording. Sensitive content should still use private access, watermarking, signed media URLs, or DRM-capable hosting when needed.
+
+## Brand Portal Addition
+
+- Added owner admin page: `/admin/`
+- Added customer brand portal page: `/brand-portal/`
+- Added Azure Static Web Apps API functions under `/api`.
+- Added private Azure Storage-backed file storage and one-time login records.
+- Admin can upload brand materials and generate one-time customer portal links.
+- One-time customer login is consumed on first successful use.
+- Customer viewing session expires after two hours.
+- Admin area disables the right-click/copy/print safeguards so the owner can work normally.
+- Brand portal keeps the right-click/copy/print/drag-save safeguards active.
+- Azure storage resource: `emcbrandportal01` in `rg-emcmarketing`.
+- Azure Static Web App app settings required:
+  - `BRAND_PORTAL_STORAGE_CONNECTION_STRING`
+  - `BRAND_PORTAL_ADMIN_PASSWORD`
