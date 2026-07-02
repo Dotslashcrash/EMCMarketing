@@ -2,7 +2,7 @@ const { assertAdmin, getMaterial, json, materialResponse } = require('../shared'
 
 module.exports = async function (context, req) {
   try {
-    if (!assertAdmin(req)) {
+    if (!(await assertAdmin(req))) {
       context.res = json(401, { error: 'Admin access required.' });
       return;
     }

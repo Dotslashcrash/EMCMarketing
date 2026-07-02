@@ -60,6 +60,8 @@ export function AdminPortal() {
   const [note, setNote] = useState('');
   const [clientName, setClientName] = useState('');
   const [expiresHours, setExpiresHours] = useState(48);
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [portalLink, setPortalLink] = useState('');
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
@@ -137,6 +139,35 @@ export function AdminPortal() {
       setMessage(`One-time portal link created. It expires ${new Date(data.expiresAt).toLocaleString()}.`);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Could not create portal login.');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function changePassword(event: React.FormEvent) {
+    event.preventDefault();
+    setBusy(true);
+    setMessage('');
+    try {
+      if (newPassword.length < 12) {
+        throw new Error('Use at least 12 characters for the new admin password.');
+      }
+      if (newPassword !== confirmPassword) {
+        throw new Error('The new passwords do not match.');
+      }
+      await api('admin-change-password', {
+        method: 'POST',
+        headers: { 'x-admin-password': adminKey },
+        body: JSON.stringify({ nextPassword: newPassword })
+      });
+      setAdminKey(newPassword);
+      setPassword(newPassword);
+      sessionStorage.setItem('emc-admin-key', newPassword);
+      setNewPassword('');
+      setConfirmPassword('');
+      setMessage('Admin password changed. Use the new password next time.');
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'Could not change admin password.');
     } finally {
       setBusy(false);
     }
@@ -241,6 +272,24 @@ export function AdminPortal() {
                   </button>
                 </div>
               ) : null}
+            </form>
+
+            <form onSubmit={changePassword} className="border border-white/15 bg-white/[.04] p-6 lg:col-span-2">
+              <p className="kicker">Owner security</p>
+              <h2 className="mt-3 text-3xl font-black uppercase">Change admin password.</h2>
+              <div className="mt-6 grid gap-4 md:grid-cols-2">
+                <label className="grid gap-2">
+                  <span className="form-label">New password</span>
+                  <input className="form-input" type="password" minLength={12} value={newPassword} onChange={(event) => setNewPassword(event.target.value)} required />
+                </label>
+                <label className="grid gap-2">
+                  <span className="form-label">Confirm new password</span>
+                  <input className="form-input" type="password" minLength={12} value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} required />
+                </label>
+              </div>
+              <button className="btn-ghost mt-5" disabled={busy || !newPassword || !confirmPassword}>
+                <KeyRound size={17} /> Update password
+              </button>
             </form>
           </div>
         )}

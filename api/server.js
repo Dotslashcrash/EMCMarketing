@@ -5,6 +5,7 @@ const routes = [
   ['get', '/api/admin-materials', require('./admin-materials')],
   ['post', '/api/admin-upload', require('./admin-upload')],
   ['post', '/api/admin-create-token', require('./admin-create-token')],
+  ['post', '/api/admin-change-password', require('./admin-change-password')],
   ['get', '/api/admin-material', require('./admin-material')],
   ['post', '/api/portal-login', require('./portal-login')],
   ['get', '/api/portal-materials', require('./portal-materials')],

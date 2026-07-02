@@ -1,13 +1,8 @@
-const { json, parseBody } = require('../shared');
+const { assertAdmin, json } = require('../shared');
 
 module.exports = async function (context, req) {
   try {
-    const { password } = parseBody(req);
-    if (!process.env.BRAND_PORTAL_ADMIN_PASSWORD) {
-      context.res = json(500, { error: 'Admin password is not configured.' });
-      return;
-    }
-    if (password !== process.env.BRAND_PORTAL_ADMIN_PASSWORD) {
+    if (!(await assertAdmin(req))) {
       context.res = json(401, { error: 'That admin password did not match.' });
       return;
     }

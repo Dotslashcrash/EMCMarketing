@@ -1,5 +1,5 @@
 const crypto = require('crypto');
-const { TableClient, AzureNamedKeyCredential } = require('@azure/data-tables');
+const { TableClient } = require('@azure/data-tables');
 const { BlobServiceClient } = require('@azure/storage-blob');
 
 const TABLE_NAME = 'BrandPortal';
@@ -45,12 +45,9 @@ function getAdminPassword() {
   return value;
 }
 
-function assertAdmin(req) {
+function suppliedAdminPassword(req) {
   const supplied = getHeader(req, 'x-admin-password') || req.query?.adminKey || parseBody(req).password;
-  if (!supplied || supplied !== getAdminPassword()) {
-    return false;
-  }
-  return true;
+  return String(supplied || '');
 }
 
 function hash(value) {
@@ -75,6 +72,37 @@ async function table() {
     if (error.statusCode !== 409) throw error;
   });
   return client;
+}
+
+async function storedAdminPasswordHash() {
+  const client = await table();
+  try {
+    const entity = await client.getEntity('config', 'adminPassword');
+    return entity.passwordHash || '';
+  } catch {
+    return '';
+  }
+}
+
+async function assertAdmin(req) {
+  const supplied = suppliedAdminPassword(req);
+  if (!supplied) return false;
+  const storedHash = await storedAdminPasswordHash();
+  if (storedHash) return hash(supplied) === storedHash;
+  return supplied === getAdminPassword();
+}
+
+async function setAdminPassword(nextPassword) {
+  const client = await table();
+  await client.upsertEntity(
+    {
+      partitionKey: 'config',
+      rowKey: 'adminPassword',
+      passwordHash: hash(nextPassword),
+      updatedAt: new Date().toISOString()
+    },
+    'Merge'
+  );
 }
 
 async function container() {
@@ -147,6 +175,7 @@ module.exports = {
   listMaterials,
   materialResponse,
   parseBody,
+  setAdminPassword,
   table,
   token,
   validateSession
