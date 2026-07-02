@@ -11,6 +11,18 @@ pnpm-debug.log*
 .env
 .env.local
 .env.*.local
+.env.*
+!.env.example
+*.key
+*.pem
+*.pfx
+*.p12
+*.crt
+*.cer
+secrets/
+certs/
+.azure/
+*.log
 
 brand-portal-api.zip
 function-logs*/

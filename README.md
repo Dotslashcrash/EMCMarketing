@@ -27,3 +27,10 @@ npm run build
 ```
 
 The static export is generated in `out/`.
+## Secrets & Configuration
+
+Azure Key Vault is the source of truth for secrets and sensitive configuration. This repository uses the shared Griffin Technology Partners Umbrella secret framework for local setup.
+
+Local development uses a generated .env file that is ignored by Git. Run ./scripts/setup-secrets.ps1 on Windows or PowerShell, or ./scripts/setup-secrets.sh on macOS/Linux. The setup flow validates Azure access, pulls secrets through Umbrella, and prompts for missing secrets without printing values.
+
+Production Azure workloads should use Managed Identity and Azure Key Vault directly. Real secret values must never be committed, logged, documented, captured in screenshots, or stored in sample files.
