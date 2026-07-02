@@ -3,11 +3,15 @@
     "rewrite": "/index.html",
     "exclude": [
       "/_next/*",
+      "/api/*",
       "/images/*",
       "/js/*",
       "/robots.txt",
       "/sitemap.xml"
     ]
+  },
+  "platform": {
+    "apiRuntime": "node:20"
   },
   "globalHeaders": {
     "X-Content-Type-Options": "nosniff",
