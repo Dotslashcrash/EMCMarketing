@@ -11,3 +11,7 @@ pnpm-debug.log*
 .env
 .env.local
 .env.*.local
+
+brand-portal-api.zip
+function-logs*/
+function-logs*.zip
