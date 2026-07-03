@@ -16,6 +16,27 @@ type PortalMaterial = {
 
 type ApiResult<T> = T & { error?: string };
 
+function cleanApiError(path: string, data: ApiResult<unknown>) {
+  const raw = data.error || '';
+  if (!raw) return 'Something did not go through.';
+  if (raw.includes('ResourceNotFound') || raw.includes('odata.error')) {
+    if (path === 'portal-login') {
+      return 'That one-time access code was not found. Generate a fresh portal link from admin and try again.';
+    }
+    return 'That protected portal resource was not found.';
+  }
+  return raw;
+}
+
+function portalCodeFromInput(value: string) {
+  const trimmed = value.trim();
+  try {
+    return new URL(trimmed).searchParams.get('token') || trimmed;
+  } catch {
+    return trimmed;
+  }
+}
+
 async function api<T>(path: string, init?: RequestInit) {
   const res = await fetch(`/api/${path}`, {
     ...init,
@@ -25,7 +46,7 @@ async function api<T>(path: string, init?: RequestInit) {
     }
   });
   const data = (await res.json().catch(() => ({}))) as ApiResult<T>;
-  if (!res.ok) throw new Error(data.error || 'Something did not go through.');
+  if (!res.ok) throw new Error(cleanApiError(path, data));
   return data;
 }
 
@@ -345,7 +366,7 @@ export function BrandPortal() {
     try {
       const data = await api<{ sessionId: string; expiresAt: string }>('portal-login', {
         method: 'POST',
-        body: JSON.stringify({ token })
+        body: JSON.stringify({ token: portalCodeFromInput(token) })
       });
       setSessionId(data.sessionId);
       sessionStorage.setItem('emc-brand-session', data.sessionId);

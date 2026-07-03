@@ -1,5 +1,9 @@
 const { hash, json, parseBody, table, token } = require('../shared');
 
+function isMissingToken(error) {
+  return error?.statusCode === 404 || error?.code === 'ResourceNotFound' || String(error?.message || '').includes('ResourceNotFound');
+}
+
 module.exports = async function (context, req) {
   try {
     const body = parseBody(req);
@@ -11,7 +15,17 @@ module.exports = async function (context, req) {
 
     const tableClient = await table();
     const rowKey = hash(supplied);
-    const entity = await tableClient.getEntity('token', rowKey);
+    let entity;
+    try {
+      entity = await tableClient.getEntity('token', rowKey);
+    } catch (error) {
+      if (isMissingToken(error)) {
+        context.res = json(401, { error: 'That one-time access code was not found. Generate a fresh portal link from admin and try again.' });
+        return;
+      }
+      throw error;
+    }
+
     if (entity.status !== 'active') {
       context.res = json(410, { error: 'This one-time login has already been used.' });
       return;
