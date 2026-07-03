@@ -54,7 +54,12 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [open, setOpen] = React.useState(false);
   const adminArea = pathname.startsWith('/admin');
-  useContentProtection(!adminArea);
+  const brandSampleArea = pathname.startsWith('/brand-sample');
+  useContentProtection(!adminArea && !brandSampleArea);
+
+  if (brandSampleArea) {
+    return <main>{children}</main>;
+  }
 
   return (
     <>

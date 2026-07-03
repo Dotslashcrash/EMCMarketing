@@ -5,6 +5,8 @@
   --acid-dark: #4f7a00;
   --ink: #050505;
   --bone: #f2efe6;
+  --font-heading: var(--font-anton), Impact, "Arial Narrow", sans-serif;
+  --font-body: var(--font-montserrat), Arial, sans-serif;
 }
 
 * {
@@ -97,6 +99,221 @@ textarea {
   line-height: 1.02;
   overflow: visible;
   text-transform: uppercase;
+}
+
+.brand-sample-page {
+  background: #000;
+  color: #fff;
+  min-height: 100svh;
+}
+
+.brand-sample-hero {
+  background: #00a0c3;
+  display: grid;
+  min-height: 43svh;
+  place-items: center;
+}
+
+.brand-sample-hero-circle {
+  align-items: center;
+  aspect-ratio: 1;
+  background: #00a0c3;
+  border-radius: 999px;
+  display: flex;
+  justify-content: center;
+  max-width: min(58vw, 34rem);
+  width: 82%;
+}
+
+.brand-sample-logo {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  line-height: 1;
+  width: min(21rem, 70%);
+}
+
+.brand-sample-hero .brand-sample-logo {
+  width: min(24rem, 62%);
+}
+
+.brand-sample-logo-mark {
+  display: block;
+  height: auto;
+  margin-bottom: -0.45rem;
+  width: 100%;
+}
+
+.brand-sample-logo-type {
+  display: block;
+  font-family: var(--font-body);
+  font-size: clamp(2.5rem, 7vw, 4.5rem);
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 0.8;
+  margin-top: -0.15rem;
+}
+
+.brand-sample-logo-row {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+.brand-sample-logo-tile {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  min-height: 24rem;
+}
+
+.brand-sample-logo-tile-light {
+  background: #fff;
+}
+
+.brand-sample-logo-tile-dark {
+  background: #000;
+  border-top: 1px solid #fff;
+}
+
+.brand-sample-system {
+  border-top: 1px solid #fff;
+  display: grid;
+  gap: clamp(3.5rem, 8vw, 6rem);
+  justify-items: center;
+  padding: clamp(4rem, 9vw, 7rem) 1.5rem 6rem;
+}
+
+.brand-sample-fonts {
+  align-items: end;
+  display: grid;
+  gap: clamp(3rem, 10vw, 9rem);
+  grid-template-columns: 1fr 1fr;
+  max-width: 44rem;
+  text-align: center;
+  width: 100%;
+}
+
+.brand-sample-anton-aa,
+.brand-sample-montserrat-aa {
+  line-height: 0.85;
+  margin: 0;
+}
+
+.brand-sample-anton-aa {
+  font-family: var(--font-heading);
+  font-size: clamp(5rem, 13vw, 9rem);
+}
+
+.brand-sample-montserrat-aa {
+  font-family: var(--font-body);
+  font-size: clamp(5rem, 13vw, 8.6rem);
+  font-weight: 400;
+}
+
+.brand-sample-font-name {
+  margin: 1.4rem 0 0;
+}
+
+.brand-sample-font-name-anton {
+  font-family: var(--font-heading);
+  font-size: clamp(2.2rem, 6vw, 4rem);
+}
+
+.brand-sample-font-name-montserrat {
+  font-family: var(--font-body);
+  font-size: clamp(1.7rem, 4.2vw, 3.4rem);
+  font-weight: 400;
+}
+
+.brand-sample-colors {
+  display: grid;
+  gap: clamp(1.5rem, 5vw, 4rem);
+  grid-template-columns: repeat(3, 1fr);
+  max-width: 44rem;
+  text-align: center;
+  width: 100%;
+}
+
+.brand-sample-dot {
+  border-radius: 999px;
+  display: inline-block;
+  height: clamp(5rem, 12vw, 8.2rem);
+  width: clamp(5rem, 12vw, 8.2rem);
+}
+
+.brand-sample-dot-black {
+  background: #000;
+  border: 1px solid #2a2a2a;
+}
+
+.brand-sample-dot-accent {
+  background: #00a0c3;
+}
+
+.brand-sample-dot-white {
+  background: #fff;
+}
+
+.brand-sample-colors p {
+  font-family: var(--font-body);
+  font-size: clamp(1.1rem, 3.5vw, 2.2rem);
+  font-style: italic;
+  font-weight: 700;
+  margin: 1.5rem 0 0;
+}
+
+.brand-sample-tagline {
+  font-family: var(--font-heading);
+  font-size: clamp(2.4rem, 7vw, 5.4rem);
+  line-height: 0.95;
+  margin: 0;
+  text-align: center;
+}
+
+.brand-sample-symbols {
+  align-items: center;
+  display: grid;
+  gap: clamp(3rem, 10vw, 9rem);
+  grid-template-columns: 1fr 1fr;
+  max-width: 45rem;
+  width: 100%;
+}
+
+.brand-sample-x,
+.brand-sample-triangles {
+  height: auto;
+  width: 100%;
+}
+
+.brand-sample-x path {
+  fill: none;
+  stroke: #fff;
+  stroke-linecap: square;
+  stroke-linejoin: miter;
+  stroke-width: 24;
+}
+
+.brand-sample-x path:nth-child(n + 3) {
+  stroke-width: 5;
+}
+
+.brand-sample-triangles polygon {
+  fill: none;
+  stroke: #fff;
+  stroke-linejoin: miter;
+  stroke-width: 3;
+}
+
+@media (min-width: 768px) {
+  .brand-sample-logo-row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .brand-sample-logo-tile-dark {
+    border-left: 1px solid #fff;
+    border-top: 0;
+  }
 }
 
 .kicker {

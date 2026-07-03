@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next';
+import { Anton, Montserrat } from 'next/font/google';
 import './globals.css';
 import { SiteShell } from '@/components/site-shell';
 import { JsonLd } from '@/components/json-ld';
@@ -10,6 +11,19 @@ export const viewport: Viewport = {
   initialScale: 1,
   themeColor: '#b8ff00'
 };
+
+const anton = Anton({
+  subsets: ['latin'],
+  weight: '400',
+  variable: '--font-anton',
+  display: 'swap'
+});
+
+const montserrat = Montserrat({
+  subsets: ['latin'],
+  variable: '--font-montserrat',
+  display: 'swap'
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -48,7 +62,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${anton.variable} ${montserrat.variable}`}>
       <body>
         <SiteShell>{children}</SiteShell>
         <JsonLd data={organizationSchema()} />
