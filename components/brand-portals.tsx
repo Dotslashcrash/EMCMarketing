@@ -1,6 +1,7 @@
 'use client';
 
 import { ArrowRight, Copy, FileArchive, FileImage, FileText, KeyRound, Lock, LogOut, ShieldCheck, Upload, Wand2 } from 'lucide-react';
+import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 
 type PortalMaterial = {
@@ -223,7 +224,7 @@ export function AdminPortal() {
             <p className="kicker">Owner access</p>
             <h1 className="hero-title mt-4 font-black uppercase leading-[.8]">Brand portal admin.</h1>
             <p className="mt-5 max-w-2xl text-lg leading-8 text-white/68">
-              Upload protected brand materials, generate one-time client access, and keep the customer-facing portal locked down.
+              Upload client brand materials, generate one-time review access, and manage the portal library.
             </p>
           </div>
           {adminKey ? (
@@ -270,8 +271,8 @@ export function AdminPortal() {
             </form>
 
             <form onSubmit={createToken} className="border border-[var(--acid)] bg-[var(--acid)] p-6 text-black">
-              <p className="text-sm font-black uppercase tracking-[.2em] text-black/55">One-time login</p>
-              <h2 className="mt-3 text-3xl font-black uppercase leading-none">Generate client access.</h2>
+              <p className="text-sm font-black uppercase tracking-[.2em] text-black/55">Client review</p>
+              <h2 className="mt-3 text-3xl font-black uppercase leading-none">Generate review access.</h2>
               <div className="mt-6 grid gap-4">
                 <label className="grid gap-2">
                   <span className="text-xs font-black uppercase tracking-[.18em] text-black/60">Client name</span>
@@ -381,8 +382,8 @@ export function BrandPortal() {
   }
 
   const locked = !sessionId;
-  const protectedMessage = useMemo(
-    () => (locked ? 'One-time client login required.' : 'Protected viewing session active. Direct saving is intentionally limited.'),
+  const accessMessage = useMemo(
+    () => (locked ? 'One-time client login required.' : 'Review session active.'),
     [locked]
   );
 
@@ -394,20 +395,25 @@ export function BrandPortal() {
             <p className="kicker">Client brand portal</p>
             <h1 className="hero-title mt-4 font-black uppercase leading-[.8]">Protected brand shelf.</h1>
             <p className="mt-5 text-lg leading-8 text-white/68">
-              View-only access for approved brand material. The login can be used once; after that, only the active viewing session remains.
+              A private review space for brand files, proofs, and campaign materials shared by EMC Marketing.
             </p>
           </div>
           <div className="border border-[var(--acid)] bg-white/[.04] p-5">
             <div className="flex gap-4">
               <ShieldCheck className="mt-1 text-[var(--acid)]" />
               <div>
-                <h2 className="text-xl font-black uppercase">{protectedMessage}</h2>
+                <h2 className="text-xl font-black uppercase">{accessMessage}</h2>
                 <p className="mt-2 text-sm leading-6 text-white/60">
-                  Right-click, copy, print, drag-save, and common save shortcuts are disabled here. This reduces casual theft, but does not replace watermarking or legal controls.
+                  Files are presented for client review in the browser. For downloadable files, final delivery, or permission changes, contact EMC Marketing.
                 </p>
               </div>
             </div>
           </div>
+        </div>
+        <div className="mt-5 flex justify-end">
+          <Link href="/admin/" className="text-xs font-black uppercase tracking-[.18em] text-white/45 transition hover:text-[var(--acid)]">
+            Owner access
+          </Link>
         </div>
 
         {message ? <p className="mt-8 border border-white/15 bg-white/[.04] p-4 text-sm text-white/78">{message}</p> : null}

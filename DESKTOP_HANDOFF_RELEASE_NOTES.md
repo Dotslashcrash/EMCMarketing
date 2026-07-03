@@ -44,7 +44,7 @@ Reimagined EMC Marketing site promoted as the main ground truth.
 
 ## Important Limitation
 
-The safeguards reduce casual copying and direct saving, but a public website cannot fully block screenshots or operating-system-level screen recording. Sensitive content should still use private access, watermarking, signed media URLs, or DRM-capable hosting when needed.
+The safeguards keep review materials inside the intended browser workflow, but a public website cannot fully control screenshots or operating-system-level recording. Sensitive content should still use private access and appropriate delivery controls when needed.
 
 ## Brand Portal Addition
 
