@@ -55,6 +55,7 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = React.useState(false);
   const adminArea = pathname.startsWith('/admin');
   const brandSampleArea = pathname.startsWith('/brand-sample');
+  const denseContentArea = pathname.startsWith('/services') || pathname.startsWith('/results-reviews') || pathname.startsWith('/videos');
   useContentProtection(!adminArea && !brandSampleArea);
 
   if (brandSampleArea) {
@@ -145,7 +146,7 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
         {children}
       </main>
       <Footer />
-      <StickyCta />
+      {!denseContentArea ? <StickyCta /> : null}
       <Chatbot />
     </>
   );

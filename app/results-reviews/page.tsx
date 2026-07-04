@@ -3,9 +3,9 @@ import { ResultsReviewsPageContent } from '@/components/sections';
 import { breadcrumbSchema, pageMeta, reviewSchemaIfVerified } from '@/lib/seo';
 
 export const metadata = pageMeta({
-  title: 'Results & Google Reviews',
+  title: 'Results, Reviews & Marketing Budget Tiers',
   description:
-    'Read verified EMC Marketing Google reviews and see how EMC approaches strategy, creative, content, and conversion.',
+    'Read EMC Marketing reviews and compare startup, small business, medium business, and enterprise marketing budget tiers with estimated tactics and cost analysis.',
   path: '/results-reviews/'
 });
 
