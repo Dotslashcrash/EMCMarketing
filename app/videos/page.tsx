@@ -1,6 +1,6 @@
 import { JsonLd } from '@/components/json-ld';
 import { VideosPageContent } from '@/components/sections';
-import { breadcrumbSchema, pageMeta, videoFaqSchema, videoSchema } from '@/lib/seo';
+import { breadcrumbSchema, faqPageSchema, pageAnswers, pageMeta, videoFaqSchema, videoSchema, webPageSchema } from '@/lib/seo';
 
 export const metadata = pageMeta({
   title: 'EMC Marketing Videos',
@@ -24,8 +24,10 @@ export default function VideosPage() {
   return (
     <>
       <VideosPageContent />
+      <JsonLd data={webPageSchema({ path: '/videos/', name: 'EMC Marketing Videos', description: metadata.description as string, type: 'CollectionPage', questions: pageAnswers.videos })} />
       <JsonLd data={videoSchema()} />
       <JsonLd data={videoFaqSchema()} />
+      <JsonLd data={faqPageSchema(pageAnswers.videos, '/videos/')} />
       <JsonLd data={breadcrumbSchema([{ name: 'Home', path: '/' }, { name: 'Videos', path: '/videos/' }])} />
     </>
   );

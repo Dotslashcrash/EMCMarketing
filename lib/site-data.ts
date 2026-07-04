@@ -20,6 +20,15 @@ export const business = {
   youtubeUrl: 'https://www.youtube.com/@EMCSocialClub'
 };
 
+export const publicPages = [
+  { label: 'Home', href: '/', priority: 1, changeFrequency: 'weekly' },
+  { label: 'About', href: '/about/', priority: 0.78, changeFrequency: 'monthly' },
+  { label: 'Services', href: '/services/', priority: 0.94, changeFrequency: 'weekly' },
+  { label: 'Results & Reviews', href: '/results-reviews/', priority: 0.9, changeFrequency: 'weekly' },
+  { label: 'Videos', href: '/videos/', priority: 0.86, changeFrequency: 'weekly' },
+  { label: 'Contact', href: '/contact/', priority: 0.82, changeFrequency: 'monthly' }
+] as const;
+
 export const navItems = [
   { label: 'Home', href: '/' },
   { label: 'About', href: '/about/' },
@@ -114,6 +123,69 @@ export const faqs = [
     a: `Email ${business.email}, call ${business.phone}, or book a consultation through the EMC Marketing website.`
   }
 ];
+
+export const pageAnswers = {
+  home: [
+    {
+      q: 'What is EMC Marketing?',
+      a: 'EMC Marketing is a Fayetteville, Arkansas marketing agency helping businesses improve social media, paid ads, content, websites, SEO, AEO, brand identity, Google Business visibility, and marketing strategy.'
+    },
+    {
+      q: 'Who is EMC best for?',
+      a: 'EMC is best for local businesses, service providers, and growing brands that need clearer messaging, stronger creative, better search visibility, and marketing that turns attention into action.'
+    }
+  ],
+  services: [
+    {
+      q: 'What marketing services does EMC Marketing offer?',
+      a: 'EMC offers social media strategy, paid advertising, brand identity, websites, SEO, AEO, content production, marketing audits, Google Business support, and campaign consultation.'
+    },
+    {
+      q: 'Can EMC build both strategy and creative?',
+      a: 'Yes. EMC connects strategy, messaging, creative direction, content, ads, and website conversion paths so each marketing tactic supports the same business goal.'
+    },
+    {
+      q: 'Does EMC support Fayetteville and Northwest Arkansas businesses?',
+      a: 'Yes. EMC is based in Fayetteville and works with Northwest Arkansas businesses as well as remote brands across the United States.'
+    }
+  ],
+  results: [
+    {
+      q: 'How much should a business spend on marketing?',
+      a: 'Many established businesses plan marketing as a percentage of revenue. Public benchmarks commonly range from low single digits for some B2B companies to high single digits or more for growth-focused B2C companies. The right number depends on revenue, margins, category, and growth speed.'
+    },
+    {
+      q: 'What should a marketing budget include?',
+      a: 'A practical marketing budget separates strategy, creative production, website or SEO work, paid media, software, reporting, and agency or contractor fees so leaders can see what drives demand.'
+    }
+  ],
+  videos: [
+    {
+      q: 'What is EMC Social Club?',
+      a: 'EMC Social Club is EMC Marketing video content from Elizabeth covering social media strategy, paid content, brand identity, content creation, marketing mistakes, and practical ways businesses can earn attention online.'
+    },
+    {
+      q: 'Why does EMC publish marketing videos?',
+      a: 'The video library builds trust before a consultation by showing how EMC thinks about creative, campaigns, search visibility, content strategy, and business owner decisions.'
+    }
+  ],
+  contact: [
+    {
+      q: 'How do I contact EMC Marketing?',
+      a: 'Contact EMC Marketing by emailing info@emcmarketing.co, calling 479-445-3632, booking a consultation, or submitting the contact form on the website.'
+    },
+    {
+      q: 'What should I bring to a marketing consultation?',
+      a: 'Bring your website, social profiles, current offers, recent campaigns, goals, budget range, and the part of your marketing that feels unclear or underperforming.'
+    }
+  ],
+  about: [
+    {
+      q: 'Who leads EMC Marketing?',
+      a: 'EMC Marketing is led by Elizabeth, who brings social media, content, brand, and practical marketing strategy together for businesses that need clearer creative direction.'
+    }
+  ]
+} as const;
 
 export const reviews = [
   {

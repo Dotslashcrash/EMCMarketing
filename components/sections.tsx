@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { ArrowRight, BadgeCheck, BarChart3, Flame, Mail, MapPin, Phone, Sparkles, Target, TrendingUp, Zap } from 'lucide-react';
-import { business, faqs, painPoints, processSteps, services, videoFaqs } from '@/lib/site-data';
+import { business, faqs, pageAnswers, painPoints, processSteps, services, videoFaqs } from '@/lib/site-data';
 import { ContactForm, DynamicVideoPreview, ExitIntentCapture, HeroEnergy, MarketingQuiz, MotionIn, ReviewCarousel, ScrollProgress, VideoGallery } from './site-widgets';
 
 const serviceTracks = [
@@ -81,6 +81,7 @@ export function HomePage() {
     <>
       <ScrollProgress />
       <Hero />
+      <QuickAnswerSection eyebrow="Quick answer" title="What EMC does." answers={pageAnswers.home} variant="light" />
       <ServicesPreview />
       <WhyEmc />
       <MarketingQuiz />
@@ -347,6 +348,7 @@ export function AboutPageContent() {
   return (
     <>
       <PageHero eyebrow="About EMC" title="Built by Elizabeth. Tuned for attention." body="EMC Marketing started as Elizabeth's Media Creations and grew into a sharp, practical agency for brands that need stronger creative direction, cleaner strategy, and less forgettable marketing." />
+      <QuickAnswerSection eyebrow="Founder signal" title="Who is behind the work?" answers={pageAnswers.about} variant="light" />
       <section className="section-bone">
         <div className="mx-auto grid max-w-7xl gap-8 px-4 md:px-6 lg:grid-cols-[.9fr_1.1fr]">
           <div className="tilt-panel bg-black text-white">
@@ -373,6 +375,7 @@ export function ServicesPageContent() {
   return (
     <>
       <PageHero eyebrow="Services" title="Strategy, content, ads, websites." body="A service page should not feel like a drawer full of labels. EMC organizes the work by the problem it solves: foundation, visibility, and growth." />
+      <QuickAnswerSection eyebrow="Answer-first services" title="What can EMC actually do?" answers={pageAnswers.services} variant="dark" />
       <LocalContext
         eyebrow="How EMC scopes work"
         title="Start with the leak. Build the system around it."
@@ -437,6 +440,7 @@ export function ResultsReviewsPageContent() {
   return (
     <>
       <PageHero eyebrow="Results & planning" title="What should marketing cost?" body="Reviews show trust. Budget tiers show what a realistic marketing plan can include at different business sizes." />
+      <QuickAnswerSection eyebrow="Answer-first budget guide" title="The short version." answers={pageAnswers.results} variant="dark" />
       <LocalContext
         eyebrow="Budget reality"
         title="The right spend depends on revenue, margins, category, and how fast you need growth."
@@ -462,6 +466,7 @@ export function VideosPageContent() {
           </a>
         }
       />
+      <QuickAnswerSection eyebrow="Video answer" title="Why watch before booking?" answers={pageAnswers.videos} variant="dark" />
       <section className="section-bone" aria-labelledby="video-split">
         <div className="mx-auto grid max-w-7xl gap-8 px-4 md:px-6 lg:grid-cols-[.85fr_1.15fr]">
           <div>
@@ -574,10 +579,43 @@ function PlayIconLabel({ title }: { title: string }) {
   );
 }
 
+function QuickAnswerSection({
+  eyebrow,
+  title,
+  answers,
+  variant
+}: {
+  eyebrow: string;
+  title: string;
+  answers: ReadonlyArray<{ q: string; a: string }>;
+  variant: 'dark' | 'light';
+}) {
+  const dark = variant === 'dark';
+  return (
+    <section className={dark ? 'section-dark border-t border-white/10' : 'section-bone'} aria-label={title}>
+      <div className="mx-auto grid max-w-7xl gap-6 px-4 md:px-6 lg:grid-cols-[.7fr_1.3fr]">
+        <div>
+          <p className={dark ? 'kicker' : 'kicker text-black/55'}>{eyebrow}</p>
+          <h2 className={`mt-3 text-4xl font-black uppercase leading-none md:text-6xl ${dark ? 'text-white' : 'text-black'}`}>{title}</h2>
+        </div>
+        <div className="grid gap-3">
+          {answers.map((answer) => (
+            <article key={answer.q} className={dark ? 'border border-white/15 bg-white/[.04] p-5' : 'border-2 border-black bg-white p-5'}>
+              <h3 className={`text-xl font-black ${dark ? 'text-white' : 'text-black'}`}>{answer.q}</h3>
+              <p className={`mt-2 leading-7 ${dark ? 'text-white/68' : 'text-black/68'}`}>{answer.a}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export function ContactPageContent() {
   return (
     <>
       <PageHero eyebrow="Contact" title="Bring the messy marketing problem." body="Email, call, book a slot, or send the form. Bring the chaos, the half-formed idea, or the thing that has been quietly bugging you." />
+      <QuickAnswerSection eyebrow="Contact answer" title="How to start." answers={pageAnswers.contact} variant="dark" />
       <LocalContext
         eyebrow="Start local, move fast"
         title="Fayetteville roots. Real conversations. No maze."

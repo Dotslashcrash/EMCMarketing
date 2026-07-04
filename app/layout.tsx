@@ -3,7 +3,7 @@ import { Anton, Montserrat } from 'next/font/google';
 import './globals.css';
 import { SiteShell } from '@/components/site-shell';
 import { JsonLd } from '@/components/json-ld';
-import { faqSchema, navSchema, organizationSchema } from '@/lib/seo';
+import { faqSchema, navSchema, organizationSchema, publicPageListSchema } from '@/lib/seo';
 import { business, siteUrl } from '@/lib/site-data';
 
 export const viewport: Viewport = {
@@ -68,6 +68,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <JsonLd data={organizationSchema()} />
         <JsonLd data={faqSchema()} />
         <JsonLd data={navSchema()} />
+        <JsonLd data={publicPageListSchema()} />
       </body>
     </html>
   );
