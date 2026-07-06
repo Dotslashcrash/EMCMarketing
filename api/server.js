@@ -7,6 +7,7 @@ const routes = [
   ['post', '/api/admin-create-token', require('./admin-create-token')],
   ['post', '/api/admin-change-password', require('./admin-change-password')],
   ['get', '/api/admin-material', require('./admin-material')],
+  ['post', '/api/chat-lead', require('./chat-lead')],
   ['post', '/api/portal-login', require('./portal-login')],
   ['get', '/api/portal-materials', require('./portal-materials')],
   ['get', '/api/portal-material', require('./portal-material')]

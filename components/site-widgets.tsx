@@ -9,6 +9,19 @@ function track(event: string, detail?: Record<string, unknown>) {
   window.dispatchEvent(new CustomEvent('emc:analytics', { detail: { event, ...detail } }));
 }
 
+async function sendLeadAlert(payload: Record<string, unknown>) {
+  const response = await fetch('/api/chat-lead', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      ...payload,
+      pageUrl: window.location.href
+    })
+  });
+  const data = (await response.json().catch(() => ({}))) as { error?: string };
+  if (!response.ok) throw new Error(data.error || 'Could not send the lead alert.');
+}
+
 function pickMixedVideos(count = 3) {
   const longVideos = videos.filter((video) => video.category === 'Videos');
   const shorts = videos.filter((video) => video.category === 'Shorts');
@@ -242,7 +255,9 @@ export function VideoGallery() {
 export function ContactForm() {
   const [sent, setSent] = useState(false);
   const [error, setError] = useState('');
-  function submit(event: React.FormEvent<HTMLFormElement>) {
+  const [sending, setSending] = useState(false);
+
+  async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
     const email = String(form.get('email') || '');
@@ -255,17 +270,21 @@ export function ContactForm() {
       setError('Phone number looks short. Add the area code.');
       return;
     }
-    const payload = Object.fromEntries(form.entries());
-    const leads = JSON.parse(localStorage.getItem('emc-contact-leads') || '[]');
-    localStorage.setItem('emc-contact-leads', JSON.stringify([...leads, { ...payload, createdAt: new Date().toISOString() }]));
-    // TODO: Send payload to Google Sheets lead capture.
-    // TODO: Send Gmail notification to EMC Marketing.
-    // TODO: Create Google Calendar booking handoff.
-    // TODO: Send Google Chat / Workspace alert.
-    track(ctaEvents.contactSubmit, { source: 'contact_form' });
-    setError('');
-    setSent(true);
-    event.currentTarget.reset();
+    setSending(true);
+    try {
+      const payload = Object.fromEntries(form.entries());
+      const leads = JSON.parse(localStorage.getItem('emc-contact-leads') || '[]');
+      localStorage.setItem('emc-contact-leads', JSON.stringify([...leads, { ...payload, createdAt: new Date().toISOString() }]));
+      await sendLeadAlert({ ...payload, source: 'contact_form' });
+      track(ctaEvents.contactSubmit, { source: 'contact_form' });
+      setError('');
+      setSent(true);
+      event.currentTarget.reset();
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Could not send the lead alert.');
+    } finally {
+      setSending(false);
+    }
   }
   return (
     <form className="grid gap-4 rounded-sm border border-white/15 bg-white/[.04] p-5 md:p-7" onSubmit={submit}>
@@ -283,8 +302,8 @@ export function ContactForm() {
       </label>
       {error ? <p className="text-sm text-red-300">{error}</p> : null}
       {sent ? <p className="text-sm text-[var(--acid)]">Got it. EMC has the signal.</p> : null}
-      <button className="btn-acid justify-center" type="submit">
-        Send the signal <Send size={17} />
+      <button className="btn-acid justify-center" type="submit" disabled={sending}>
+        {sending ? 'Sending...' : 'Send the signal'} <Send size={17} />
       </button>
     </form>
   );
@@ -302,18 +321,26 @@ function Field({ label, ...props }: React.InputHTMLAttributes<HTMLInputElement> 
 export function Chatbot() {
   const [open, setOpen] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  function submit(event: React.FormEvent<HTMLFormElement>) {
+  const [error, setError] = useState('');
+  const [sending, setSending] = useState(false);
+
+  async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
-    const payload = Object.fromEntries(form.entries());
-    const messages = JSON.parse(localStorage.getItem('emc-chat-leads') || '[]');
-    localStorage.setItem('emc-chat-leads', JSON.stringify([...messages, { ...payload, createdAt: new Date().toISOString() }]));
-    // TODO: Google Sheets lead capture.
-    // TODO: Gmail notification.
-    // TODO: Google Calendar booking.
-    // TODO: Google Chat / Workspace alert.
-    track(ctaEvents.chatSubmit, { source: 'floating_chat' });
-    setSubmitted(true);
+    setSending(true);
+    setError('');
+    try {
+      const payload = Object.fromEntries(form.entries());
+      const messages = JSON.parse(localStorage.getItem('emc-chat-leads') || '[]');
+      localStorage.setItem('emc-chat-leads', JSON.stringify([...messages, { ...payload, createdAt: new Date().toISOString() }]));
+      await sendLeadAlert({ ...payload, source: 'floating_chat' });
+      track(ctaEvents.chatSubmit, { source: 'floating_chat' });
+      setSubmitted(true);
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Could not send that message.');
+    } finally {
+      setSending(false);
+    }
   }
   return (
     <>
@@ -356,8 +383,8 @@ export function Chatbot() {
               {submitted ? (
                 <div className="mt-4 rounded-sm border border-[var(--acid)] p-4">
                   <Check className="text-[var(--acid)]" />
-                  <p className="mt-3 font-bold">Captured locally.</p>
-                  <p className="mt-1 text-sm text-white/60">Next hook: Sheets, Gmail, Calendar, and Google Chat.</p>
+                  <p className="mt-3 font-bold">Sent to EMC.</p>
+                  <p className="mt-1 text-sm text-white/60">Elizabeth has this in Google Chat.</p>
                 </div>
               ) : (
                 <form className="mt-4 grid gap-3" onSubmit={submit}>
@@ -365,8 +392,9 @@ export function Chatbot() {
                   <input className="form-input" name="email" type="email" placeholder="Email" required />
                   <input className="form-input" name="phone" type="tel" placeholder="Phone" />
                   <textarea className="form-input resize-y" name="need" rows={3} placeholder="Business need" required />
-                  <button className="btn-acid justify-center" type="submit">
-                    Send <Send size={16} />
+                  {error ? <p className="text-sm text-red-300">{error}</p> : null}
+                  <button className="btn-acid justify-center" type="submit" disabled={sending}>
+                    {sending ? 'Sending...' : 'Send'} <Send size={16} />
                   </button>
                 </form>
               )}
