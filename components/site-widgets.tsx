@@ -345,14 +345,16 @@ export function Chatbot() {
   return (
     <>
       <button
-        className="fixed bottom-5 right-5 z-50 grid h-14 w-14 place-items-center rounded-full bg-[var(--acid)] text-black shadow-[0_0_35px_rgba(46,184,68,.35)]"
+        className="fixed bottom-5 right-5 z-50 grid h-16 w-16 place-items-center rounded-full border-4 border-black bg-white p-1 text-black shadow-[0_0_0_2px_rgba(255,255,255,.95),0_16px_45px_rgba(0,0,0,.55)] transition hover:scale-105"
         onClick={() => {
           setOpen(true);
           track(ctaEvents.chatOpen);
         }}
         aria-label="Open EMC assistant"
       >
-        <MessageCircle />
+        <span className="grid h-full w-full place-items-center rounded-full bg-[var(--acid)]">
+          <MessageCircle />
+        </span>
       </button>
       <AnimatePresence>
         {open ? (
