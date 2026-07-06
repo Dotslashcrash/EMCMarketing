@@ -25,7 +25,7 @@ jobs:
       - name: Build Next export
         run: npm run build
         env:
-          NEXT_PUBLIC_SITE_URL: https://yellow-plant-05a58a310.7.azurestaticapps.net
+          NEXT_PUBLIC_SITE_URL: https://www.emcmarketing.co
 
       - name: Build And Deploy
         uses: Azure/static-web-apps-deploy@v1

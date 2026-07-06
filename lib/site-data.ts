@@ -1,7 +1,7 @@
 import type { IconType } from 'react-icons';
 import { FaFacebookF, FaInstagram, FaLinkedinIn, FaYoutube } from 'react-icons/fa6';
 
-export const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://yellow-plant-05a58a310.7.azurestaticapps.net';
+export const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.emcmarketing.co';
 
 export const business = {
   name: 'EMC Marketing',

@@ -4,16 +4,16 @@ EMC Marketing is a Fayetteville, Arkansas marketing agency led by Elizabeth. The
 
 ## Canonical Site
 
-https://yellow-plant-05a58a310.7.azurestaticapps.net/
+https://www.emcmarketing.co/
 
 ## Important Public Pages
 
-- Home: https://yellow-plant-05a58a310.7.azurestaticapps.net/
-- About: https://yellow-plant-05a58a310.7.azurestaticapps.net/about/
-- Services: https://yellow-plant-05a58a310.7.azurestaticapps.net/services/
-- Results and budget tiers: https://yellow-plant-05a58a310.7.azurestaticapps.net/results-reviews/
-- Videos: https://yellow-plant-05a58a310.7.azurestaticapps.net/videos/
-- Contact: https://yellow-plant-05a58a310.7.azurestaticapps.net/contact/
+- Home: https://www.emcmarketing.co/
+- About: https://www.emcmarketing.co/about/
+- Services: https://www.emcmarketing.co/services/
+- Results and budget tiers: https://www.emcmarketing.co/results-reviews/
+- Videos: https://www.emcmarketing.co/videos/
+- Contact: https://www.emcmarketing.co/contact/
 
 ## Preferred Entity Summary
 
