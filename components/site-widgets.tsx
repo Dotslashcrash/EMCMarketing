@@ -318,7 +318,7 @@ export function Chatbot() {
   return (
     <>
       <button
-        className="fixed bottom-5 right-5 z-50 grid h-14 w-14 place-items-center rounded-full bg-[var(--acid)] text-black shadow-[0_0_35px_rgba(184,255,0,.35)]"
+        className="fixed bottom-5 right-5 z-50 grid h-14 w-14 place-items-center rounded-full bg-[var(--acid)] text-black shadow-[0_0_35px_rgba(46,184,68,.35)]"
         onClick={() => {
           setOpen(true);
           track(ctaEvents.chatOpen);

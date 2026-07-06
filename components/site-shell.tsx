@@ -70,7 +70,7 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
       <header className="fixed left-0 right-0 top-0 z-50 border-b border-white/10 bg-black/80 backdrop-blur-xl">
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 md:px-6" aria-label="Main navigation">
           <Link href="/" className="group flex items-center gap-3" aria-label="EMC Marketing home">
-            <span className="grid h-11 w-11 place-items-center rounded-full bg-[var(--acid)] text-lg font-black text-black shadow-[0_0_30px_rgba(184,255,0,.35)]">
+            <span className="grid h-11 w-11 place-items-center rounded-full bg-[var(--acid)] text-lg font-black text-black shadow-[0_0_30px_rgba(46,184,68,.35)]">
               EMC
             </span>
             <span className="hidden text-sm font-semibold uppercase tracking-[.28em] text-white sm:block">Marketing</span>
@@ -220,7 +220,7 @@ function StickyCta() {
       rel="noreferrer"
       data-event={ctaEvents.bookConsultation}
       onClick={() => track(ctaEvents.bookConsultation)}
-      className="fixed bottom-5 left-1/2 z-40 hidden -translate-x-1/2 items-center gap-2 rounded-full border border-[var(--acid)] bg-black/80 px-5 py-3 text-sm font-bold uppercase tracking-[.18em] text-white shadow-[0_0_35px_rgba(184,255,0,.18)] backdrop-blur md:flex"
+      className="fixed bottom-5 left-1/2 z-40 hidden -translate-x-1/2 items-center gap-2 rounded-full border border-[var(--acid)] bg-black/80 px-5 py-3 text-sm font-bold uppercase tracking-[.18em] text-white shadow-[0_0_35px_rgba(46,184,68,.18)] backdrop-blur md:flex"
     >
       Get the marketing diagnosis <ArrowUpRight size={16} />
     </a>

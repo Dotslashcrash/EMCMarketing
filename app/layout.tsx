@@ -9,7 +9,7 @@ import { business, siteUrl } from '@/lib/site-data';
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#b8ff00'
+  themeColor: '#2eb844'
 };
 
 const anton = Anton({
