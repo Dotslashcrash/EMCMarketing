@@ -3,6 +3,7 @@
     "rewrite": "/index.html",
     "exclude": [
       "/_next/*",
+      "/api/*",
       "/images/*",
       "/js/*",
       "/robots.txt",

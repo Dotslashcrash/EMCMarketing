@@ -46,8 +46,12 @@ async function api<T>(path: string, init?: RequestInit) {
       ...(init?.headers || {})
     }
   });
-  const data = (await res.json().catch(() => ({}))) as ApiResult<T>;
+  const contentType = res.headers.get('content-type') || '';
+  const data = contentType.includes('application/json')
+    ? ((await res.json().catch(() => ({}))) as ApiResult<T>)
+    : ({ error: 'The brand portal API is not responding. Check that /api traffic is routed to the portal backend.' } as ApiResult<T>);
   if (!res.ok) throw new Error(cleanApiError(path, data));
+  if (!contentType.includes('application/json')) throw new Error(cleanApiError(path, data));
   return data;
 }
 
