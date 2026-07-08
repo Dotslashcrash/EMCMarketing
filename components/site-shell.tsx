@@ -20,7 +20,7 @@ function useContentProtection(enabled: boolean) {
 
     const block = (event: Event) => event.preventDefault();
     const blockMediaDrag = (event: DragEvent) => {
-      if ((event.target as HTMLElement | null)?.closest?.('img, video, iframe')) {
+      if ((event.target as HTMLElement | null)?.closest?.('img, video, iframe, canvas')) {
         event.preventDefault();
       }
     };

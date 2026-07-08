@@ -49,7 +49,8 @@ body.content-protected textarea {
 
 body.content-protected img,
 body.content-protected video,
-body.content-protected iframe {
+body.content-protected iframe,
+body.content-protected canvas {
   -webkit-user-drag: none;
   user-drag: none;
 }

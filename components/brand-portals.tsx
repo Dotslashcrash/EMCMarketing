@@ -2,7 +2,7 @@
 
 import { ArrowRight, Copy, FileArchive, FileImage, FileText, KeyRound, Lock, LogOut, ShieldCheck, Upload, Wand2 } from 'lucide-react';
 import Link from 'next/link';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 type PortalMaterial = {
   id: string;
@@ -75,6 +75,90 @@ function readFile(file: File) {
     reader.onerror = () => reject(new Error('Could not read that file.'));
     reader.readAsDataURL(file);
   });
+}
+
+function PdfPreview({ title, url }: { title: string; url: string }) {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [status, setStatus] = useState('Loading PDF preview...');
+
+  useEffect(() => {
+    let cancelled = false;
+    const container = containerRef.current;
+    if (!container) return;
+
+    container.replaceChildren();
+    setStatus('Loading PDF preview...');
+
+    async function renderPdf() {
+      try {
+        const [pdfjs, response] = await Promise.all([
+          import('pdfjs-dist'),
+          fetch(url, { cache: 'no-store' })
+        ]);
+        if (!response.ok) throw new Error('PDF preview could not be loaded.');
+
+        pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+        const data = await response.arrayBuffer();
+        const documentTask = pdfjs.getDocument({ data });
+        const pdf = await documentTask.promise;
+        const pageLimit = Math.min(pdf.numPages, 8);
+        const targetWidth = Math.max(260, Math.min(container.clientWidth || 560, 700));
+
+        for (let pageNumber = 1; pageNumber <= pageLimit; pageNumber += 1) {
+          if (cancelled) return;
+          const page = await pdf.getPage(pageNumber);
+          const baseViewport = page.getViewport({ scale: 1 });
+          const scale = targetWidth / baseViewport.width;
+          const viewport = page.getViewport({ scale });
+          const canvas = document.createElement('canvas');
+          const context = canvas.getContext('2d');
+          if (!context) throw new Error('PDF preview is not supported in this browser.');
+
+          const outputScale = window.devicePixelRatio || 1;
+          canvas.width = Math.floor(viewport.width * outputScale);
+          canvas.height = Math.floor(viewport.height * outputScale);
+          canvas.style.width = `${Math.floor(viewport.width)}px`;
+          canvas.style.height = `${Math.floor(viewport.height)}px`;
+          canvas.className = 'mx-auto block border border-white/10 bg-white shadow-lg';
+          canvas.draggable = false;
+          canvas.setAttribute('aria-label', `${title}, page ${pageNumber}`);
+
+          container.appendChild(canvas);
+          await page.render({
+            canvas,
+            canvasContext: context,
+            viewport,
+            transform: outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : undefined
+          }).promise;
+        }
+
+        if (cancelled) return;
+        setStatus(pdf.numPages > pageLimit ? `Showing first ${pageLimit} of ${pdf.numPages} pages.` : '');
+      } catch (error) {
+        if (!cancelled) setStatus(error instanceof Error ? error.message : 'PDF preview could not be loaded.');
+      }
+    }
+
+    renderPdf();
+    return () => {
+      cancelled = true;
+      container.replaceChildren();
+    };
+  }, [title, url]);
+
+  return (
+    <div
+      className="h-72 w-full overflow-y-auto bg-black/80 px-3 py-4"
+      aria-label={title}
+      onContextMenu={(event) => event.preventDefault()}
+      onCopy={(event) => event.preventDefault()}
+      onCut={(event) => event.preventDefault()}
+      onDragStart={(event) => event.preventDefault()}
+    >
+      <div ref={containerRef} className="grid gap-4" />
+      {status ? <p className="mt-3 text-center text-sm text-white/55">{status}</p> : null}
+    </div>
+  );
 }
 
 export function AdminPortal() {
@@ -467,7 +551,11 @@ function MaterialGrid({ materials, admin = false, adminKey = '' }: { materials: 
               {material.contentType.startsWith('image/') ? (
                 <img src={viewUrl} alt={material.label || material.fileName} draggable={false} className="max-h-72 w-full object-contain" />
               ) : material.contentType === 'application/pdf' ? (
-                <iframe src={viewUrl} title={material.label || material.fileName} className="h-72 w-full border-0" />
+                admin ? (
+                  <iframe src={viewUrl} title={material.label || material.fileName} className="h-72 w-full border-0" />
+                ) : (
+                  <PdfPreview title={material.label || material.fileName} url={viewUrl} />
+                )
               ) : (
                 <Icon className="text-[var(--acid)]" size={52} />
               )}
