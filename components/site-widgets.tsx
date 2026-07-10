@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion, useScroll, useTransform } from 'framer-motion';
 import { ArrowRight, Bot, Check, ChevronLeft, ChevronRight, Download, MessageCircle, Play, Send, X } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { business, ctaEvents, reviews, videoCategories, videos } from '@/lib/site-data';
 
 function track(event: string, detail?: Record<string, unknown>) {
@@ -256,6 +256,7 @@ export function ContactForm() {
   const [sent, setSent] = useState(false);
   const [error, setError] = useState('');
   const [sending, setSending] = useState(false);
+  const formStartedAt = useRef(Date.now());
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -288,6 +289,11 @@ export function ContactForm() {
   }
   return (
     <form className="grid gap-4 rounded-sm border border-white/15 bg-white/[.04] p-5 md:p-7" onSubmit={submit}>
+      <input type="hidden" name="submittedAt" value={formStartedAt.current} />
+      <label className="hidden" aria-hidden="true">
+        Company website
+        <input name="leadUrl" tabIndex={-1} autoComplete="off" />
+      </label>
       <div className="grid gap-4 md:grid-cols-2">
         <Field label="Name" name="name" required />
         <Field label="Email" name="email" type="email" required />
@@ -323,6 +329,7 @@ export function Chatbot() {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
   const [sending, setSending] = useState(false);
+  const formStartedAt = useRef(Date.now());
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -347,6 +354,7 @@ export function Chatbot() {
       <button
         className="fixed bottom-5 right-5 z-50 grid h-16 w-16 place-items-center rounded-full border-4 border-black bg-white p-1 text-black shadow-[0_0_0_2px_rgba(255,255,255,.95),0_16px_45px_rgba(0,0,0,.55)] transition hover:scale-105"
         onClick={() => {
+          formStartedAt.current = Date.now();
           setOpen(true);
           track(ctaEvents.chatOpen);
         }}
@@ -390,6 +398,11 @@ export function Chatbot() {
                 </div>
               ) : (
                 <form className="mt-4 grid gap-3" onSubmit={submit}>
+                  <input type="hidden" name="submittedAt" value={formStartedAt.current} />
+                  <label className="hidden" aria-hidden="true">
+                    Company website
+                    <input name="leadUrl" tabIndex={-1} autoComplete="off" />
+                  </label>
                   <input className="form-input" name="name" placeholder="Name" required />
                   <input className="form-input" name="email" type="email" placeholder="Email" required />
                   <input className="form-input" name="phone" type="tel" placeholder="Phone" />
