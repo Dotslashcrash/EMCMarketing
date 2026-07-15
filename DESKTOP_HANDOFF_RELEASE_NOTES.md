@@ -70,6 +70,9 @@ The safeguards keep review materials inside the intended browser workflow, but a
 - Contact form and floating chat form now send a honeypot field and submit timestamp.
 - Clarified the floating widget as a message form, not a live chat bot.
 - Google Chat lead alerts now warn that replying in Google Chat does not reply to the visitor; follow up by email or phone.
+- Upgraded the floating widget into an interactive chat flow.
+- Added two-way visitor/rep chat using the existing Azure Table Storage-backed API.
+- Added a `/admin/` live chat panel so an available rep can reply directly to the visitor thread.
 - `/api/chat-lead` now drops suspected spam before posting to Google Chat using honeypot, submit timing, duplicate, rate-limit, and simple random-text checks.
 - Suspected spam returns success to the browser so bots do not get a useful failure signal.
 - Desktop pickup notes: `docs/lead-spam-protection-handoff.md`

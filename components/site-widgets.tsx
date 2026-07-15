@@ -1,7 +1,7 @@
 'use client';
 
 import { AnimatePresence, motion, useScroll, useTransform } from 'framer-motion';
-import { ArrowRight, Check, ChevronLeft, ChevronRight, Download, MessageCircle, Play, Send, X } from 'lucide-react';
+import { ArrowRight, Bot, Check, ChevronLeft, ChevronRight, Download, MessageCircle, Play, Send, X } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { business, ctaEvents, reviews, videoCategories, videos } from '@/lib/site-data';
 
@@ -324,41 +324,231 @@ function Field({ label, ...props }: React.InputHTMLAttributes<HTMLInputElement> 
   );
 }
 
+type ChatBubble = { from: 'bot' | 'user' | 'rep'; text: string; id?: string };
+
 export function Chatbot() {
   const [open, setOpen] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
   const [sending, setSending] = useState(false);
+  const [sessionId, setSessionId] = useState('');
+  const [step, setStep] = useState<'need' | 'message' | 'name' | 'email' | 'phone' | 'done'>('need');
+  const [input, setInput] = useState('');
+  const [lead, setLead] = useState({ need: '', message: '', name: '', email: '', phone: '' });
+  const [messages, setMessages] = useState<ChatBubble[]>([
+    { from: 'bot', text: 'Hey, I can help Elizabeth get the useful version of what you need.' },
+    { from: 'bot', text: 'If a rep is available, they can answer here. If not, I will collect the right details.' },
+    { from: 'bot', text: 'What kind of marketing problem are we looking at first?' }
+  ]);
   const formStartedAt = useRef(Date.now());
+  const seenRepMessages = useRef(new Set<string>());
+  const quickNeeds = ['Website / SEO', 'Social content', 'Paid ads', 'Brand identity', 'Not sure yet'];
+
+  function addMessages(nextMessages: ChatBubble[]) {
+    setMessages((current) => [...current, ...nextMessages]);
+  }
+
+  function resetChat() {
+    sessionStorage.removeItem('emc-chat-session');
+    setSessionId('');
+    setStep('need');
+    setInput('');
+    setLead({ need: '', message: '', name: '', email: '', phone: '' });
+    setMessages([
+      { from: 'bot', text: 'Hey, I can help Elizabeth get the useful version of what you need.' },
+      { from: 'bot', text: 'If a rep is available, they can answer here. If not, I will collect the right details.' },
+      { from: 'bot', text: 'What kind of marketing problem are we looking at first?' }
+    ]);
+    seenRepMessages.current.clear();
+    setError('');
+    formStartedAt.current = Date.now();
+  }
+
+  async function ensureSession() {
+    if (sessionId) return sessionId;
+    const savedSessionId = sessionStorage.getItem('emc-chat-session') || '';
+    if (savedSessionId) {
+      setSessionId(savedSessionId);
+      return savedSessionId;
+    }
+    const response = await fetch('/api/chat-session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pageUrl: window.location.href })
+    });
+    const data = (await response.json().catch(() => ({}))) as { session?: { id: string }; error?: string };
+    if (!response.ok || !data.session?.id) throw new Error(data.error || 'Could not start chat.');
+    sessionStorage.setItem('emc-chat-session', data.session.id);
+    setSessionId(data.session.id);
+    return data.session.id;
+  }
+
+  async function postChatMessage(text: string, details = lead) {
+    const activeSessionId = await ensureSession();
+    const response = await fetch('/api/chat-messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        sessionId: activeSessionId,
+        text,
+        visitorName: details.name,
+        visitorEmail: details.email,
+        visitorPhone: details.phone,
+        need: details.need
+      })
+    });
+    const data = (await response.json().catch(() => ({}))) as { error?: string };
+    if (!response.ok) throw new Error(data.error || 'Could not update chat.');
+  }
+
+  async function loadRepMessages(activeSessionId = sessionId) {
+    if (!activeSessionId) return;
+    const response = await fetch(`/api/chat-messages?sessionId=${encodeURIComponent(activeSessionId)}`, { cache: 'no-store' });
+    const data = (await response.json().catch(() => ({}))) as { messages?: Array<{ id: string; sender: string; text: string }>; error?: string };
+    if (!response.ok) throw new Error(data.error || 'Could not refresh chat.');
+    const incoming = (data.messages || []).filter((message) => message.sender === 'rep' && !seenRepMessages.current.has(message.id));
+    if (!incoming.length) return;
+    incoming.forEach((message) => seenRepMessages.current.add(message.id));
+    setMessages((current) => [...current, ...incoming.map((message) => ({ from: 'rep' as const, text: message.text, id: message.id }))]);
+  }
+
+  async function advance(value: string) {
+    const answer = value.trim();
+    if (!answer && step !== 'phone') return;
+    setError('');
+
+    if (step === 'need') {
+      const nextLead = { ...lead, need: answer };
+      setLead(nextLead);
+      addMessages([
+        { from: 'user', text: answer },
+        { from: 'bot', text: 'Got it. Give me the quick version of what is going on.' }
+      ]);
+      await postChatMessage(`Need: ${answer}`, nextLead);
+      setStep('message');
+      setInput('');
+      return;
+    }
+
+    if (step === 'message') {
+      const nextLead = { ...lead, message: answer };
+      setLead(nextLead);
+      addMessages([
+        { from: 'user', text: answer },
+        { from: 'bot', text: 'Perfect. Who should Elizabeth follow up with?' }
+      ]);
+      await postChatMessage(answer, nextLead);
+      setStep('name');
+      setInput('');
+      return;
+    }
+
+    if (step === 'name') {
+      const nextLead = { ...lead, name: answer };
+      setLead(nextLead);
+      addMessages([
+        { from: 'user', text: answer },
+        { from: 'bot', text: 'What email should she use?' }
+      ]);
+      await postChatMessage(`Name: ${answer}`, nextLead);
+      setStep('email');
+      setInput('');
+      return;
+    }
+
+    if (step === 'email') {
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(answer)) {
+        setError('Use a real email so Elizabeth can reply.');
+        return;
+      }
+      const nextLead = { ...lead, email: answer };
+      setLead(nextLead);
+      addMessages([
+        { from: 'user', text: answer },
+        { from: 'bot', text: 'Last thing: phone number, or type skip.' }
+      ]);
+      await postChatMessage(`Email: ${answer}`, nextLead);
+      setStep('phone');
+      setInput('');
+      return;
+    }
+
+    if (step === 'phone') {
+      const phone = /^skip$/i.test(answer) ? '' : answer;
+      if (phone && phone.replace(/\D/g, '').length < 10) {
+        setError('Phone number looks short. Add the area code, or type skip.');
+        return;
+      }
+
+      const finalLead = { ...lead, phone };
+      setSending(true);
+      try {
+        await postChatMessage(phone ? `Phone: ${phone}` : 'Phone skipped', finalLead);
+        const payload = {
+          ...finalLead,
+          source: 'interactive_chatbot',
+          chatSessionId: sessionId || sessionStorage.getItem('emc-chat-session') || '',
+          submittedAt: formStartedAt.current,
+          leadUrl: '',
+          message: `${finalLead.message}\n\nInteractive chat summary: ${finalLead.need}`
+        };
+        const stored = JSON.parse(localStorage.getItem('emc-chat-leads') || '[]');
+        localStorage.setItem('emc-chat-leads', JSON.stringify([...stored, { ...payload, createdAt: new Date().toISOString() }]));
+        await sendLeadAlert(payload);
+        track(ctaEvents.chatSubmit, { source: 'interactive_chatbot' });
+        addMessages([
+          { from: 'user', text: phone || 'Skip' },
+          { from: 'bot', text: 'Sent. Elizabeth has the details here and in Google Chat.' }
+        ]);
+        setLead(finalLead);
+        setStep('done');
+        setInput('');
+      } catch (error) {
+        setError(error instanceof Error ? error.message : 'Could not send that message.');
+      } finally {
+        setSending(false);
+      }
+    }
+  }
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const form = new FormData(event.currentTarget);
-    setSending(true);
-    setError('');
-    try {
-      const payload = Object.fromEntries(form.entries());
-      const messages = JSON.parse(localStorage.getItem('emc-chat-leads') || '[]');
-      localStorage.setItem('emc-chat-leads', JSON.stringify([...messages, { ...payload, createdAt: new Date().toISOString() }]));
-      await sendLeadAlert({ ...payload, source: 'floating_chat' });
-      track(ctaEvents.chatSubmit, { source: 'floating_chat' });
-      setSubmitted(true);
-    } catch (error) {
-      setError(error instanceof Error ? error.message : 'Could not send that message.');
-    } finally {
-      setSending(false);
-    }
+    await advance(input);
   }
+
+  const prompt =
+    step === 'need'
+      ? 'Choose one or type your own'
+      : step === 'message'
+        ? 'What is going on?'
+        : step === 'name'
+          ? 'Your name'
+          : step === 'email'
+            ? 'Email'
+            : step === 'phone'
+              ? 'Phone or skip'
+              : '';
+
+  useEffect(() => {
+    if (!open) return;
+    ensureSession().catch((error) => setError(error instanceof Error ? error.message : 'Could not start chat.'));
+  }, [open]);
+
+  useEffect(() => {
+    if (!open || !sessionId) return;
+    loadRepMessages(sessionId).catch(() => undefined);
+    const interval = window.setInterval(() => loadRepMessages(sessionId).catch(() => undefined), 5000);
+    return () => window.clearInterval(interval);
+  }, [open, sessionId]);
+
   return (
     <>
       <button
         className="fixed bottom-5 right-5 z-50 grid h-16 w-16 place-items-center rounded-full border-4 border-black bg-white p-1 text-black shadow-[0_0_0_2px_rgba(255,255,255,.95),0_16px_45px_rgba(0,0,0,.55)] transition hover:scale-105"
         onClick={() => {
-          formStartedAt.current = Date.now();
           setOpen(true);
           track(ctaEvents.chatOpen);
         }}
-        aria-label="Open EMC message form"
+        aria-label="Open EMC interactive chat"
       >
         <span className="grid h-full w-full place-items-center rounded-full bg-[var(--acid)]">
           <MessageCircle />
@@ -375,44 +565,77 @@ export function Chatbot() {
             <div className="flex items-center justify-between border-b border-white/10 p-4">
               <div className="flex items-center gap-3">
                 <span className="grid h-10 w-10 place-items-center rounded-full bg-[var(--acid)] text-black">
-                  <MessageCircle />
+                  <Bot />
                 </span>
                 <div>
-                  <p className="font-black">Message EMC</p>
-                  <p className="text-xs text-white/55">Not a live chat</p>
+                  <p className="font-black">EMC Chat</p>
+                  <p className="text-xs text-white/55">Bot + rep replies</p>
                 </div>
               </div>
-              <button onClick={() => setOpen(false)} aria-label="Close message form">
+              <button onClick={() => setOpen(false)} aria-label="Close EMC chat">
                 <X />
               </button>
             </div>
-            <div className="p-4">
-              <p className="rounded-sm bg-white/10 p-3 text-sm text-white/80">
-                Send Elizabeth a quick note about what is bugging your marketing. She will follow up by email or phone.
-              </p>
-              {submitted ? (
-                <div className="mt-4 rounded-sm border border-[var(--acid)] p-4">
-                  <Check className="text-[var(--acid)]" />
-                  <p className="mt-3 font-bold">Message sent.</p>
-                  <p className="mt-1 text-sm text-white/60">This is not a live chat. Elizabeth will reply using your email or phone.</p>
-                </div>
-              ) : (
-                <form className="mt-4 grid gap-3" onSubmit={submit}>
-                  <input type="hidden" name="submittedAt" value={formStartedAt.current} />
-                  <label className="hidden" aria-hidden="true">
-                    Company website
-                    <input name="leadUrl" tabIndex={-1} autoComplete="off" />
-                  </label>
-                  <input className="form-input" name="name" placeholder="Name" required />
-                  <input className="form-input" name="email" type="email" placeholder="Email" required />
-                  <input className="form-input" name="phone" type="tel" placeholder="Phone" />
-                  <textarea className="form-input resize-y" name="need" rows={3} placeholder="Business need" required />
-                  {error ? <p className="text-sm text-red-300">{error}</p> : null}
-                  <button className="btn-acid justify-center" type="submit" disabled={sending}>
-                    {sending ? 'Sending...' : 'Send'} <Send size={16} />
+            <div className="grid max-h-[70vh] grid-rows-[1fr_auto]">
+              <div className="grid gap-3 overflow-y-auto p-4">
+                {messages.map((message, index) => (
+                  <div
+                    key={`${message.from}-${message.id || index}`}
+                    className={`max-w-[86%] rounded-sm p-3 text-sm leading-6 ${
+                      message.from === 'user'
+                        ? 'justify-self-end bg-[var(--acid)] text-black'
+                        : message.from === 'rep'
+                          ? 'justify-self-start border border-[var(--acid)] bg-[var(--acid)]/10 text-white'
+                          : 'justify-self-start bg-white/10 text-white/82'
+                    }`}
+                  >
+                    {message.text}
+                  </div>
+                ))}
+                {step === 'need' ? (
+                  <div className="flex flex-wrap gap-2">
+                    {quickNeeds.map((need) => (
+                      <button key={need} className="rounded-full border border-white/15 px-3 py-2 text-xs font-bold text-white/75 transition hover:border-[var(--acid)] hover:text-[var(--acid)]" onClick={() => advance(need)}>
+                        {need}
+                      </button>
+                    ))}
+                  </div>
+                ) : null}
+                {step === 'done' ? (
+                  <button className="btn-ghost justify-self-start" onClick={resetChat}>
+                    Start another chat
                   </button>
-                </form>
-              )}
+                ) : null}
+              </div>
+              {step !== 'done' ? (
+                <div className="border-t border-white/10 p-4">
+                  <form className="grid gap-3" onSubmit={submit}>
+                    {step === 'message' ? (
+                      <textarea
+                        className="form-input resize-y"
+                        rows={3}
+                        placeholder={prompt}
+                        value={input}
+                        onChange={(event) => setInput(event.target.value)}
+                        required
+                      />
+                    ) : (
+                      <input
+                        className="form-input"
+                        value={input}
+                        onChange={(event) => setInput(event.target.value)}
+                        placeholder={prompt}
+                        type={step === 'email' ? 'email' : 'text'}
+                        required={step !== 'phone'}
+                      />
+                    )}
+                    {error ? <p className="text-sm text-red-300">{error}</p> : null}
+                    <button className="btn-acid justify-center" type="submit" disabled={sending}>
+                      {sending ? 'Sending...' : step === 'phone' ? 'Send to EMC' : 'Continue'} <Send size={16} />
+                    </button>
+                  </form>
+                </div>
+              ) : null}
             </div>
           </motion.div>
         ) : null}

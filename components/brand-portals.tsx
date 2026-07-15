@@ -15,6 +15,27 @@ type PortalMaterial = {
   viewUrl?: string;
 };
 
+type ChatSession = {
+  id: string;
+  status: string;
+  pageUrl: string;
+  visitorName: string;
+  visitorEmail: string;
+  visitorPhone: string;
+  need: string;
+  lastMessage: string;
+  lastSender: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+type ChatMessage = {
+  id: string;
+  sender: 'visitor' | 'rep';
+  text: string;
+  createdAt: string;
+};
+
 type ApiResult<T> = T & { error?: string };
 
 function cleanApiError(path: string, data: ApiResult<unknown>) {
@@ -405,6 +426,10 @@ export function AdminPortal() {
         )}
 
         {adminKey ? (
+          <LiveChatAdmin adminKey={adminKey} />
+        ) : null}
+
+        {adminKey ? (
           <div className="mt-10">
             <div className="flex items-end justify-between gap-4">
               <div>
@@ -530,6 +555,138 @@ export function BrandPortal() {
             <MaterialGrid materials={materials} />
           </div>
         )}
+      </div>
+    </section>
+  );
+}
+
+function LiveChatAdmin({ adminKey }: { adminKey: string }) {
+  const [sessions, setSessions] = useState<ChatSession[]>([]);
+  const [activeId, setActiveId] = useState('');
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [reply, setReply] = useState('');
+  const [message, setMessage] = useState('');
+  const [busy, setBusy] = useState(false);
+
+  async function loadSessions() {
+    const data = await api<{ sessions: ChatSession[] }>('admin-chat-sessions', {
+      headers: { 'x-admin-password': adminKey }
+    });
+    setSessions(data.sessions);
+    if (!activeId && data.sessions[0]) setActiveId(data.sessions[0].id);
+  }
+
+  async function loadMessages(sessionId = activeId) {
+    if (!sessionId) return;
+    const data = await api<{ messages: ChatMessage[] }>(`chat-messages?sessionId=${encodeURIComponent(sessionId)}`);
+    setMessages(data.messages);
+  }
+
+  async function sendReply(event: React.FormEvent) {
+    event.preventDefault();
+    if (!activeId || !reply.trim()) return;
+    setBusy(true);
+    setMessage('');
+    try {
+      await api('admin-chat-message', {
+        method: 'POST',
+        headers: { 'x-admin-password': adminKey },
+        body: JSON.stringify({ sessionId: activeId, text: reply })
+      });
+      setReply('');
+      await Promise.all([loadSessions(), loadMessages(activeId)]);
+      setMessage('Reply sent to the visitor chat.');
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'Could not send reply.');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  useEffect(() => {
+    loadSessions().catch((error) => setMessage(error instanceof Error ? error.message : 'Could not load chats.'));
+  }, [adminKey]);
+
+  useEffect(() => {
+    if (!activeId) return;
+    loadMessages(activeId).catch(() => undefined);
+    const interval = window.setInterval(() => {
+      loadSessions().catch(() => undefined);
+      loadMessages(activeId).catch(() => undefined);
+    }, 5000);
+    return () => window.clearInterval(interval);
+  }, [activeId, adminKey]);
+
+  const activeSession = sessions.find((session) => session.id === activeId);
+
+  return (
+    <section className="mt-10 border border-[var(--acid)] bg-white/[.04] p-6">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="kicker">Live website chat</p>
+          <h2 className="mt-3 text-4xl font-black uppercase">Visitor threads.</h2>
+        </div>
+        <button className="btn-ghost" onClick={() => loadSessions()}>
+          Refresh
+        </button>
+      </div>
+      {message ? <p className="mt-5 border border-white/15 bg-black/30 p-3 text-sm text-white/70">{message}</p> : null}
+      <div className="mt-6 grid gap-5 lg:grid-cols-[.8fr_1.2fr]">
+        <div className="grid max-h-[32rem] gap-3 overflow-y-auto">
+          {sessions.length ? (
+            sessions.map((session) => (
+              <button
+                key={session.id}
+                className={`border p-4 text-left transition ${
+                  session.id === activeId ? 'border-[var(--acid)] bg-[var(--acid)] text-black' : 'border-white/15 bg-black/30 text-white hover:border-[var(--acid)]'
+                }`}
+                onClick={() => setActiveId(session.id)}
+              >
+                <p className="text-sm font-black uppercase tracking-[.16em]">{session.visitorName || 'Website visitor'}</p>
+                <p className="mt-2 line-clamp-2 text-sm opacity-75">{session.lastMessage || session.need || 'New chat started.'}</p>
+                <p className="mt-3 text-xs uppercase tracking-[.14em] opacity-60">{new Date(session.updatedAt).toLocaleString()}</p>
+              </button>
+            ))
+          ) : (
+            <p className="border border-white/15 bg-black/30 p-4 text-sm text-white/60">No live chat sessions yet.</p>
+          )}
+        </div>
+        <div className="border border-white/15 bg-black/40">
+          {activeSession ? (
+            <>
+              <div className="border-b border-white/10 p-4">
+                <h3 className="text-xl font-black">{activeSession.visitorName || 'Website visitor'}</h3>
+                <p className="mt-1 text-sm text-white/55">
+                  {[activeSession.visitorEmail, activeSession.visitorPhone, activeSession.need].filter(Boolean).join(' | ') || 'Contact details pending'}
+                </p>
+              </div>
+              <div className="grid max-h-80 gap-3 overflow-y-auto p-4">
+                {messages.length ? (
+                  messages.map((chatMessage) => (
+                    <div
+                      key={chatMessage.id}
+                      className={`max-w-[84%] rounded-sm p-3 text-sm leading-6 ${
+                        chatMessage.sender === 'rep' ? 'justify-self-end bg-[var(--acid)] text-black' : 'justify-self-start bg-white/10 text-white'
+                      }`}
+                    >
+                      {chatMessage.text}
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-sm text-white/55">No messages in this thread yet.</p>
+                )}
+              </div>
+              <form onSubmit={sendReply} className="grid gap-3 border-t border-white/10 p-4">
+                <textarea className="form-input resize-y" rows={3} value={reply} onChange={(event) => setReply(event.target.value)} placeholder="Reply to this visitor..." required />
+                <button className="btn-acid justify-center" disabled={busy || !reply.trim()}>
+                  Send reply
+                </button>
+              </form>
+            </>
+          ) : (
+            <p className="p-5 text-sm text-white/60">Select a chat to reply.</p>
+          )}
+        </div>
       </div>
     </section>
   );

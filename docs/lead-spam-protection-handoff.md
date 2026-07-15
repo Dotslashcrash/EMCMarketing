@@ -10,6 +10,9 @@ Google Chat received repeated junk website lead notifications from the contact f
 - Added a `submittedAt` timestamp to form payloads.
 - Clarified that the floating widget is a message form, not a live chat bot.
 - Added a Google Chat reply note so Elizabeth knows replies in Google Chat do not reach the site visitor.
+- Upgraded the floating widget to an interactive chat flow with two-way rep replies when a rep is available.
+- Added live chat storage and polling through the existing Azure Table Storage-backed API.
+- Added a live chat reply panel to `/admin/` behind the existing admin password.
 - Added server-side checks in `api/chat-lead/index.js` before Google Chat notification delivery:
   - Honeypot field detection.
   - Minimum and maximum submit timing.
@@ -21,7 +24,13 @@ Google Chat received repeated junk website lead notifications from the contact f
 ## Files
 
 - `components/site-widgets.tsx`
+- `components/brand-portals.tsx`
 - `api/chat-lead/index.js`
+- `api/chat-shared.js`
+- `api/chat-session/index.js`
+- `api/chat-messages/index.js`
+- `api/admin-chat-sessions/index.js`
+- `api/admin-chat-message/index.js`
 - `lib/site-data.ts`
 - `docs/lead-spam-protection-handoff.md`
 

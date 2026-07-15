@@ -7,7 +7,12 @@ const routes = [
   ['post', '/api/admin-create-token', require('./admin-create-token')],
   ['post', '/api/admin-change-password', require('./admin-change-password')],
   ['get', '/api/admin-material', require('./admin-material')],
+  ['get', '/api/admin-chat-sessions', require('./admin-chat-sessions')],
+  ['post', '/api/admin-chat-message', require('./admin-chat-message')],
   ['post', '/api/chat-lead', require('./chat-lead')],
+  ['post', '/api/chat-session', require('./chat-session')],
+  ['get', '/api/chat-messages', require('./chat-messages')],
+  ['post', '/api/chat-messages', require('./chat-messages')],
   ['post', '/api/portal-login', require('./portal-login')],
   ['get', '/api/portal-materials', require('./portal-materials')],
   ['get', '/api/portal-material', require('./portal-material')]

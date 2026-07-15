@@ -111,13 +111,16 @@ module.exports = async function (context, req) {
       line('Email', body.email),
       line('Phone', body.phone),
       line('Business need', body.need),
+      line('Chat session', body.chatSessionId),
       line('Page', body.pageUrl),
       '',
       '*Message*',
       message,
       '',
       '*Reply note*',
-      'Do not reply in Google Chat expecting the visitor to see it. Follow up by email or phone from the lead details above.'
+      body.chatSessionId
+        ? 'Reply from the EMC admin live chat panel while the visitor is active. Google Chat replies do not go back to the site visitor.'
+        : 'Do not reply in Google Chat expecting the visitor to see it. Follow up by email or phone from the lead details above.'
     ].filter(Boolean);
 
     const response = await fetch(webhookUrl, {
