@@ -114,7 +114,10 @@ module.exports = async function (context, req) {
       line('Page', body.pageUrl),
       '',
       '*Message*',
-      message
+      message,
+      '',
+      '*Reply note*',
+      'Do not reply in Google Chat expecting the visitor to see it. Follow up by email or phone from the lead details above.'
     ].filter(Boolean);
 
     const response = await fetch(webhookUrl, {

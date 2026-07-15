@@ -1,7 +1,7 @@
 'use client';
 
 import { AnimatePresence, motion, useScroll, useTransform } from 'framer-motion';
-import { ArrowRight, Bot, Check, ChevronLeft, ChevronRight, Download, MessageCircle, Play, Send, X } from 'lucide-react';
+import { ArrowRight, Check, ChevronLeft, ChevronRight, Download, MessageCircle, Play, Send, X } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { business, ctaEvents, reviews, videoCategories, videos } from '@/lib/site-data';
 
@@ -358,7 +358,7 @@ export function Chatbot() {
           setOpen(true);
           track(ctaEvents.chatOpen);
         }}
-        aria-label="Open EMC assistant"
+        aria-label="Open EMC message form"
       >
         <span className="grid h-full w-full place-items-center rounded-full bg-[var(--acid)]">
           <MessageCircle />
@@ -375,26 +375,26 @@ export function Chatbot() {
             <div className="flex items-center justify-between border-b border-white/10 p-4">
               <div className="flex items-center gap-3">
                 <span className="grid h-10 w-10 place-items-center rounded-full bg-[var(--acid)] text-black">
-                  <Bot />
+                  <MessageCircle />
                 </span>
                 <div>
-                  <p className="font-black">EMC Assistant</p>
-                  <p className="text-xs text-white/55">Start here</p>
+                  <p className="font-black">Message EMC</p>
+                  <p className="text-xs text-white/55">Not a live chat</p>
                 </div>
               </div>
-              <button onClick={() => setOpen(false)} aria-label="Close chat">
+              <button onClick={() => setOpen(false)} aria-label="Close message form">
                 <X />
               </button>
             </div>
             <div className="p-4">
               <p className="rounded-sm bg-white/10 p-3 text-sm text-white/80">
-                Tell me what is bugging your marketing. Quick version is perfect.
+                Send Elizabeth a quick note about what is bugging your marketing. She will follow up by email or phone.
               </p>
               {submitted ? (
                 <div className="mt-4 rounded-sm border border-[var(--acid)] p-4">
                   <Check className="text-[var(--acid)]" />
-                  <p className="mt-3 font-bold">Sent to EMC.</p>
-                  <p className="mt-1 text-sm text-white/60">Elizabeth has this in Google Chat.</p>
+                  <p className="mt-3 font-bold">Message sent.</p>
+                  <p className="mt-1 text-sm text-white/60">This is not a live chat. Elizabeth will reply using your email or phone.</p>
                 </div>
               ) : (
                 <form className="mt-4 grid gap-3" onSubmit={submit}>

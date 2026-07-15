@@ -172,7 +172,7 @@ export const pageAnswers = {
   contact: [
     {
       q: 'How do I contact EMC Marketing?',
-      a: 'Contact EMC Marketing by using the website chatbot, emailing info@emcmarketing.co, calling 479-445-3632, booking a consultation, or submitting the contact form on the website.'
+      a: 'Contact EMC Marketing by using the website message form, emailing info@emcmarketing.co, calling 479-445-3632, booking a consultation, or submitting the contact form on the website.'
     },
     {
       q: 'What should I bring to a marketing consultation?',

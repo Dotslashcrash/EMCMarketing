@@ -8,6 +8,8 @@ Google Chat received repeated junk website lead notifications from the contact f
 
 - Added honeypot fields to the contact form and floating chat form.
 - Added a `submittedAt` timestamp to form payloads.
+- Clarified that the floating widget is a message form, not a live chat bot.
+- Added a Google Chat reply note so Elizabeth knows replies in Google Chat do not reach the site visitor.
 - Added server-side checks in `api/chat-lead/index.js` before Google Chat notification delivery:
   - Honeypot field detection.
   - Minimum and maximum submit timing.
@@ -20,6 +22,7 @@ Google Chat received repeated junk website lead notifications from the contact f
 
 - `components/site-widgets.tsx`
 - `api/chat-lead/index.js`
+- `lib/site-data.ts`
 - `docs/lead-spam-protection-handoff.md`
 
 ## Tuning
