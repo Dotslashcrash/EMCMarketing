@@ -90,6 +90,8 @@ module.exports = async function (context, req) {
     const name = clean(body.name, 'Website visitor');
     const source = clean(body.source, 'website_chat');
     const message = clean(body.message || body.need);
+    const chatSessionId = clean(body.chatSessionId);
+    const adminChatUrl = chatSessionId ? `https://www.emcmarketing.co/admin/?chat=${encodeURIComponent(chatSessionId)}` : '';
 
     if (!message) {
       context.res = json(400, { error: 'Add a message before sending.' });
@@ -111,15 +113,16 @@ module.exports = async function (context, req) {
       line('Email', body.email),
       line('Phone', body.phone),
       line('Business need', body.need),
-      line('Chat session', body.chatSessionId),
+      line('Chat session', chatSessionId),
+      line('Rep reply link', adminChatUrl),
       line('Page', body.pageUrl),
       '',
       '*Message*',
       message,
       '',
       '*Reply note*',
-      body.chatSessionId
-        ? 'Reply from the EMC admin live chat panel while the visitor is active. Google Chat replies do not go back to the site visitor.'
+      chatSessionId
+        ? 'Use the rep reply link above. Replies typed inside Google Chat do not go back to the site visitor.'
         : 'Do not reply in Google Chat expecting the visitor to see it. Follow up by email or phone from the lead details above.'
     ].filter(Boolean);
 

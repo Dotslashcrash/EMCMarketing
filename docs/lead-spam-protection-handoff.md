@@ -13,6 +13,8 @@ Google Chat received repeated junk website lead notifications from the contact f
 - Upgraded the floating widget to an interactive chat flow with two-way rep replies when a rep is available.
 - Added live chat storage and polling through the existing Azure Table Storage-backed API.
 - Added a live chat reply panel to `/admin/` behind the existing admin password.
+- Google Chat remains the alert channel only. Replies typed inside Google Chat do not reach the visitor.
+- Lead alerts now include a direct `/admin/?chat=...` rep reply link that opens the matching visitor thread.
 - Added server-side checks in `api/chat-lead/index.js` before Google Chat notification delivery:
   - Honeypot field detection.
   - Minimum and maximum submit timing.

@@ -573,6 +573,11 @@ function LiveChatAdmin({ adminKey }: { adminKey: string }) {
       headers: { 'x-admin-password': adminKey }
     });
     setSessions(data.sessions);
+    const requestedChat = new URLSearchParams(window.location.search).get('chat') || '';
+    if (requestedChat && data.sessions.some((session) => session.id === requestedChat)) {
+      setActiveId(requestedChat);
+      return;
+    }
     if (!activeId && data.sessions[0]) setActiveId(data.sessions[0].id);
   }
 
