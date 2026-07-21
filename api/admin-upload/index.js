@@ -1,4 +1,4 @@
-const { assertAdmin, cleanFileName, container, id, json, parseBody, table } = require('../shared');
+const { assertAdmin, cleanFileName, clearPortal, container, id, json, parseBody, table } = require('../shared');
 
 module.exports = async function (context, req) {
   try {
@@ -9,17 +9,20 @@ module.exports = async function (context, req) {
 
     const body = parseBody(req);
     const files = Array.isArray(body.files) ? body.files : [];
-    if (!files.length) {
+    const validFiles = files.filter((file) => file?.data && file?.fileName);
+    if (!validFiles.length) {
       context.res = json(400, { error: 'Choose at least one file.' });
       return;
     }
 
+    // This is a single-client workspace: remove prior files and revoke all old
+    // customer access before publishing this new batch.
+    await clearPortal();
     const tableClient = await table();
     const blobContainer = await container();
     const uploaded = [];
 
-    for (const file of files) {
-      if (!file.data || !file.fileName) continue;
+    for (const file of validFiles) {
       const materialId = id();
       const fileName = cleanFileName(file.fileName);
       const blobName = `${materialId}-${fileName}`;
@@ -50,7 +53,7 @@ module.exports = async function (context, req) {
       uploaded.push(materialId);
     }
 
-    context.res = json(200, { uploaded });
+    context.res = json(200, { uploaded, replacedPreviousContent: true });
   } catch (error) {
     context.res = json(500, { error: error.message || 'Upload failed.' });
   }

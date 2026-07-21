@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowRight, Copy, FileArchive, FileImage, FileText, KeyRound, Lock, LogOut, ShieldCheck, Upload, Wand2 } from 'lucide-react';
+import { ArrowRight, Copy, FileArchive, FileImage, FileText, KeyRound, Lock, LogOut, ShieldCheck, Trash2, Upload, Wand2 } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
@@ -247,9 +247,29 @@ export function AdminPortal() {
       setLabel('');
       setNote('');
       await loadMaterials();
-      setMessage('Brand material uploaded.');
+      setPortalLink('');
+      setMessage('New brand material uploaded. Previous files and customer access were cleared.');
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Upload failed.');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function clearPortal() {
+    if (!window.confirm('Clear every brand file and revoke all active customer links and sessions? This cannot be undone.')) return;
+    setBusy(true);
+    setMessage('');
+    try {
+      const data = await api<{ deletedMaterials: number; message: string }>('admin-clear-portal', {
+        method: 'POST',
+        headers: { 'x-admin-password': adminKey }
+      });
+      setMaterials([]);
+      setPortalLink('');
+      setMessage(`${data.message} ${data.deletedMaterials} file${data.deletedMaterials === 1 ? '' : 's'} removed.`);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'Could not clear the brand portal.');
     } finally {
       setBusy(false);
     }
@@ -436,9 +456,14 @@ export function AdminPortal() {
                 <p className="kicker">Current library</p>
                 <h2 className="mt-3 text-4xl font-black uppercase">Uploaded material.</h2>
               </div>
-              <button className="btn-ghost" onClick={() => loadMaterials()}>
-                Refresh
-              </button>
+              <div className="flex flex-wrap gap-3">
+                <button className="btn-ghost" onClick={() => loadMaterials()} disabled={busy}>
+                  Refresh
+                </button>
+                <button className="btn-ghost" onClick={clearPortal} disabled={busy}>
+                  <Trash2 size={17} /> Clear portal
+                </button>
+              </div>
             </div>
             <MaterialGrid materials={materials} admin adminKey={adminKey} />
           </div>

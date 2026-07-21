@@ -136,6 +136,29 @@ async function getMaterial(materialId) {
   return client.getEntity('material', materialId);
 }
 
+async function clearPortal() {
+  const client = await table();
+  const blobs = await container();
+  const partitions = ['material', 'token', 'session'];
+  let deletedMaterials = 0;
+
+  for (const partitionKey of partitions) {
+    const entities = client.listEntities({ queryOptions: { filter: `PartitionKey eq '${partitionKey}'` } });
+    for await (const entity of entities) {
+      if (partitionKey === 'material' && entity.blobName) {
+        await blobs.deleteBlob(entity.blobName, { deleteSnapshots: 'include' }).catch((error) => {
+          if (error.statusCode !== 404) throw error;
+        });
+        deletedMaterials += 1;
+      }
+      await client.deleteEntity(partitionKey, entity.rowKey).catch((error) => {
+        if (error.statusCode !== 404) throw error;
+      });
+    }
+  }
+  return { deletedMaterials };
+}
+
 async function validateSession(sessionId) {
   if (!sessionId) return false;
   const client = await table();
@@ -166,6 +189,7 @@ async function materialResponse(material, disposition = 'inline') {
 
 module.exports = {
   assertAdmin,
+  clearPortal,
   cleanFileName,
   container,
   getMaterial,
