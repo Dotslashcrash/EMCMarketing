@@ -38,6 +38,20 @@ type ChatMessage = {
 
 type ApiResult<T> = T & { error?: string };
 
+type UploadTicket = {
+  materialId: string;
+  blobName: string;
+  fileName: string;
+  contentType: string;
+  size: number;
+  uploadUrl: string;
+};
+
+type UploadReceipt = Omit<UploadTicket, 'uploadUrl'>;
+
+const MAX_PORTAL_FILE_BYTES = 25 * 1024 * 1024;
+const MAX_PORTAL_BATCH_BYTES = 250 * 1024 * 1024;
+
 function cleanApiError(path: string, data: ApiResult<unknown>) {
   const raw = data.error || '';
   if (!raw) return 'Something did not go through.';
@@ -67,6 +81,9 @@ async function api<T>(path: string, init?: RequestInit) {
       ...(init?.headers || {})
     }
   });
+  if (res.status === 413) {
+    throw new Error('That upload is too large for the portal gateway. Select the files again and retry.');
+  }
   const contentType = res.headers.get('content-type') || '';
   const data = contentType.includes('application/json')
     ? ((await res.json().catch(() => ({}))) as ApiResult<T>)
@@ -87,15 +104,6 @@ function materialIcon(contentType: string) {
   if (contentType.startsWith('image/')) return FileImage;
   if (contentType.includes('pdf') || contentType.startsWith('text/')) return FileText;
   return FileArchive;
-}
-
-function readFile(file: File) {
-  return new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(String(reader.result).split(',')[1] || '');
-    reader.onerror = () => reject(new Error('Could not read that file.'));
-    reader.readAsDataURL(file);
-  });
 }
 
 function PdfPreview({ title, url }: { title: string; url: string }) {
@@ -183,6 +191,7 @@ function PdfPreview({ title, url }: { title: string; url: string }) {
 }
 
 export function AdminPortal() {
+  const uploadInputRef = useRef<HTMLInputElement | null>(null);
   const [password, setPassword] = useState('');
   const [adminKey, setAdminKey] = useState('');
   const [materials, setMaterials] = useState<PortalMaterial[]>([]);
@@ -195,6 +204,8 @@ export function AdminPortal() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [portalLink, setPortalLink] = useState('');
   const [busy, setBusy] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [uploadStatus, setUploadStatus] = useState('');
   const [message, setMessage] = useState('');
 
   async function loadMaterials(key = adminKey) {
@@ -227,33 +238,95 @@ export function AdminPortal() {
   async function upload(event: React.FormEvent) {
     event.preventDefault();
     if (!selectedFiles?.length) return;
+    const files = Array.from(selectedFiles);
+    const oversized = files.find((file) => file.size > MAX_PORTAL_FILE_BYTES);
+    const totalSize = files.reduce((total, file) => total + file.size, 0);
+    if (oversized) {
+      setMessage(`${oversized.name} is ${bytes(oversized.size)}. Portal files must be ${bytes(MAX_PORTAL_FILE_BYTES)} or smaller so customers can view them securely.`);
+      return;
+    }
+    if (totalSize > MAX_PORTAL_BATCH_BYTES) {
+      setMessage(`This batch is ${bytes(totalSize)}. Upload ${bytes(MAX_PORTAL_BATCH_BYTES)} or less at a time.`);
+      return;
+    }
+
     setBusy(true);
+    setUploading(true);
     setMessage('');
+    setUploadStatus(`Preparing ${files.length} file${files.length === 1 ? '' : 's'}...`);
+    let tickets: UploadTicket[] = [];
     try {
-      const files = await Promise.all(
-        Array.from(selectedFiles).map(async (file) => ({
-          fileName: file.name,
-          contentType: file.type || 'application/octet-stream',
-          size: file.size,
-          data: await readFile(file)
-        }))
-      );
-      await api('admin-upload', {
+      const started = await api<{ uploads: UploadTicket[] }>('admin-upload-start', {
         method: 'POST',
         headers: { 'x-admin-password': adminKey },
-        body: JSON.stringify({ label, note, files })
+        body: JSON.stringify({
+          files: files.map((file) => ({
+          fileName: file.name,
+          contentType: file.type || 'application/octet-stream',
+            size: file.size
+          }))
+        })
+      });
+      tickets = started.uploads;
+      if (tickets.length !== files.length) throw new Error('The upload could not be prepared. Please try again.');
+
+      for (let index = 0; index < files.length; index += 1) {
+        const file = files[index];
+        const ticket = tickets[index];
+        setUploadStatus(`Uploading ${index + 1} of ${files.length}: ${file.name}`);
+        const uploaded = await fetch(ticket.uploadUrl, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': file.type || 'application/octet-stream',
+            'x-ms-blob-type': 'BlockBlob'
+          },
+          body: file
+        });
+        if (!uploaded.ok) throw new Error(`${file.name} could not be uploaded. Please try again.`);
+      }
+
+      setUploadStatus('Publishing the new protected library...');
+      const receipts: UploadReceipt[] = tickets.map(({ uploadUrl: _uploadUrl, ...ticket }) => ticket);
+      await api('admin-upload-complete', {
+        method: 'POST',
+        headers: { 'x-admin-password': adminKey },
+        body: JSON.stringify({ label, note, uploads: receipts })
       });
       setSelectedFiles(null);
+      if (uploadInputRef.current) uploadInputRef.current.value = '';
       setLabel('');
       setNote('');
       await loadMaterials();
       setPortalLink('');
+      setUploadStatus('');
       setMessage('New brand material uploaded. Previous files and customer access were cleared.');
     } catch (error) {
+      if (tickets.length) {
+        const receipts: UploadReceipt[] = tickets.map(({ uploadUrl: _uploadUrl, ...ticket }) => ticket);
+        await api('admin-upload-cancel', {
+          method: 'POST',
+          headers: { 'x-admin-password': adminKey },
+          body: JSON.stringify({ uploads: receipts })
+        }).catch(() => undefined);
+      }
+      setUploadStatus('');
       setMessage(error instanceof Error ? error.message : 'Upload failed.');
     } finally {
+      setUploading(false);
       setBusy(false);
     }
+  }
+
+  function selectFiles(event: React.ChangeEvent<HTMLInputElement>) {
+    const nextFiles = event.target.files;
+    setSelectedFiles(nextFiles);
+    setMessage('');
+    if (!nextFiles?.length) {
+      setUploadStatus('');
+      return;
+    }
+    const totalSize = Array.from(nextFiles).reduce((total, file) => total + file.size, 0);
+    setUploadStatus(`${nextFiles.length} file${nextFiles.length === 1 ? '' : 's'} selected · ${bytes(totalSize)}`);
   }
 
   async function clearPortal() {
@@ -391,11 +464,12 @@ export function AdminPortal() {
                 </label>
                 <label className="grid gap-2">
                   <span className="form-label">Files</span>
-                  <input className="form-input" type="file" multiple onChange={(event) => setSelectedFiles(event.target.files)} />
+                  <input ref={uploadInputRef} className="form-input" type="file" multiple onChange={selectFiles} />
                 </label>
               </div>
-              <button className="btn-acid mt-5" disabled={busy || !selectedFiles?.length}>
-                <Upload size={17} /> Upload files
+              {uploadStatus ? <p className="mt-4 text-sm text-white/65" aria-live="polite">{uploadStatus}</p> : null}
+              <button type="submit" className="btn-acid mt-5" disabled={busy || !selectedFiles?.length}>
+                <Upload size={17} /> {uploading ? 'Uploading…' : 'Upload files'}
               </button>
             </form>
 

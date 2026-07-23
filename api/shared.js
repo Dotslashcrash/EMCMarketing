@@ -156,6 +156,14 @@ async function clearPortal() {
       });
     }
   }
+
+  // Failed direct uploads are intentionally never published in Table Storage,
+  // but their private blobs can remain. A portal flush removes those orphans too.
+  for await (const blob of blobs.listBlobsFlat()) {
+    await blobs.deleteBlob(blob.name, { deleteSnapshots: 'include' }).catch((error) => {
+      if (error.statusCode !== 404) throw error;
+    });
+  }
   return { deletedMaterials };
 }
 

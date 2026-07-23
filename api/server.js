@@ -4,6 +4,9 @@ const routes = [
   ['post', '/api/admin-login', require('./admin-login')],
   ['get', '/api/admin-materials', require('./admin-materials')],
   ['post', '/api/admin-upload', require('./admin-upload')],
+  ['post', '/api/admin-upload-start', require('./admin-upload-start')],
+  ['post', '/api/admin-upload-complete', require('./admin-upload-complete')],
+  ['post', '/api/admin-upload-cancel', require('./admin-upload-cancel')],
   ['post', '/api/admin-clear-portal', require('./admin-clear-portal')],
   ['post', '/api/admin-create-token', require('./admin-create-token')],
   ['post', '/api/admin-change-password', require('./admin-change-password')],
@@ -52,7 +55,16 @@ function wrap(handler) {
 
 const app = express();
 app.disable('x-powered-by');
-app.use(express.json({ limit: '25mb' }));
+// Static Web Apps has a 30 MB request ceiling. New uploads go directly to
+// private Blob Storage; this limit remains for metadata and cached old clients.
+app.use(express.json({ limit: '30mb' }));
+app.use((error, _req, res, next) => {
+  if (error?.type === 'entity.too.large') {
+    res.status(413).json({ error: 'That request is too large. Refresh the admin page and upload the files again.' });
+    return;
+  }
+  next(error);
+});
 
 app.get('/api/health', (_req, res) => {
   res.json({ ok: true });
