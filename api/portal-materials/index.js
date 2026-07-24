@@ -1,14 +1,15 @@
-const { json, listMaterials, validateSession } = require('../shared');
+const { json, listPortalMaterials, validateSession } = require('../shared');
 
 module.exports = async function (context, req) {
   try {
     const session = req.headers['x-portal-session'] || '';
-    if (!(await validateSession(session))) {
+    const sessionEntity = await validateSession(session);
+    if (!sessionEntity) {
       context.res = json(401, { error: 'Portal session expired or invalid.' });
       return;
     }
 
-    const materials = (await listMaterials()).map((material) => ({
+    const materials = (await listPortalMaterials(sessionEntity.portalId || '')).map((material) => ({
       ...material,
       blobName: undefined,
       viewUrl: `/api/portal-material?id=${encodeURIComponent(material.id)}&session=${encodeURIComponent(session)}`

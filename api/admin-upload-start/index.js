@@ -1,5 +1,5 @@
 const { BlobSASPermissions } = require('@azure/storage-blob');
-const { assertAdmin, cleanFileName, clearPortal, container, id, json, parseBody } = require('../shared');
+const { assertAdmin, cleanFileName, cleanupExpiredPortalAccess, container, id, json, listPortals, parseBody } = require('../shared');
 
 const MAX_FILE_BYTES = 25 * 1024 * 1024;
 const MAX_BATCH_BYTES = 250 * 1024 * 1024;
@@ -13,6 +13,17 @@ module.exports = async function (context, req) {
     }
 
     const body = parseBody(req);
+    if (!String(body.clientName || '').trim()) {
+      context.res = json(400, { error: 'Client name is required to create a portal.' });
+      return;
+    }
+    await cleanupExpiredPortalAccess();
+    const activePortals = await listPortals();
+    if (activePortals.length >= 5) {
+      context.res = json(400, { error: 'Five client portals are already active. Clear one before creating another.' });
+      return;
+    }
+
     const files = Array.isArray(body.files) ? body.files : [];
     if (!files.length || files.length > MAX_FILES) {
       context.res = json(400, { error: `Choose between 1 and ${MAX_FILES} files.` });
@@ -35,9 +46,7 @@ module.exports = async function (context, req) {
       return;
     }
 
-    // Privacy first: flush prior material, tokens, sessions, and any orphaned
-    // blobs before issuing narrowly scoped write-only URLs for the new batch.
-    await clearPortal();
+    const portalId = id();
     const blobContainer = await container();
     const startsOn = new Date(Date.now() - 5 * 60 * 1000);
     const expiresOn = new Date(Date.now() + 60 * 60 * 1000);
@@ -45,7 +54,7 @@ module.exports = async function (context, req) {
 
     for (const file of normalized) {
       const materialId = id();
-      const blobName = `${materialId}-${file.fileName}`;
+      const blobName = `${portalId}/${materialId}-${file.fileName}`;
       const blob = blobContainer.getBlockBlobClient(blobName);
       const uploadUrl = await blob.generateSasUrl({
         permissions: BlobSASPermissions.parse('cw'),
@@ -53,6 +62,7 @@ module.exports = async function (context, req) {
         expiresOn
       });
       uploads.push({
+        portalId,
         materialId,
         blobName,
         fileName: file.fileName,
@@ -62,7 +72,7 @@ module.exports = async function (context, req) {
       });
     }
 
-    context.res = json(200, { uploads, previousContentCleared: true });
+    context.res = json(200, { uploads, portalId });
   } catch (error) {
     context.res = json(500, { error: error.message || 'Upload could not be prepared.' });
   }

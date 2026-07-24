@@ -38,10 +38,11 @@ module.exports = async function (context, req) {
 
     const sessionId = token();
     const expiresAt = new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString();
-    await tableClient.updateEntity({ partitionKey: 'token', rowKey, status: 'consumed', usedAt: new Date().toISOString() }, 'Merge');
+    await tableClient.deleteEntity('token', rowKey);
     await tableClient.createEntity({
       partitionKey: 'session',
       rowKey: hash(sessionId),
+      portalId: entity.portalId || '',
       clientName: entity.clientName || 'Client',
       createdAt: new Date().toISOString(),
       expiresAt

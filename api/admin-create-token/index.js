@@ -1,4 +1,4 @@
-const { assertAdmin, hash, json, parseBody, table, token } = require('../shared');
+const { assertAdmin, hash, json, listPortals, parseBody, table, token } = require('../shared');
 
 module.exports = async function (context, req) {
   try {
@@ -8,6 +8,13 @@ module.exports = async function (context, req) {
     }
 
     const body = parseBody(req);
+    const portalId = String(body.portalId || '');
+    const portals = await listPortals();
+    const portal = portals.find((item) => item.id === portalId);
+    if (!portal) {
+      context.res = json(400, { error: 'Choose an active client portal before generating access.' });
+      return;
+    }
     const hours = Math.max(1, Math.min(168, Number(body.expiresHours || 48)));
     const accessToken = token();
     const expiresAt = new Date(Date.now() + hours * 60 * 60 * 1000).toISOString();
@@ -15,7 +22,8 @@ module.exports = async function (context, req) {
     await tableClient.createEntity({
       partitionKey: 'token',
       rowKey: hash(accessToken),
-      clientName: body.clientName || 'Client',
+      portalId,
+      clientName: portal.clientName || body.clientName || 'Client',
       status: 'active',
       createdAt: new Date().toISOString(),
       expiresAt

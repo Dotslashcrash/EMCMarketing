@@ -1,11 +1,12 @@
 'use client';
 
-import { ArrowRight, Copy, FileArchive, FileImage, FileText, KeyRound, Lock, LogOut, ShieldCheck, Trash2, Upload, Wand2 } from 'lucide-react';
+import { ArrowRight, Copy, FileArchive, FileImage, FileText, FolderLock, KeyRound, Lock, LogOut, Plus, ShieldCheck, Trash2, Upload, Wand2 } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 type PortalMaterial = {
   id: string;
+  portalId?: string;
   fileName: string;
   label: string;
   note: string;
@@ -13,6 +14,18 @@ type PortalMaterial = {
   size: number;
   uploadedAt: string;
   viewUrl?: string;
+};
+
+type ClientPortal = {
+  id: string;
+  clientName: string;
+  label: string;
+  note: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+  expiresAt?: string;
+  materialCount: number;
 };
 
 type ChatSession = {
@@ -39,6 +52,7 @@ type ChatMessage = {
 type ApiResult<T> = T & { error?: string };
 
 type UploadTicket = {
+  portalId: string;
   materialId: string;
   blobName: string;
   fileName: string;
@@ -194,6 +208,8 @@ export function AdminPortal() {
   const uploadInputRef = useRef<HTMLInputElement | null>(null);
   const [password, setPassword] = useState('');
   const [adminKey, setAdminKey] = useState('');
+  const [portals, setPortals] = useState<ClientPortal[]>([]);
+  const [selectedPortalId, setSelectedPortalId] = useState('');
   const [materials, setMaterials] = useState<PortalMaterial[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
   const [label, setLabel] = useState('');
@@ -208,10 +224,13 @@ export function AdminPortal() {
   const [uploadStatus, setUploadStatus] = useState('');
   const [message, setMessage] = useState('');
 
-  async function loadMaterials(key = adminKey) {
-    const data = await api<{ materials: PortalMaterial[] }>('admin-materials', {
+  async function loadMaterials(key = adminKey, portalId = selectedPortalId) {
+    const path = portalId ? `admin-materials?portalId=${encodeURIComponent(portalId)}` : 'admin-materials';
+    const data = await api<{ portals: ClientPortal[]; selectedPortalId: string; materials: PortalMaterial[] }>(path, {
       headers: { 'x-admin-password': key }
     });
+    setPortals(data.portals || []);
+    setSelectedPortalId(data.selectedPortalId || data.portals?.[0]?.id || '');
     setMaterials(data.materials);
   }
 
@@ -260,6 +279,7 @@ export function AdminPortal() {
         method: 'POST',
         headers: { 'x-admin-password': adminKey },
         body: JSON.stringify({
+          clientName,
           files: files.map((file) => ({
           fileName: file.name,
           contentType: file.type || 'application/octet-stream',
@@ -290,16 +310,18 @@ export function AdminPortal() {
       await api('admin-upload-complete', {
         method: 'POST',
         headers: { 'x-admin-password': adminKey },
-        body: JSON.stringify({ label, note, uploads: receipts })
+        body: JSON.stringify({ clientName, label, note, uploads: receipts })
       });
       setSelectedFiles(null);
       if (uploadInputRef.current) uploadInputRef.current.value = '';
       setLabel('');
       setNote('');
-      await loadMaterials();
+      const nextPortalId = receipts[0]?.portalId || '';
+      await loadMaterials(adminKey, nextPortalId);
+      setSelectedPortalId(nextPortalId);
       setPortalLink('');
       setUploadStatus('');
-      setMessage('New brand material uploaded. Previous files and customer access were cleared.');
+      setMessage('New isolated client portal created. Generate its one-time access link when ready.');
     } catch (error) {
       if (tickets.length) {
         const receipts: UploadReceipt[] = tickets.map(({ uploadUrl: _uploadUrl, ...ticket }) => ticket);
@@ -329,16 +351,18 @@ export function AdminPortal() {
     setUploadStatus(`${nextFiles.length} file${nextFiles.length === 1 ? '' : 's'} selected · ${bytes(totalSize)}`);
   }
 
-  async function clearPortal() {
-    if (!window.confirm('Clear every brand file and revoke all active customer links and sessions? This cannot be undone.')) return;
+  async function clearPortal(portalId = selectedPortalId) {
+    const portal = portals.find((item) => item.id === portalId);
+    if (!window.confirm(`Clear ${portal?.clientName || 'this client portal'} and revoke its links and sessions? This cannot be undone.`)) return;
     setBusy(true);
     setMessage('');
     try {
       const data = await api<{ deletedMaterials: number; message: string }>('admin-clear-portal', {
         method: 'POST',
-        headers: { 'x-admin-password': adminKey }
+        headers: { 'x-admin-password': adminKey },
+        body: JSON.stringify({ portalId })
       });
-      setMaterials([]);
+      await loadMaterials(adminKey, '');
       setPortalLink('');
       setMessage(`${data.message} ${data.deletedMaterials} file${data.deletedMaterials === 1 ? '' : 's'} removed.`);
     } catch (error) {
@@ -350,13 +374,18 @@ export function AdminPortal() {
 
   async function createToken(event: React.FormEvent) {
     event.preventDefault();
+    const portal = portals.find((item) => item.id === selectedPortalId);
+    if (!portal) {
+      setMessage('Create or select a client portal before generating access.');
+      return;
+    }
     setBusy(true);
     setMessage('');
     try {
       const data = await api<{ token: string; expiresAt: string }>('admin-create-token', {
         method: 'POST',
         headers: { 'x-admin-password': adminKey },
-        body: JSON.stringify({ clientName, expiresHours })
+        body: JSON.stringify({ portalId: selectedPortalId, clientName: portal.clientName, expiresHours })
       });
       const link = `${window.location.origin}/brand-portal/?token=${encodeURIComponent(data.token)}`;
       setPortalLink(link);
@@ -406,6 +435,8 @@ export function AdminPortal() {
   function logout() {
     setAdminKey('');
     setPassword('');
+    setPortals([]);
+    setSelectedPortalId('');
     setMaterials([]);
     sessionStorage.removeItem('emc-admin-key');
   }
@@ -418,15 +449,19 @@ export function AdminPortal() {
     }
   }, []);
 
+  const selectedPortal = portals.find((portal) => portal.id === selectedPortalId);
+  const canCreatePortal = portals.length < 5;
+
   return (
-    <section className="min-h-screen bg-black px-4 py-16 text-white md:px-6 md:py-24">
+    <section className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(46,184,68,.16),transparent_28rem),linear-gradient(135deg,#050505,#101010_48%,#050505)] px-4 py-12 text-white md:px-6 md:py-20">
       <div className="mx-auto max-w-7xl">
+        <div className="rounded-sm border border-white/10 bg-black/45 p-5 shadow-2xl shadow-black/50 backdrop-blur md:p-7">
         <div className="flex flex-wrap items-start justify-between gap-5">
           <div>
-            <p className="kicker">Owner access</p>
-            <h1 className="hero-title mt-4 font-black uppercase leading-[.8]">Brand portal admin.</h1>
-            <p className="mt-5 max-w-2xl text-lg leading-8 text-white/68">
-              Upload client brand materials, generate one-time review access, and manage the portal library.
+            <p className="kicker">Private client vault</p>
+            <h1 className="mt-4 max-w-4xl font-black uppercase leading-[.82] text-5xl md:text-7xl">Brand portal command.</h1>
+            <p className="mt-5 max-w-2xl text-base leading-7 text-white/65 md:text-lg">
+              Create up to five isolated client portals, publish protected files, and issue one-time access with no cross-client library bleed.
             </p>
           </div>
           {adminKey ? (
@@ -439,7 +474,7 @@ export function AdminPortal() {
         {message ? <p className="mt-8 border border-white/15 bg-white/[.04] p-4 text-sm text-white/78">{message}</p> : null}
 
         {!adminKey ? (
-          <form onSubmit={login} className="mt-10 max-w-xl border border-white/15 bg-white/[.04] p-6">
+          <form onSubmit={login} className="mt-10 max-w-xl border border-white/15 bg-white/[.04] p-6 shadow-xl shadow-black/30">
             <label className="grid gap-2">
               <span className="form-label">Admin password</span>
               <input className="form-input" type="password" value={password} onChange={(event) => setPassword(event.target.value)} required />
@@ -449,14 +484,61 @@ export function AdminPortal() {
             </button>
           </form>
         ) : (
-          <div className="mt-10 grid gap-6 lg:grid-cols-[1fr_.9fr]">
-            <form onSubmit={upload} className="border border-white/15 bg-white/[.04] p-6">
-              <p className="kicker">Protected assets</p>
-              <h2 className="mt-3 text-3xl font-black uppercase">Upload brand material.</h2>
+          <>
+          <div className="mt-10 grid gap-4 md:grid-cols-3">
+            <div className="border border-white/10 bg-white/[.035] p-5">
+              <p className="text-xs font-black uppercase tracking-[.18em] text-white/45">Active portals</p>
+              <p className="mt-3 text-4xl font-black">{portals.length}<span className="text-lg text-white/45">/5</span></p>
+            </div>
+            <div className="border border-white/10 bg-white/[.035] p-5">
+              <p className="text-xs font-black uppercase tracking-[.18em] text-white/45">Selected client</p>
+              <p className="mt-3 truncate text-2xl font-black">{selectedPortal?.clientName || 'No portal selected'}</p>
+            </div>
+            <div className="border border-white/10 bg-white/[.035] p-5">
+              <p className="text-xs font-black uppercase tracking-[.18em] text-white/45">Isolation</p>
+              <p className="mt-3 text-2xl font-black text-[var(--acid)]">No bleed</p>
+            </div>
+          </div>
+
+          {portals.length ? (
+            <div className="mt-6 flex gap-3 overflow-x-auto border-y border-white/10 py-4">
+              {portals.map((portal) => (
+                <button
+                  key={portal.id}
+                  className={`min-w-56 border px-4 py-3 text-left transition ${
+                    portal.id === selectedPortalId ? 'border-[var(--acid)] bg-[var(--acid)] text-black' : 'border-white/15 bg-black/35 text-white hover:border-[var(--acid)]'
+                  }`}
+                  onClick={() => loadMaterials(adminKey, portal.id)}
+                >
+                  <span className="flex items-center gap-2 text-xs font-black uppercase tracking-[.16em]">
+                    <FolderLock size={15} /> {portal.materialCount} file{portal.materialCount === 1 ? '' : 's'}
+                  </span>
+                  <span className="mt-2 block truncate text-lg font-black">{portal.clientName}</span>
+                  <span className="mt-1 block truncate text-xs opacity-60">{portal.label || 'Client portal'}</span>
+                </button>
+              ))}
+            </div>
+          ) : null}
+
+          <div className="mt-8 grid gap-6 lg:grid-cols-[1.05fr_.95fr]">
+            <form onSubmit={upload} className="border border-white/15 bg-white/[.04] p-6 shadow-xl shadow-black/30">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <p className="kicker">Create portal</p>
+                  <h2 className="mt-3 text-3xl font-black uppercase">New client vault.</h2>
+                </div>
+                <div className="grid h-12 w-12 place-items-center border border-[var(--acid)] text-[var(--acid)]">
+                  <Plus />
+                </div>
+              </div>
               <div className="mt-6 grid gap-4">
                 <label className="grid gap-2">
-                  <span className="form-label">Label</span>
-                  <input className="form-input" value={label} onChange={(event) => setLabel(event.target.value)} placeholder="Client logo package, brand guide, campaign proof..." />
+                  <span className="form-label">Client name</span>
+                  <input className="form-input" value={clientName} onChange={(event) => setClientName(event.target.value)} placeholder="Client or company name" required />
+                </label>
+                <label className="grid gap-2">
+                  <span className="form-label">Portal label</span>
+                  <input className="form-input" value={label} onChange={(event) => setLabel(event.target.value)} placeholder="Logo package, brand guide, campaign proof..." />
                 </label>
                 <label className="grid gap-2">
                   <span className="form-label">Owner note</span>
@@ -468,25 +550,25 @@ export function AdminPortal() {
                 </label>
               </div>
               {uploadStatus ? <p className="mt-4 text-sm text-white/65" aria-live="polite">{uploadStatus}</p> : null}
-              <button type="submit" className="btn-acid mt-5" disabled={busy || !selectedFiles?.length}>
-                <Upload size={17} /> {uploading ? 'Uploading…' : 'Upload files'}
+              <button type="submit" className="btn-acid mt-5" disabled={busy || !selectedFiles?.length || !clientName.trim() || !canCreatePortal}>
+                <Upload size={17} /> {uploading ? 'Creating portal...' : canCreatePortal ? 'Create isolated portal' : 'Five portal limit reached'}
               </button>
+              {!canCreatePortal ? <p className="mt-3 text-sm text-white/55">Clear an inactive client portal before creating another.</p> : null}
             </form>
 
-            <form onSubmit={createToken} className="border border-[var(--acid)] bg-[var(--acid)] p-6 text-black">
+            <form onSubmit={createToken} className="border border-[var(--acid)] bg-[var(--acid)] p-6 text-black shadow-2xl shadow-[rgba(46,184,68,.18)]">
               <p className="text-sm font-black uppercase tracking-[.2em] text-black/55">Client review</p>
-              <h2 className="mt-3 text-3xl font-black uppercase leading-none">Generate review access.</h2>
+              <h2 className="mt-3 text-3xl font-black uppercase leading-none">One-time access.</h2>
+              <p className="mt-4 text-sm leading-6 text-black/65">
+                {selectedPortal ? `Generate a self-destructing login for ${selectedPortal.clientName}.` : 'Select or create a portal first.'}
+              </p>
               <div className="mt-6 grid gap-4">
-                <label className="grid gap-2">
-                  <span className="text-xs font-black uppercase tracking-[.18em] text-black/60">Client name</span>
-                  <input className="rounded-sm border border-black/20 bg-white px-4 py-3 text-black outline-none" value={clientName} onChange={(event) => setClientName(event.target.value)} required />
-                </label>
                 <label className="grid gap-2">
                   <span className="text-xs font-black uppercase tracking-[.18em] text-black/60">Link expires in hours</span>
                   <input className="rounded-sm border border-black/20 bg-white px-4 py-3 text-black outline-none" type="number" min={1} max={168} value={expiresHours} onChange={(event) => setExpiresHours(Number(event.target.value))} />
                 </label>
               </div>
-              <button className="btn-dark mt-5" disabled={busy}>
+              <button className="btn-dark mt-5" disabled={busy || !selectedPortal}>
                 <Wand2 size={17} /> Generate one-time login
               </button>
               {portalLink ? (
@@ -499,7 +581,7 @@ export function AdminPortal() {
               ) : null}
             </form>
 
-            <form onSubmit={changePassword} className="border border-white/15 bg-white/[.04] p-6 lg:col-span-2">
+            <form onSubmit={changePassword} className="border border-white/15 bg-white/[.04] p-6 shadow-xl shadow-black/30 lg:col-span-2">
               <p className="kicker">Owner security</p>
               <h2 className="mt-3 text-3xl font-black uppercase">Change admin password.</h2>
               <div className="mt-6 grid gap-4 md:grid-cols-2">
@@ -517,6 +599,7 @@ export function AdminPortal() {
               </button>
             </form>
           </div>
+          </>
         )}
 
         {adminKey ? (
@@ -527,21 +610,22 @@ export function AdminPortal() {
           <div className="mt-10">
             <div className="flex items-end justify-between gap-4">
               <div>
-                <p className="kicker">Current library</p>
-                <h2 className="mt-3 text-4xl font-black uppercase">Uploaded material.</h2>
+                <p className="kicker">Selected portal library</p>
+                <h2 className="mt-3 text-4xl font-black uppercase">{selectedPortal?.clientName || 'Uploaded material'}.</h2>
               </div>
               <div className="flex flex-wrap gap-3">
                 <button className="btn-ghost" onClick={() => loadMaterials()} disabled={busy}>
                   Refresh
                 </button>
-                <button className="btn-ghost" onClick={clearPortal} disabled={busy}>
-                  <Trash2 size={17} /> Clear portal
+                <button className="btn-ghost" onClick={() => clearPortal()} disabled={busy || !selectedPortal}>
+                  <Trash2 size={17} /> Clear selected
                 </button>
               </div>
             </div>
             <MaterialGrid materials={materials} admin adminKey={adminKey} />
           </div>
         ) : null}
+        </div>
       </div>
     </section>
   );

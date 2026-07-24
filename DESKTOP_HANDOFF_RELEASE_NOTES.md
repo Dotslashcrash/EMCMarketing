@@ -63,6 +63,7 @@ The safeguards keep review materials inside the intended browser workflow, but a
 - Azure Web App app settings required:
   - `BRAND_PORTAL_STORAGE_CONNECTION_STRING`
   - `BRAND_PORTAL_ADMIN_PASSWORD`
+  - `BRAND_PORTAL_DEV_ADMIN_PASSWORD` optional Griffin live-check / break-glass admin password
 
 ## Lead Spam Protection Addition
 

@@ -6,6 +6,7 @@ This repository uses the shared Griffin Technology Partners Umbrella framework f
 
 - `BRAND_PORTAL_STORAGE_CONNECTION_STRING`
 - `BRAND_PORTAL_ADMIN_PASSWORD`
+- `BRAND_PORTAL_DEV_ADMIN_PASSWORD` optional break-glass password for Griffin live checks. Store it only in Azure Key Vault / Azure App Settings, never in source control.
 
 ## Running Setup
 

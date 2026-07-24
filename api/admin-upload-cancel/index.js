@@ -12,10 +12,11 @@ module.exports = async function (context, req) {
     const blobContainer = await container();
     let deleted = 0;
     for (const upload of uploads) {
+      const portalId = String(upload?.portalId || '');
       const materialId = String(upload?.materialId || '');
       const fileName = cleanFileName(upload?.fileName);
       const blobName = String(upload?.blobName || '');
-      if (!/^[0-9a-f-]{36}$/i.test(materialId) || blobName !== `${materialId}-${fileName}`) continue;
+      if (!/^[0-9a-f-]{36}$/i.test(portalId) || !/^[0-9a-f-]{36}$/i.test(materialId) || blobName !== `${portalId}/${materialId}-${fileName}`) continue;
       await blobContainer.deleteBlob(blobName, { deleteSnapshots: 'include' }).catch((error) => {
         if (error.statusCode !== 404) throw error;
       });
