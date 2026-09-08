@@ -4,17 +4,13 @@
       "route": "/brand-portal/*",
       "redirect": "/contact/",
       "statusCode": 301
-    },
-    {
-      "route": "/admin/*",
-      "redirect": "/contact/",
-      "statusCode": 301
     }
   ],
   "navigationFallback": {
     "rewrite": "/index.html",
     "exclude": [
       "/_next/*",
+      "/admin/*",
       "/api/*",
       "/images/*",
       "/js/*",
