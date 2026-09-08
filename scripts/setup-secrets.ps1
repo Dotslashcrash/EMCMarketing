@@ -10,8 +10,7 @@ $ErrorActionPreference = "Stop"
 
 $ProjectRoot = Split-Path -Parent $PSScriptRoot
 $RequiredVariables = @(
-    "BRAND_PORTAL_STORAGE_CONNECTION_STRING",
-    "BRAND_PORTAL_ADMIN_PASSWORD"
+    "GOOGLE_CHAT_WEBHOOK_URL"
 )
 
 function Write-UmbrellaInfo {

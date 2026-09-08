@@ -1,18 +1,13 @@
 {
-  "name": "emc-brand-portal-api",
-  "version": "1.1.0",
+  "name": "emc-contact-api",
+  "version": "1.0.0",
   "private": true,
   "type": "commonjs",
-  "main": "server.js",
-  "scripts": {
-    "start": "node server.js"
-  },
+  "main": "src/functions/*.js",
   "engines": {
-    "node": "24.x"
+    "node": ">=20"
   },
   "dependencies": {
-    "@azure/data-tables": "^13.3.1",
-    "@azure/storage-blob": "^12.27.0",
-    "express": "^5.1.0"
+    "@azure/functions": "^4.16.2"
   }
 }

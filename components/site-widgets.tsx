@@ -1,7 +1,7 @@
 'use client';
 
 import { AnimatePresence, motion, useScroll, useTransform } from 'framer-motion';
-import { ArrowRight, Bot, Check, ChevronLeft, ChevronRight, Download, MessageCircle, Play, Send, X } from 'lucide-react';
+import { ArrowRight, Check, ChevronLeft, ChevronRight, Download, Play, Send, X } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { business, ctaEvents, reviews, videoCategories, videos } from '@/lib/site-data';
 
@@ -9,8 +9,8 @@ function track(event: string, detail?: Record<string, unknown>) {
   window.dispatchEvent(new CustomEvent('emc:analytics', { detail: { event, ...detail } }));
 }
 
-async function sendLeadAlert(payload: Record<string, unknown>) {
-  const response = await fetch('/api/chat-lead', {
+async function sendContactAlert(payload: Record<string, unknown>) {
+  const response = await fetch('/api/contact', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -19,7 +19,7 @@ async function sendLeadAlert(payload: Record<string, unknown>) {
     })
   });
   const data = (await response.json().catch(() => ({}))) as { error?: string };
-  if (!response.ok) throw new Error(data.error || 'Could not send the lead alert.');
+  if (!response.ok) throw new Error(data.error || 'Could not send the contact form.');
 }
 
 function pickMixedVideos(count = 3) {
@@ -276,13 +276,13 @@ export function ContactForm() {
       const payload = Object.fromEntries(form.entries());
       const leads = JSON.parse(localStorage.getItem('emc-contact-leads') || '[]');
       localStorage.setItem('emc-contact-leads', JSON.stringify([...leads, { ...payload, createdAt: new Date().toISOString() }]));
-      await sendLeadAlert({ ...payload, source: 'contact_form' });
+      await sendContactAlert({ ...payload, source: 'contact_form' });
       track(ctaEvents.contactSubmit, { source: 'contact_form' });
       setError('');
       setSent(true);
       event.currentTarget.reset();
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'Could not send the lead alert.');
+      setError(error instanceof Error ? error.message : 'Could not send the contact form.');
     } finally {
       setSending(false);
     }
@@ -323,6 +323,11 @@ function Field({ label, ...props }: React.InputHTMLAttributes<HTMLInputElement> 
     </label>
   );
 }
+
+/*
+The interactive chatbot was retired in September 2026. This block is kept
+temporarily as implementation history while the contact form is verified in
+production; it is not exported, rendered, or included in the live experience.
 
 type ChatBubble = { from: 'bot' | 'user' | 'rep'; text: string; id?: string };
 
@@ -493,7 +498,7 @@ export function Chatbot() {
         };
         const stored = JSON.parse(localStorage.getItem('emc-chat-leads') || '[]');
         localStorage.setItem('emc-chat-leads', JSON.stringify([...stored, { ...payload, createdAt: new Date().toISOString() }]));
-        await sendLeadAlert(payload);
+        await sendContactAlert(payload);
         track(ctaEvents.chatSubmit, { source: 'interactive_chatbot' });
         addMessages([
           { from: 'user', text: phone || 'Skip' },
@@ -643,6 +648,8 @@ export function Chatbot() {
     </>
   );
 }
+
+*/
 
 export function ExitIntentCapture() {
   const [show, setShow] = useState(false);

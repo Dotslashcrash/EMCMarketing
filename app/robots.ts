@@ -9,7 +9,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/admin/', '/brand-portal/', '/brand-sample/']
+        disallow: ['/brand-sample/']
       }
     ],
     sitemap: new URL('/sitemap.xml', siteUrl).toString()

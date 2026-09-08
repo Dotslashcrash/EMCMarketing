@@ -35,7 +35,6 @@ export const navItems = [
   { label: 'Services', href: '/services/' },
   { label: 'Results', href: '/results-reviews/' },
   { label: 'Videos', href: '/videos/' },
-  { label: 'Brand Portal', href: '/brand-portal/' },
   { label: 'Contact', href: '/contact/' }
 ];
 
@@ -415,7 +414,5 @@ export const ctaEvents = {
   emailClick: 'cta_click_to_email',
   reviewClick: 'cta_leave_google_review',
   leadMagnet: 'cta_download_marketing_scorecard',
-  chatOpen: 'chat_open',
-  chatSubmit: 'chat_lead_submit',
   contactSubmit: 'contact_form_submit'
 };

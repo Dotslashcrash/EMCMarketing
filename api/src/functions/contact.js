@@ -1,4 +1,4 @@
-const { json, parseBody } = require('../shared');
+const { app } = require('@azure/functions');
 
 const recentLeads = new Map();
 const recentIps = new Map();
@@ -7,6 +7,16 @@ const RATE_WINDOW_MS = 10 * 60 * 1000;
 const MIN_SUBMIT_MS = 3000;
 const MAX_SUBMIT_MS = 24 * 60 * 60 * 1000;
 const MAX_IP_SUBMISSIONS = 5;
+
+function json(status, jsonBody) {
+  return {
+    status,
+    jsonBody,
+    headers: {
+      'Cache-Control': 'no-store'
+    }
+  };
+}
 
 function clean(value, fallback = '') {
   return String(value || fallback).trim().slice(0, 1800);
@@ -17,9 +27,9 @@ function line(label, value) {
   return cleaned ? `${label}: ${cleaned}` : '';
 }
 
-function clientIp(req) {
-  const forwarded = req.headers?.['x-forwarded-for'] || req.headers?.['X-Forwarded-For'] || '';
-  return String(forwarded).split(',')[0].trim() || req.headers?.['x-client-ip'] || 'unknown';
+function clientIp(request) {
+  const forwarded = request.headers.get('x-forwarded-for') || '';
+  return forwarded.split(',')[0].trim() || request.headers.get('x-client-ip') || 'unknown';
 }
 
 function prune(map, now, maxAge) {
@@ -45,9 +55,9 @@ function looksRandom(value) {
   return vowels / letters.length < 0.28 || upperRuns > 1 || alternatingCase;
 }
 
-function spamReason(body, req) {
+function spamReason(body, request) {
   const now = Date.now();
-  const ip = clientIp(req);
+  const ip = clientIp(request);
   const submittedAt = Number(body.submittedAt || 0);
   const email = clean(body.email);
   const phone = clean(body.phone);
@@ -78,52 +88,39 @@ function spamReason(body, req) {
   return '';
 }
 
-module.exports = async function (context, req) {
+async function contact(request, context) {
   try {
-    const webhookUrl = process.env.GOOGLE_CHAT_WEBHOOK_URL;
-    if (!webhookUrl) {
-      context.res = json(500, { error: 'Google Chat notifications are not configured.' });
-      return;
-    }
-
-    const body = parseBody(req);
+    const body = await request.json().catch(() => ({}));
     const name = clean(body.name, 'Website visitor');
-    const source = clean(body.source, 'website_chat');
+    const source = clean(body.source, 'contact_form');
     const message = clean(body.message || body.need);
-    const chatSessionId = clean(body.chatSessionId);
-    const adminChatUrl = chatSessionId ? `https://www.emcmarketing.co/admin/?chat=${encodeURIComponent(chatSessionId)}` : '';
 
-    if (!message) {
-      context.res = json(400, { error: 'Add a message before sending.' });
-      return;
-    }
+    if (!message) return json(400, { error: 'Add a message before sending.' });
 
-    const blockedReason = spamReason(body, req);
+    const blockedReason = spamReason(body, request);
     if (blockedReason) {
-      console.warn(`Dropped suspected EMC lead spam: ${blockedReason}`);
-      context.res = json(200, { ok: true });
-      return;
+      context.warn(`Dropped suspected EMC contact spam: ${blockedReason}`);
+      return json(200, { ok: true });
     }
+
+    const webhookUrl = process.env.GOOGLE_CHAT_WEBHOOK_URL;
+    if (!webhookUrl) return json(500, { error: 'Contact notifications are not configured.' });
 
     const lines = [
-      '*New EMC website lead*',
+      '*New EMC website contact*',
       '',
       line('Source', source),
       line('Name', name),
       line('Email', body.email),
       line('Phone', body.phone),
       line('Business need', body.need),
-      line('Chat session', chatSessionId),
-      line('Rep reply link', adminChatUrl),
       line('Page', body.pageUrl),
       '',
       '*Message*',
       message,
       '',
       '*Reply note*',
-      chatSessionId
-        ? 'Use the rep reply link above. Replies typed inside Google Chat do not go back to the site visitor.'
-        : 'Do not reply in Google Chat expecting the visitor to see it. Follow up by email or phone from the lead details above.'
+      'Follow up by email or phone from the contact details above.'
     ].filter(Boolean);
 
     const response = await fetch(webhookUrl, {
@@ -132,12 +129,19 @@ module.exports = async function (context, req) {
       body: JSON.stringify({ text: lines.join('\n') })
     });
 
-    if (!response.ok) {
-      throw new Error(`Google Chat rejected the alert with status ${response.status}.`);
-    }
-
-    context.res = json(200, { ok: true });
+    if (!response.ok) throw new Error(`Google Chat rejected the contact alert with status ${response.status}.`);
+    return json(200, { ok: true });
   } catch (error) {
-    context.res = json(500, { error: error.message || 'Could not send the Google Chat alert.' });
+    context.error(error);
+    return json(500, { error: error.message || 'Could not send the contact alert.' });
   }
-};
+}
+
+app.http('contact', {
+  methods: ['POST'],
+  authLevel: 'anonymous',
+  route: 'contact',
+  handler: contact
+});
+
+module.exports = { contact };

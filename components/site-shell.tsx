@@ -5,7 +5,6 @@ import { usePathname } from 'next/navigation';
 import React, { useEffect } from 'react';
 import { ArrowUpRight, Mail, Menu, Phone, X } from 'lucide-react';
 import { business, ctaEvents, navItems, socials } from '@/lib/site-data';
-import { Chatbot } from './site-widgets';
 
 function track(event: string) {
   window.dispatchEvent(new CustomEvent('emc:analytics', { detail: { event } }));
@@ -147,7 +146,6 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
       </main>
       <Footer />
       {!denseContentArea ? <StickyCta /> : null}
-      <Chatbot />
     </>
   );
 }

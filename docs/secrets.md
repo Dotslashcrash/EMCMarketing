@@ -4,9 +4,7 @@ This repository uses the shared Griffin Technology Partners Umbrella framework f
 
 ## Required Local Variables
 
-- `BRAND_PORTAL_STORAGE_CONNECTION_STRING`
-- `BRAND_PORTAL_ADMIN_PASSWORD`
-- `BRAND_PORTAL_DEV_ADMIN_PASSWORD` optional break-glass password for Griffin live checks. Store it only in Azure Key Vault / Azure App Settings, never in source control.
+- `GOOGLE_CHAT_WEBHOOK_URL` for contact-form delivery. Store it only in Azure Key Vault / Azure Static Web Apps application settings, never in source control.
 
 ## Running Setup
 
@@ -37,7 +35,7 @@ If a required secret is unavailable, setup prints only the missing secret name a
 
 ## Production
 
-Production Azure workloads should use Managed Identity and Azure Key Vault directly. Do not deploy generated .env files.
+The production contact function reads `GOOGLE_CHAT_WEBHOOK_URL` from encrypted Azure Static Web Apps application settings. Do not deploy generated .env files.
 
 ## Contributor Rules
 
