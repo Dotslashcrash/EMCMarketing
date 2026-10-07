@@ -1,8 +1,23 @@
 {
   "routes": [
     {
+      "route": "/portal",
+      "redirect": "/",
+      "statusCode": 301
+    },
+    {
+      "route": "/portal/*",
+      "redirect": "/",
+      "statusCode": 301
+    },
+    {
+      "route": "/brand-portal",
+      "redirect": "/",
+      "statusCode": 301
+    },
+    {
       "route": "/brand-portal/*",
-      "redirect": "/contact/",
+      "redirect": "/",
       "statusCode": 301
     }
   ],

@@ -164,10 +164,9 @@ export function ServicesPreview() {
           </Link>
         </div>
         <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {services.map((service, index) => (
+          {services.map((service) => (
             <MotionIn key={service.slug} className="group service-card">
-              <div className="flex items-start justify-between gap-4">
-                <span className="text-sm font-black text-black/35">0{index + 1}</span>
+              <div className="flex items-start justify-end">
                 <Zap className="text-[var(--acid-dark)] transition group-hover:rotate-12" />
               </div>
               <h3 className="mt-8 text-3xl font-black uppercase leading-none">{service.title}</h3>
@@ -410,11 +409,10 @@ export function ServicesPageContent() {
             <h2 id="service-menu" className="headline mt-3">The actual levers.</h2>
             <p className="mt-5 text-lg text-white/68">These can stand alone, but they work best when they point at the same offer and the same buyer decision.</p>
           </div>
-          {services.map((service, index) => (
+          {services.map((service) => (
             <article key={service.slug} className="grid gap-6 border border-white/15 bg-white/[.04] p-6 md:grid-cols-[.7fr_1.3fr] md:p-8">
               <div>
-                <p className="text-sm font-black text-[var(--acid)]">0{index + 1}</p>
-                <h2 className="mt-3 text-4xl font-black uppercase leading-none">{service.title}</h2>
+                <h2 className="text-4xl font-black uppercase leading-none">{service.title}</h2>
               </div>
               <div>
                 <p className="text-xl font-black">{service.hook}</p>
