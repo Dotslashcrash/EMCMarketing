@@ -82,6 +82,7 @@ export function HomePage() {
     <>
       <ScrollProgress />
       <Hero />
+      <SocialStarterSection />
       <QuickAnswerSection eyebrow="Quick answer" title="What EMC does." answers={pageAnswers.home} variant="light" />
       <ServicesPreview />
       <WhyEmc />
@@ -115,7 +116,9 @@ export function Hero() {
               <a href={business.bookingUrl} target="_blank" rel="noreferrer" className="btn-acid" data-event="cta_hero_book">
                 Book a consultation <ArrowRight size={18} />
               </a>
-              <SocialStarterSignup className="btn-ghost" />
+              <a href="#social-starter" className="btn-ghost" data-event="cta_social_starter_signup">
+                Social Starter Signup <ArrowRight size={18} />
+              </a>
               <Link href="/services/" className="btn-ghost">
                 See services
               </Link>
@@ -145,6 +148,36 @@ export function Hero() {
             Human-made energy
           </div>
         </MotionIn>
+      </div>
+    </section>
+  );
+}
+
+function SocialStarterSection() {
+  return (
+    <section id="social-starter" aria-labelledby="social-starter-title" className="relative scroll-mt-20 border-y border-[var(--acid)]/40 bg-[radial-gradient(ellipse_at_top_left,rgba(46,184,68,.22),transparent_65%)] px-4 py-14 md:px-6 md:py-20">
+      <div className="mx-auto grid max-w-7xl items-start gap-10 lg:grid-cols-[.85fr_1.15fr] lg:gap-16">
+        <div className="lg:sticky lg:top-28">
+          <p className="kicker">Social Starter · EMC Marketing</p>
+          <h2 id="social-starter-title" className="mt-5 text-5xl font-black uppercase leading-[.95] md:text-7xl">
+            Your next <span className="text-[var(--acid)]">30 days</span> start here.
+          </h2>
+          <div className="mt-8 border-l-4 border-[var(--acid)] pl-5">
+            <p className="text-7xl font-black leading-none text-[var(--acid)] md:text-8xl">$222<span className="ml-3 text-xl uppercase text-white">flat.</span></p>
+            <p className="mt-3 text-xl font-bold">No contract. No monthly trap.</p>
+          </div>
+          <p className="mt-7 max-w-lg text-lg leading-8 text-white/75">
+            Tell us about your business and what you want from your socials. Your Social Starter begins with the form right here.
+          </p>
+          <div className="mt-7 flex flex-wrap gap-3 text-xs font-bold uppercase tracking-[.14em]">
+            {['One flat price', '30 days', 'Two-minute signup'].map((label) => (
+              <span key={label} className="rounded-full border border-[var(--acid)]/40 bg-[var(--acid)]/10 px-4 py-2 text-[var(--acid)]">{label}</span>
+            ))}
+          </div>
+        </div>
+        <div className="mx-auto w-full max-w-[640px] rounded-2xl border border-[var(--acid)]/40 bg-black shadow-[0_0_70px_rgba(46,184,68,.12)]">
+          <SocialStarterSignup />
+        </div>
       </div>
     </section>
   );

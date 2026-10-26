@@ -1,5 +1,22 @@
 # Deployment and Revert Log
 
+## 2026-10-26 Social Starter inline form below the hero
+
+- Update date: October 26, 2026 (America/Chicago).
+- Updated from computer: `NULLPOINTER` (Windows computer name).
+- Branch: `main`.
+- Website: https://www.emcmarketing.co/#social-starter
+- Removed the Social Starter popup, automatic timer, session suppression, overlay, and popup-opening CTA behavior at the user's request.
+- Embedded the complete Votel form in a dedicated section directly after the homepage hero.
+- Added a green-accented offer section highlighting the $222 flat price, 30 days, and no-contract terms already present in the form.
+- The hero signup CTA now scrolls to the inline form.
+- Uses Votel's official inline widget with automatic content-height resizing, without a fixed height, maximum height, or internal scrolling container. The form retains its own styling and submission handling.
+- Includes loading/error feedback and a hosted-form fallback link.
+- `npm run build` passed, including TypeScript and static export.
+- Browser verified a 1,634px form height, no maximum-height constraint, all fields and Submit rendered, no horizontal page overflow, and no Social Starter popup.
+- CRM submission and physical-phone testing remain unverified.
+- This commit and its Azure workflow record the source change and deployment status. Revert this commit and push to `main` to restore the previous automatic popup.
+
 ## 2026-10-26 Social Starter automatic popup follow-up
 
 - Update date: October 26, 2026 (America/Chicago).
