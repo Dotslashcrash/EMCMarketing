@@ -1,5 +1,19 @@
 # Deployment and Revert Log
 
+## 2026-10-26 Social Starter automatic popup follow-up
+
+- Update date: October 26, 2026 (America/Chicago).
+- Updated from computer: `NULLPOINTER` (Windows computer name).
+- Branch: `main`.
+- Website: https://www.emcmarketing.co/
+- Changed the signup popup to appear automatically four seconds after the Votel embed SDK is ready, as requested.
+- Shows automatically once per browser session. Closing it keeps it dismissed during that session; the Social Starter Signup CTA can reopen it anytime.
+- Uses an in-memory fallback when browser session storage is unavailable.
+- `npm run build` passed, including TypeScript and static export.
+- Browser verified automatic opening without a click, dismissal, suppression after reload, and manual reopening.
+- CRM submission and physical-phone testing remain unverified.
+- This commit and its Azure workflow record the source change and deployment status. Revert this commit and push to `main` to restore click-only opening.
+
 ## 2026-10-26 Social Starter signup popup
 
 - Update date: October 26, 2026 (America/Chicago).
