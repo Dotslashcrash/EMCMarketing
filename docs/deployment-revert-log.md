@@ -1,5 +1,35 @@
 # Deployment and Revert Log
 
+## 2026-10-26 Social Starter signup popup
+
+- Update date: October 26, 2026 (America/Chicago).
+- Updated from computer: `NULLPOINTER` (Windows computer name).
+- Requested by the site owner through Codex on this computer.
+- Branch: `main`.
+- Website: https://www.emcmarketing.co/
+- Form: https://app.votel.ai/f/social_starter
+
+### Change summary
+
+- Added a Social Starter Signup CTA beside the homepage consultation CTA.
+- Connected the CTA to Votel's official embed SDK and `createPopup('social_starter', { trigger: 'button' }).open()` API.
+- The form opens only on a CTA click. Votel provides the overlay, X, Escape, outside-click dismissal, form content, and submission handling.
+- Made the modal container scrollable within the viewport so the full form remains reachable on smaller screens without changing the form's own styling.
+- Added an accessible dialog name, a labeled close control, background interaction/scroll locking, and focus restoration.
+- Kept the hosted form URL as a fallback if the embed script fails to load.
+
+### Verification
+
+- `npm run build` passed, including TypeScript checks and static export.
+- Browser checked at a 614 × 668 viewport: form rendered, modal fit the viewport, vertical scrolling was available, and no page horizontal overflow was present.
+- Verified Escape, X, outside-click dismissal, reopening, and focus restoration.
+- No test signup was submitted. CRM contact creation and a physical-phone check remain unverified.
+- The Git commit containing this entry records the exact change; the Azure workflow linked to that commit records deployment status.
+
+### Revert
+
+Revert the commit containing this entry and push the resulting revert commit to `main` to redeploy the previous behavior.
+
 ## 2026-07-08 Brand portal upload and PDF protection deployment
 
 - Branch: `main`

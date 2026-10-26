@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import { ArrowRight, BadgeCheck, BarChart3, Flame, Mail, MapPin, Phone, Sparkles, Target, TrendingUp, Zap } from 'lucide-react';
 import { business, faqs, pageAnswers, painPoints, processSteps, services, videoFaqs } from '@/lib/site-data';
 import { ContactForm, DynamicVideoPreview, ExitIntentCapture, HeroEnergy, MarketingQuiz, MotionIn, ReviewCarousel, ScrollProgress, VideoGallery } from './site-widgets';
+import { SocialStarterSignup } from './social-starter-signup';
 
 const serviceTracks = [
   {
@@ -114,6 +115,7 @@ export function Hero() {
               <a href={business.bookingUrl} target="_blank" rel="noreferrer" className="btn-acid" data-event="cta_hero_book">
                 Book a consultation <ArrowRight size={18} />
               </a>
+              <SocialStarterSignup className="btn-ghost" />
               <Link href="/services/" className="btn-ghost">
                 See services
               </Link>
