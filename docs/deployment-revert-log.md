@@ -1,5 +1,16 @@
 # Deployment and Revert Log
 
+## 2026-10-26 Release v2.0.3
+
+- Release: `v2.0.3` — Social Starter inline signup.
+- Release date: October 26, 2026 (America/Chicago).
+- Release computer: `NULLPOINTER` (Windows computer name).
+- Release notes: [v2.0.3](releases/v2.0.3.md).
+- GitHub release: https://github.com/Dotslashcrash/EMCMarketing/releases/tag/v2.0.3
+- Implementation commit: `db84dbe545148d405dc2ddf9b6b2d0fd63cd9d0f`.
+- Implementation deployment: https://github.com/Dotslashcrash/EMCMarketing/actions/runs/40387847459 (success).
+- Updated package metadata to `2.0.3`; the release tag identifies the commit containing this release record.
+
 ## 2026-10-26 Social Starter inline form below the hero
 
 - Update date: October 26, 2026 (America/Chicago).
