@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import type { ReactNode } from 'react';
+import { Fragment, type ReactNode } from 'react';
 import { ArrowRight, BadgeCheck, BarChart3, Flame, Mail, MapPin, Phone, Sparkles, Target, TrendingUp, Zap } from 'lucide-react';
 import { business, faqs, pageAnswers, painPoints, processSteps, services, videoFaqs } from '@/lib/site-data';
 import { ContactForm, DynamicVideoPreview, ExitIntentCapture, HeroEnergy, MarketingQuiz, MotionIn, ReviewCarousel, ScrollProgress, VideoGallery } from './site-widgets';
@@ -546,13 +546,13 @@ function MarketingTiersSection() {
         <div className="mt-10 grid gap-5">
           {marketingTiers.map((tier) => (
             <article key={tier.name} className="border-2 border-black bg-white p-6 md:p-8">
-              <div className="grid gap-6 lg:grid-cols-[.8fr_1.2fr]">
+              <div className="grid gap-6 lg:grid-cols-[minmax(0,.8fr)_minmax(0,1.2fr)]">
                 <div>
                   <p className="text-sm font-black uppercase tracking-[.18em] text-black/45">{tier.revenue}</p>
                   <h3 className="mt-3 text-4xl font-black uppercase leading-none">{tier.name}</h3>
                   <p className="mt-4 text-black/68">{tier.benchmark}</p>
                 </div>
-                <div className="grid gap-3 sm:grid-cols-3">
+                <div className="grid min-w-0 gap-3 sm:grid-cols-3">
                   <Metric label="Total monthly plan" value={tier.monthlyBudget} />
                   <Metric label="EMC estimate" value={tier.emcEstimate} />
                   <Metric label="Paid media" value={tier.paidMedia} />
@@ -594,9 +594,13 @@ function MarketingTiersSection() {
 
 function Metric({ label, value }: { label: string; value: string }) {
   return (
-    <div className="border border-black/15 bg-black p-4 text-white">
+    <div className="min-w-0 border border-black/15 bg-black p-4 text-white">
       <p className="text-xs font-black uppercase tracking-[.16em] text-white/45">{label}</p>
-      <p className="mt-3 text-2xl font-black text-[var(--acid)]">{value}</p>
+      <p className="mt-3 text-xl font-black leading-snug text-[var(--acid)] [overflow-wrap:anywhere]">
+        {value.split('-').map((part, index) => (
+          <Fragment key={index}>{index > 0 && <>-<wbr /></>}{part}</Fragment>
+        ))}
+      </p>
     </div>
   );
 }
